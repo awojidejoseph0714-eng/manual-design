@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BS 8110 — Complete Manual Design Guide</title>
+<meta name="description" content="A complete step-by-step manual design guide for structural concrete slabs, beams, and columns under BS 8110-1:1997.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* =====================================
+   DESIGN TOKENS - Notion-like B&W
+   ===================================== */
+:root {
+  --black:      #0f0f0f;
+  --off-black:  #1a1a1a;
+  --dark-gray:  #2d2d2d;
+  --mid-gray:   #6b6b6b;
+  --rule:       #e0e0e0;
+  --light-bg:   #f7f7f5;
+  --white:      #ffffff;
+  --highlight:  #f0f0ee;
+  --code-bg:    #1a1a1a;
+  --code-text:  #e8e8e8;
+  --code-yellow:#e8d088;
+
+  --mono:  'IBM Plex Mono', monospace;
+  --serif: 'Lora', serif;
+  --sans:  'Inter', sans-serif;
+
+  --radius: 4px;
+  --max-w:  860px;
+}
+
+/* =====================================
+   RESET & BASE
+   ===================================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  background: var(--white);
+  color: var(--black);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute; top: -999px; left: 0;
+  background: var(--black); color: var(--white);
+  padding: 8px 16px; font-family: var(--mono); font-size: 12px;
+  z-index: 9999;
+}
+.skip-link:focus { top: 0; }
+
+/* =====================================
+   APP LAYOUT
+   ===================================== */
+.app-layout { display: flex; min-height: 100vh; }
+
+/* =====================================
+   SIDEBAR
+   ===================================== */
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: var(--light-bg);
+  border-right: 1px solid var(--rule);
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+.sidebar-header {
+  padding: 20px 16px 14px;
+  border-bottom: 1px solid var(--rule);
+  flex-shrink: 0;
+}
+.sidebar-logo {
+  font-family: var(--mono);
+  font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--mid-gray); margin-bottom: 4px;
+}
+.sidebar-title { font-size: 13px; font-weight: 600; color: var(--black); line-height: 1.4; }
+
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 0 32px; }
+
+.sidebar-section-label {
+  font-family: var(--mono);
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--mid-gray); padding: 14px 16px 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.sidebar-section-label::before {
+  content: ''; display: inline-block;
+  width: 5px; height: 5px;
+  background: var(--black); border-radius: 50%; flex-shrink: 0;
+}
+
+.sidebar-link {
+  display: flex; align-items: center;
+  padding: 5px 14px 5px 24px;
+  font-size: 13px; color: var(--dark-gray);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  line-height: 1.45; gap: 6px;
+}
+.sidebar-link:hover { background: var(--rule); color: var(--black); }
+.sidebar-link.active { background: var(--black); color: var(--white); }
+.link-num {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--mid-gray); flex-shrink: 0; width: 20px;
+}
+.sidebar-link:hover .link-num,
+.sidebar-link.active .link-num { color: inherit; opacity: 0.6; }
+
+/* Sidebar overlay (mobile) */
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 99;
+  backdrop-filter: blur(2px);
+}
+.sidebar-overlay.visible { display: block; }
+
+/* Mobile FAB toggle */
+.mobile-menu-toggle {
+  display: none;
+  position: fixed; bottom: 20px; right: 20px; z-index: 200;
+  background: var(--black); color: var(--white);
+  border: none; width: 48px; height: 48px; border-radius: 50%;
+  cursor: pointer; font-size: 18px;
+  align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+.mobile-menu-toggle:hover { transform: scale(1.08); }
+
+/* =====================================
+   MAIN CONTENT
+   ===================================== */
+.main-content { margin-left: 260px; flex: 1; min-width: 0; }
+
+/* =====================================
+   HEADER
+   ===================================== */
+header {
+  background: var(--black); color: var(--white);
+  padding: 52px 24px 44px;
+  position: relative; overflow: hidden;
+}
+header::after {
+  content: ''; position: absolute; right: -80px; top: -80px;
+  width: 300px; height: 300px; border-radius: 50%;
+  border: 60px solid rgba(255,255,255,0.04);
+  pointer-events: none;
+}
+.header-inner { max-width: var(--max-w); margin: 0 auto; }
+.header-label {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4); margin-bottom: 14px;
+}
+header h1 {
+  font-family: var(--serif);
+  font-size: clamp(22px, 5vw, 40px);
+  font-weight: 400; line-height: 1.2; margin-bottom: 12px;
+}
+header h1 em { font-style: italic; color: rgba(255,255,255,0.65); }
+.header-sub {
+  font-family: var(--mono); font-size: 11px;
+  color: rgba(255,255,255,0.3); letter-spacing: 0.05em;
+}
+
+/* =====================================
+   PART DIVIDER BAR
+   ===================================== */
+.part-bar {
+  background: var(--black); color: var(--white);
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.part-bar-inner {
+  max-width: var(--max-w); margin: 0 auto;
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+}
+.part-label {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.08);
+  padding: 2px 8px; border-radius: 2px; white-space: nowrap;
+}
+.part-bar h2 {
+  font-family: var(--serif);
+  font-size: clamp(17px, 3vw, 23px); font-weight: 400;
+}
+
+/* =====================================
+   SECTION NAV BAR
+   ===================================== */
+.section-nav {
+  border-bottom: 1px solid var(--rule);
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  background: var(--white);
+  position: sticky; top: 0; z-index: 50;
+}
+.section-nav::-webkit-scrollbar { display: none; }
+.section-nav-inner {
+  display: flex; padding: 0;
+  max-width: var(--max-w); margin: 0 auto;
+}
+.section-nav a {
+  display: block; padding: 10px 13px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em;
+  color: var(--mid-gray); text-decoration: none; white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s; flex-shrink: 0;
+}
+.section-nav a:hover { color: var(--black); border-bottom-color: var(--black); }
+
+/* =====================================
+   CONTENT WRAP
+   ===================================== */
+.content-wrap {
+  max-width: var(--max-w); margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* =====================================
+   TOC BLOCK
+   ===================================== */
+.toc-block {
+  max-width: var(--max-w); margin: 0 auto;
+  padding: 36px 24px 0;
+}
+.toc-heading {
+  font-family: var(--serif); font-size: clamp(18px, 3vw, 22px); font-weight: 400;
+  border-bottom: 1px solid var(--black); padding-bottom: 10px; margin-bottom: 18px;
+}
+.toc-intro { font-size: 14px; color: var(--dark-gray); margin-bottom: 18px; line-height: 1.8; }
+.toc-note {
+  background: var(--light-bg); border: 1px solid var(--rule);
+  border-left: 3px solid var(--black);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; font-size: 13.5px; margin-bottom: 24px; line-height: 1.7;
+}
+.toc-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden;
+  margin-bottom: 10px;
+}
+.toc-card { background: var(--white); padding: 16px 18px; border-top: 2px solid var(--black); }
+.toc-card.lighter { border-top-color: var(--mid-gray); }
+.toc-card h3 {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--mid-gray); margin-bottom: 10px; font-weight: 600;
+}
+.toc-card ol { padding-left: 14px; font-size: 12.5px; color: var(--dark-gray); }
+.toc-card ol li { margin-bottom: 4px; }
+.toc-card a { color: var(--dark-gray); text-decoration: none; }
+.toc-card a:hover { color: var(--black); text-decoration: underline; }
+
+/* =====================================
+   SECTIONS
+   ===================================== */
+section { margin-bottom: 48px; padding-top: 28px; }
+
+.section-header {
+  display: flex; align-items: flex-start;
+  gap: 12px; margin-bottom: 20px;
+  border-bottom: 1px solid var(--black); padding-bottom: 10px;
+}
+.step-num {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--mid-gray); letter-spacing: 0.08em; white-space: nowrap;
+  border: 1px solid var(--rule); padding: 2px 7px; border-radius: 2px;
+  flex-shrink: 0; margin-top: 3px;
+}
+.section-header h2 {
+  font-family: var(--serif);
+  font-size: clamp(17px, 2.5vw, 21px); font-weight: 400; line-height: 1.25;
+}
+
+h3 {
+  font-family: var(--sans); font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--mid-gray); margin: 22px 0 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+h3::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+
+p { margin-bottom: 12px; font-size: 14.5px; color: var(--dark-gray); }
+p strong { color: var(--black); }
+
+/* =====================================
+   CLAUSE BADGE
+   ===================================== */
+.cl {
+  display: inline-block; background: var(--black); color: var(--white);
+  font-family: var(--mono); font-size: 9.5px; padding: 1px 6px;
+  border-radius: 2px; letter-spacing: 0.04em;
+  vertical-align: middle; margin: 0 2px; white-space: nowrap;
+}
+
+/* =====================================
+   CARDS
+   ===================================== */
+.card {
+  background: var(--light-bg); border: 1px solid var(--rule);
+  border-left: 3px solid var(--black);
+  padding: 14px 18px; margin: 14px 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.card.blue { border-left-color: var(--mid-gray); }
+.card p { margin-bottom: 6px; font-size: 13.5px; }
+.card p:last-child { margin-bottom: 0; }
+
+/* =====================================
+   FORMULA / CODE BLOCK
+   ===================================== */
+.formula {
+  background: var(--code-bg); color: var(--code-text);
+  font-family: var(--mono); font-size: 12.5px;
+  padding: 16px 20px; margin: 14px 0;
+  border-radius: var(--radius); line-height: 2;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  white-space: pre;
+}
+.formula span { color: var(--code-yellow); }
+
+/* =====================================
+   TABLES
+   ===================================== */
+.table-wrap {
+  width: 100%; overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 14px 0;
+  border-radius: var(--radius);
+  border: 1px solid var(--rule);
+}
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 380px; }
+th {
+  background: var(--black); color: var(--white);
+  text-align: left; padding: 9px 14px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.07em; font-weight: 400;
+}
+td { padding: 9px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; color: var(--dark-gray); }
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) td { background: var(--light-bg); }
+
+@media (max-width: 600px) {
+  .table-wrap { border-radius: 0; margin: 14px -16px; width: calc(100% + 32px); }
+}
+
+/* =====================================
+   CHECKLIST
+   ===================================== */
+ul.check {
+  list-style: none; padding: 0;
+  border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; margin: 14px 0;
+}
+ul.check li {
+  padding: 10px 14px 10px 40px; position: relative;
+  border-bottom: 1px solid var(--rule);
+  font-size: 13.5px; color: var(--dark-gray); line-height: 1.55;
+}
+ul.check li:last-child { border-bottom: none; }
+ul.check li::before {
+  content: '□'; position: absolute; left: 14px;
+  color: var(--mid-gray); font-size: 14px; line-height: 1.55;
+}
+
+/* =====================================
+   FLOW DIAGRAM
+   ===================================== */
+.flow {
+  display: flex; flex-direction: column; gap: 0; margin: 16px 0;
+  border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden;
+}
+.flow-item {
+  background: var(--white); padding: 12px 16px;
+  font-size: 13px; position: relative; border-bottom: 1px solid var(--rule);
+}
+.flow-item:last-child { border-bottom: none; }
+.flow-item::after {
+  content: '↓'; display: block;
+  text-align: center; color: var(--mid-gray); font-size: 14px;
+  padding: 4px 0 2px; background: var(--light-bg);
+  border-bottom: 1px solid var(--rule);
+  margin: 12px -16px -12px; position: relative;
+}
+.flow-item:last-child::after { display: none; }
+.flow-item strong {
+  font-family: var(--mono); font-size: 10px; color: var(--mid-gray);
+  display: block; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;
+}
+
+/* =====================================
+   WARNING
+   ===================================== */
+.warn {
+  background: var(--light-bg); border: 1px solid var(--rule);
+  border-left: 3px solid var(--dark-gray);
+  padding: 12px 16px; margin: 14px 0; font-size: 13px;
+  color: var(--dark-gray); border-radius: 0 var(--radius) var(--radius) 0; line-height: 1.7;
+}
+.warn::before { content: '\26A0 '; font-size: 14px; color: var(--black); }
+
+/* =====================================
+   TYPE CARD (slab types etc.)
+   ===================================== */
+.type-card {
+  border: 1px solid var(--rule); border-top: 2px solid var(--black);
+  padding: 16px 18px; margin: 12px 0;
+  border-radius: 0 0 var(--radius) var(--radius); background: var(--white);
+}
+.type-card .meta {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--mid-gray); margin-bottom: 6px;
+}
+.type-card h3 {
+  font-family: var(--serif); font-size: 16px; font-weight: 400;
+  text-transform: none; letter-spacing: 0; color: var(--black);
+  margin: 0 0 6px; display: block;
+}
+.type-card h3::after { display: none; }
+.type-card p { margin-bottom: 0; font-size: 13px; }
+
+/* =====================================
+   BUILDING CARD
+   ===================================== */
+.building-card {
+  background: var(--black); color: var(--white);
+  padding: 22px 24px; margin: 14px 0; border-radius: var(--radius);
+}
+.building-card h3 {
+  color: rgba(255,255,255,0.5); margin-top: 0; margin-bottom: 10px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.building-card h3::after { background: rgba(255,255,255,0.1); }
+.building-card ul { padding-left: 18px; }
+.building-card ul li { margin-bottom: 6px; font-size: 13.5px; line-height: 1.65; color: rgba(255,255,255,0.82); }
+.building-card .cl { background: rgba(255,255,255,0.15); color: var(--white); }
+
+/* =====================================
+   GLOSSARY
+   ===================================== */
+.glossary {
+  border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden;
+}
+.glossary dt {
+  font-family: var(--mono); font-size: 12px; color: var(--black);
+  padding: 8px 14px 2px; border-top: 1px solid var(--rule); background: var(--light-bg);
+}
+.glossary dt:first-child { border-top: none; }
+.glossary dd { margin: 0; padding: 2px 14px 8px; font-size: 13px; color: var(--dark-gray); background: var(--white); }
+
+/* =====================================
+   BACK TO TOP
+   ===================================== */
+.backtotop { margin: 8px 0 0; text-align: right; }
+.backtotop a {
+  font-family: var(--mono); font-size: 10px; color: var(--mid-gray);
+  text-decoration: none; letter-spacing: 0.05em;
+  border: 1px solid var(--rule); padding: 3px 10px; border-radius: 20px;
+  transition: all 0.15s; display: inline-block;
+}
+.backtotop a:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+
+/* =====================================
+   FOOTER
+   ===================================== */
+footer {
+  background: var(--black); color: rgba(255,255,255,0.28);
+  font-family: var(--mono); font-size: 10.5px;
+  text-align: center; padding: 28px 24px;
+  letter-spacing: 0.08em; border-top: 1px solid var(--off-black);
+}
+
+/* =====================================
+   RESPONSIVE — TABLET (<=900px)
+   ===================================== */
+@media (max-width: 900px) {
+  .sidebar { width: 230px; min-width: 230px; }
+  .main-content { margin-left: 230px; }
+}
+
+/* =====================================
+   RESPONSIVE — MOBILE (<=700px)
+   ===================================== */
+@media (max-width: 700px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 280px;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-left: 0; }
+  .mobile-menu-toggle { display: flex; }
+
+  header { padding: 32px 16px 28px; }
+  .toc-block { padding: 24px 16px 0; }
+  .content-wrap { padding: 0 16px 80px; }
+  .part-bar { padding: 14px 16px; }
+  .section-nav a { padding: 10px 11px; font-size: 10px; }
+  .formula { font-size: 11px; padding: 12px 14px; }
+  .section-header { flex-direction: column; gap: 6px; }
+  .step-num { align-self: flex-start; }
+}
+
+/* =====================================
+   PRINT
+   ===================================== */
+@media print {
+  .sidebar, .mobile-menu-toggle, .sidebar-overlay { display: none; }
+  .main-content { margin-left: 0; }
+  .section-nav { position: static; }
+  .formula { background: #f0f0f0; color: #111; border: 1px solid #ccc; white-space: pre-wrap; }
+  th { background: #111; color: #fff; -webkit-print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<button class="mobile-menu-toggle" id="menuToggle" aria-label="Open navigation" onclick="toggleSidebar()">&#9776;</button>
+
+<div class="app-layout">
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Guide navigation">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">BS 8110 &middot; 1997</div>
+      <div class="sidebar-title">Manual Design Guide</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Part 0 &mdash; Fundamentals</div>
+      <a class="sidebar-link" href="#f1"><span class="link-num">0.1</span>Materials &amp; Safety Factors</a>
+      <a class="sidebar-link" href="#f2"><span class="link-num">0.2</span>Load Types &amp; Combinations</a>
+      <a class="sidebar-link" href="#f3"><span class="link-num">0.3</span>Universal Flexure Method</a>
+      <a class="sidebar-link" href="#f4"><span class="link-num">0.4</span>The Overall Load Path</a>
+
+      <div class="sidebar-section-label">Part 1 &mdash; Slabs</div>
+      <a class="sidebar-link" href="#s1"><span class="link-num">S1</span>Slab Types</a>
+      <a class="sidebar-link" href="#s2"><span class="link-num">S2</span>Loading</a>
+      <a class="sidebar-link" href="#s3"><span class="link-num">S3</span>Trial Depth</a>
+      <a class="sidebar-link" href="#s4"><span class="link-num">S4</span>One-Way Slabs</a>
+      <a class="sidebar-link" href="#s5"><span class="link-num">S5</span>Two-Way Simply Supported</a>
+      <a class="sidebar-link" href="#s6"><span class="link-num">S6</span>Two-Way Restrained</a>
+      <a class="sidebar-link" href="#s7"><span class="link-num">S7</span>Flat Slabs</a>
+      <a class="sidebar-link" href="#s8"><span class="link-num">S8</span>Ribbed / Waffle</a>
+      <a class="sidebar-link" href="#s9"><span class="link-num">S9</span>Cantilever Slabs</a>
+      <a class="sidebar-link" href="#s10"><span class="link-num">S10</span>Flexure, Shear &amp; Deflection</a>
+      <a class="sidebar-link" href="#s11"><span class="link-num">S11</span>Detailing</a>
+
+      <div class="sidebar-section-label">Part 2 &mdash; Beams</div>
+      <a class="sidebar-link" href="#b1"><span class="link-num">B1</span>Classification</a>
+      <a class="sidebar-link" href="#b2"><span class="link-num">B2</span>Loading</a>
+      <a class="sidebar-link" href="#b3"><span class="link-num">B3</span>Effective Span &amp; Depth</a>
+      <a class="sidebar-link" href="#b4"><span class="link-num">B4</span>Analysis Method</a>
+      <a class="sidebar-link" href="#b5"><span class="link-num">B5</span>Moments &amp; Shear</a>
+      <a class="sidebar-link" href="#b6"><span class="link-num">B6</span>Flexural Design</a>
+      <a class="sidebar-link" href="#b7"><span class="link-num">B7</span>Shear Design</a>
+      <a class="sidebar-link" href="#b8"><span class="link-num">B8</span>Deflection</a>
+      <a class="sidebar-link" href="#b9"><span class="link-num">B9</span>Cracking</a>
+      <a class="sidebar-link" href="#b10"><span class="link-num">B10</span>Detailing</a>
+
+      <div class="sidebar-section-label">Part 3 &mdash; Columns</div>
+      <a class="sidebar-link" href="#c1"><span class="link-num">C1</span>Classification</a>
+      <a class="sidebar-link" href="#c2"><span class="link-num">C2</span>Loading</a>
+      <a class="sidebar-link" href="#c3"><span class="link-num">C3</span>Slenderness</a>
+      <a class="sidebar-link" href="#c4"><span class="link-num">C4</span>Design Moments</a>
+      <a class="sidebar-link" href="#c5"><span class="link-num">C5</span>Axial + Uniaxial</a>
+      <a class="sidebar-link" href="#c6"><span class="link-num">C6</span>Biaxial Bending</a>
+      <a class="sidebar-link" href="#c7"><span class="link-num">C7</span>Shear</a>
+      <a class="sidebar-link" href="#c8"><span class="link-num">C8</span>Design Charts</a>
+      <a class="sidebar-link" href="#c9"><span class="link-num">C9</span>Detailing</a>
+
+      <div class="sidebar-section-label">Part 4 &mdash; Building</div>
+      <a class="sidebar-link" href="#building"><span class="link-num">W1</span>Whole-Building Guide</a>
+      <a class="sidebar-link" href="#quickref"><span class="link-num">W2</span>Quick Reference</a>
+      <a class="sidebar-link" href="#glossary"><span class="link-num">W3</span>Glossary of Symbols</a>
+    </nav>
+  </aside>
+
+  <!-- ============================= MAIN ============================= -->
+  <div class="main-content" id="main-content">
+
+    <header id="top">
+      <div class="header-inner">
+        <div class="header-label">Structural Concrete &mdash; Complete Manual Design Guide</div>
+        <h1>Designing Slabs, Beams &amp; Columns<br><em>by Hand, under BS 8110</em></h1>
+        <p class="header-sub">BS 8110-1:1997 &middot; One combined, step-by-step reference from load take-down to detailing</p>
+      </div>
+    </header>
+
+    <!-- TOC -->
+    <div class="toc-block">
+      <h2 class="toc-heading">How This Guide Works</h2>
+      <p class="toc-intro">Structures are designed top-down but built bottom-up. Load starts at the roof, works its way through <strong>slabs</strong>, into <strong>beams</strong>, down through <strong>columns</strong>, and finally into the foundations. This guide follows that exact order &mdash; read it in sequence the first time, then use it as a lookup reference afterward.</p>
+      <div class="toc-note"><strong>New to manual design?</strong> Read Part 0 (Fundamentals) first &mdash; it explains the shared vocabulary (characteristic vs design load, partial safety factors, K and lever-arm method) used identically in every part that follows.</div>
+      <div class="toc-grid">
+        <div class="toc-card">
+          <h3>Part 0 &mdash; Fundamentals</h3>
+          <ol>
+            <li><a href="#f1">Materials &amp; Partial Safety Factors</a></li>
+            <li><a href="#f2">Load Types &amp; Combinations</a></li>
+            <li><a href="#f3">The Universal Flexure Method</a></li>
+            <li><a href="#f4">The Overall Load Path</a></li>
+          </ol>
+        </div>
+        <div class="toc-card">
+          <h3>Part 1 &mdash; Slabs</h3>
+          <ol>
+            <li><a href="#s1">Slab Types</a></li>
+            <li><a href="#s2">Loading</a></li>
+            <li><a href="#s3">Trial Depth</a></li>
+            <li><a href="#s4">One-Way Slabs</a></li>
+            <li><a href="#s5">Two-Way Simply Supported</a></li>
+            <li><a href="#s6">Two-Way Restrained</a></li>
+            <li><a href="#s7">Flat Slabs</a></li>
+            <li><a href="#s8">Ribbed / Waffle Slabs</a></li>
+            <li><a href="#s9">Cantilever Slabs</a></li>
+            <li><a href="#s10">Flexure, Shear &amp; Deflection</a></li>
+            <li><a href="#s11">Detailing</a></li>
+          </ol>
+        </div>
+        <div class="toc-card">
+          <h3>Part 2 &mdash; Beams</h3>
+          <ol>
+            <li><a href="#b1">Classification</a></li>
+            <li><a href="#b2">Loading</a></li>
+            <li><a href="#b3">Effective Span &amp; Depth</a></li>
+            <li><a href="#b4">Analysis Method</a></li>
+            <li><a href="#b5">Moments &amp; Shear</a></li>
+            <li><a href="#b6">Flexural Design</a></li>
+            <li><a href="#b7">Shear Design</a></li>
+            <li><a href="#b8">Deflection</a></li>
+            <li><a href="#b9">Cracking</a></li>
+            <li><a href="#b10">Detailing</a></li>
+          </ol>
+        </div>
+        <div class="toc-card lighter">
+          <h3>Part 3 &mdash; Columns</h3>
+          <ol>
+            <li><a href="#c1">Classification</a></li>
+            <li><a href="#c2">Loading</a></li>
+            <li><a href="#c3">Slenderness</a></li>
+            <li><a href="#c4">Design Moments</a></li>
+            <li><a href="#c5">Axial + Uniaxial</a></li>
+            <li><a href="#c6">Biaxial Bending</a></li>
+            <li><a href="#c7">Shear</a></li>
+            <li><a href="#c8">Design Charts</a></li>
+            <li><a href="#c9">Detailing</a></li>
+          </ol>
+        </div>
+        <div class="toc-card lighter">
+          <h3>Part 4 &mdash; Building</h3>
+          <ol>
+            <li><a href="#building">Whole-Building Guidelines</a></li>
+            <li><a href="#quickref">Combined Quick Reference</a></li>
+            <li><a href="#glossary">Glossary of Symbols</a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== PART 0 ===================== -->
+    <div class="part-bar">
+      <div class="part-bar-inner">
+        <span class="part-label">Part 0</span>
+        <h2>Fundamentals &mdash; Read This First</h2>
+      </div>
+    </div>
+
+    <div class="content-wrap" style="padding-top:24px;">
+
+      <section id="f1">
+        <div class="section-header">
+          <span class="step-num">0.1</span>
+          <h2>Materials and Partial Safety Factors</h2>
+        </div>
+        <p>Every calculation in this guide uses <strong>limit state design</strong>: real (characteristic) loads and material strengths are each factored to a "worst realistic case" before being combined, so the structure has a built-in margin against the things you can't predict exactly.</p>
+        <h3>Material Partial Safety Factors <span class="cl">Table 2.2</span></h3>
+        <div class="table-wrap"><table>
+          <tr><th>Material / Effect</th><th>&gamma;<sub>m</sub></th></tr>
+          <tr><td>Concrete in flexure or axial load</td><td>1.5</td></tr>
+          <tr><td>Reinforcement (all types)</td><td>1.05</td></tr>
+          <tr><td>Concrete in shear (design v<sub>c</sub>)</td><td>1.25</td></tr>
+        </table></div>
+        <h3>Common Material Grades</h3>
+        <div class="formula">f<sub>cu</sub> = characteristic concrete cube strength &mdash; typically 25, 30, 35, 40 N/mm&sup2; for RC frames
+f<sub>y</sub>  = characteristic steel yield strength &mdash; 460 N/mm&sup2; (high yield), 250 N/mm&sup2; (mild steel)
+E<sub>c</sub>  &asymp; 20 to 30 kN/mm&sup2; depending on f<sub>cu</sub> (for deflection/stiffness calcs)</div>
+        <div class="card"><p><strong>Design strength</strong> is always characteristic strength &divide; &gamma;<sub>m</sub>: e.g. design steel stress = 0.87f<sub>y</sub> (since 1/1.05 &asymp; 0.95, and BS 8110 rounds the steel design stress factor to 0.87 to also fold in a small additional margin used in the stress-block derivation).</p></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="f2">
+        <div class="section-header">
+          <span class="step-num">0.2</span>
+          <h2>Load Types and Combinations</h2>
+        </div>
+        <div class="table-wrap"><table>
+          <tr><th>Symbol</th><th>Meaning</th></tr>
+          <tr><td>G<sub>k</sub></td><td>Characteristic dead load &mdash; self-weight of the structure and everything permanently attached (finishes, services, fixed partitions)</td></tr>
+          <tr><td>Q<sub>k</sub></td><td>Characteristic imposed (live) load &mdash; people, furniture, movable partitions, stored goods; from <span class="cl">BS 6399-1</span></td></tr>
+          <tr><td>W<sub>k</sub></td><td>Characteristic wind load &mdash; from <span class="cl">BS 6399-2</span> (or CP3 Ch V historically)</td></tr>
+        </table></div>
+        <h3>Standard Load Combinations <span class="cl">Table 2.1</span></h3>
+        <div class="formula">Dead + Imposed:           1.4G<sub>k</sub> + 1.6Q<sub>k</sub>
+Dead + Wind:              1.0G<sub>k</sub> + 1.4W<sub>k</sub>  (or 1.4G<sub>k</sub> + 1.4W<sub>k</sub>, check both)
+Dead + Imposed + Wind:    1.2G<sub>k</sub> + 1.2Q<sub>k</sub> + 1.2W<sub>k</sub>
+Minimum dead (uplift / stability / pattern): 1.0G<sub>k</sub></div>
+        <p>This guide's slab, beam, and column sections deal mainly with the gravity case (1.4G<sub>k</sub>+1.6Q<sub>k</sub>) since that governs the great majority of members; wind/lateral combinations are flagged specifically wherever they matter.</p>
+        <div class="warn">Always check the minimum-load case (1.0G<sub>k</sub> only, no live load) on adjacent spans too &mdash; for continuous members this "unloaded span" case, paired with a fully loaded neighbouring span, often produces the true maximum hogging moment at a support.</div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="f3">
+        <div class="section-header">
+          <span class="step-num">0.3</span>
+          <h2>The Universal Flexure Method (K and Lever Arm)</h2>
+        </div>
+        <p>Slabs, beams, and columns (in bending) are all ultimately designed for flexure the same way. Learn this once; it is reused in every part of this guide.</p>
+        <div class="flow">
+          <div class="flow-item"><strong>1 &mdash; Compute K</strong>K = M / (bd&sup2;f<sub>cu</sub>) &mdash; a non-dimensional measure of how hard the section is being worked.</div>
+          <div class="flow-item"><strong>2 &mdash; Compare to K'</strong>K' = 0.156 (singly reinforced limit, no redistribution). If K &le; K', section works with tension steel alone. If K &gt; K', compression steel is needed too.</div>
+          <div class="flow-item"><strong>3 &mdash; Find lever arm z</strong>z = d[0.5 + &radic;(0.25 &minus; K/0.9)], capped at 0.95d.</div>
+          <div class="flow-item"><strong>4 &mdash; Solve for steel</strong>A<sub>s</sub> = M / (0.87f<sub>y</sub>z)</div>
+          <div class="flow-item"><strong>5 &mdash; Check limits</strong>Compare A<sub>s</sub> against the minimum and maximum steel percentages for that member type.</div>
+        </div>
+        <div class="card blue"><p>For slabs, b = 1000mm (design a 1-metre-wide strip). For beams, b = actual beam width (or effective flange width for T/L sections). For columns, the same stress-block logic underlies the design charts in Part 3, just combined with axial load N.</p></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="f4">
+        <div class="section-header">
+          <span class="step-num">0.4</span>
+          <h2>The Overall Load Path</h2>
+        </div>
+        <div class="formula">Roof / Floor Finishes  &rarr;  SLAB  &rarr;  BEAM (if present)  &rarr;  COLUMN / WALL  &rarr;  FOUNDATION  &rarr;  Ground</div>
+        <p>Every load starts as a pressure (kN/m&sup2;) on a slab. The slab converts that into a line load (kN/m) on the beams or a point reaction on columns (flat slabs). Beams convert their loads into point reactions on columns. Columns accumulate every floor above them into a single growing axial force that ends up at the foundation.</p>
+        <div class="card"><p><strong>Design sequence for a real building:</strong> (1) sketch the load path floor by floor, (2) design the roof slab, (3) design the beams the roof slab lands on, (4) repeat downward floor by floor, (5) accumulate column loads all the way to foundation level, (6) design the foundations last.</p></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+    </div>
+
+    <!-- ===================== PART 1 — SLABS ===================== -->
+    <div class="part-bar">
+      <div class="part-bar-inner"><span class="part-label">Part 1</span><h2>Slabs &mdash; All Types</h2></div>
+    </div>
+    <nav class="section-nav" aria-label="Slabs sections">
+      <div class="section-nav-inner">
+        <a href="#s1">S1 &middot; Types</a>
+        <a href="#s2">S2 &middot; Loading</a>
+        <a href="#s3">S3 &middot; Depth</a>
+        <a href="#s4">S4 &middot; One-Way</a>
+        <a href="#s5">S5 &middot; 2-Way Simple</a>
+        <a href="#s6">S6 &middot; 2-Way Restrained</a>
+        <a href="#s7">S7 &middot; Flat</a>
+        <a href="#s8">S8 &middot; Ribbed</a>
+        <a href="#s9">S9 &middot; Cantilever</a>
+        <a href="#s10">S10 &middot; Design</a>
+        <a href="#s11">S11 &middot; Detailing</a>
+      </div>
+    </nav>
+
+    <div class="content-wrap">
+
+      <section id="s1">
+        <div class="section-header"><span class="step-num">STEP S1</span><h2>Identify the Slab Type</h2></div>
+        <p>Slab analysis branches early. Identify the type first; everything downstream (coefficients, formulas, detailing) follows from this choice.</p>
+        <div class="type-card">
+          <div class="meta">TYPE 1 &mdash; Cl. 3.5.2</div>
+          <h3>One-Way Spanning Solid Slab</h3>
+          <p>Supported on two opposite sides only, or l<sub>y</sub>/l<sub>x</sub> &gt; 2.0 on four sides.</p>
+        </div>
+        <div class="type-card">
+          <div class="meta">TYPE 2 &mdash; Cl. 3.5.3.3</div>
+          <h3>Two-Way Spanning Slab, Simply Supported (Corners Free to Lift)</h3>
+          <p>Rectangular panel, l<sub>y</sub>/l<sub>x</sub> &le; 2.0, supported on four sides with no corner restraint.</p>
+        </div>
+        <div class="type-card">
+          <div class="meta">TYPE 3 &mdash; Cl. 3.5.3.4 / 3.5.3.5</div>
+          <h3>Two-Way Spanning Slab, Restrained (Corners Held Down)</h3>
+          <p>Cast monolithically with edge beams/adjacent panels so corners are restrained &mdash; torsion reinforcement provided at corners. The most common floor slab type in framed buildings.</p>
+        </div>
+        <div class="type-card">
+          <div class="meta">TYPE 4 &mdash; Cl. 3.7</div>
+          <h3>Flat Slab (Supported Directly on Columns)</h3>
+          <p>No beams &mdash; slab bears directly on columns, with or without drop panels or column heads. Punching shear is a governing case.</p>
+        </div>
+        <div class="type-card">
+          <div class="meta">TYPE 5 &mdash; Cl. 3.6</div>
+          <h3>Ribbed / Waffle Slab</h3>
+          <p>Closely spaced ribs (one-way) or ribs in both directions (waffle) with a thin top flange &mdash; reduces self-weight on longer spans.</p>
+        </div>
+        <div class="type-card">
+          <div class="meta">TYPE 6 &mdash; Cl. 3.4.6</div>
+          <h3>Cantilever Slab</h3>
+          <p>Projects beyond its support with a free edge &mdash; balconies, canopies. Deflection and top-steel anchorage govern.</p>
+        </div>
+        <div class="card"><p><strong>Decision shortcut:</strong> no beams &rarr; flat slab. Beams on all 4 sides, l<sub>y</sub>/l<sub>x</sub> &le; 2.0 &rarr; two-way. Beams on 2 sides or l<sub>y</sub>/l<sub>x</sub> &gt; 2.0 &rarr; one-way. Long span, want reduced weight &rarr; ribbed/waffle. Free edge, no support &rarr; cantilever.</p></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="s2">
+        <div class="section-header"><span class="step-num">STEP S2</span><h2>Determine the Loading</h2></div>
+        <h3>2.1 &mdash; List Every Load Source (per m&sup2; of slab)</h3>
+        <div class="table-wrap"><table>
+          <tr><th>Source</th><th>How to Calculate</th><th>Load Type</th></tr>
+          <tr><td>Self-weight of slab</td><td>&gamma;<sub>c</sub> &times; h (&gamma;<sub>c</sub> &asymp; 24 kN/m&sup3;, h in m)</td><td>Dead (Gk)</td></tr>
+          <tr><td>Screed / finishes</td><td>&gamma;<sub>screed</sub> &times; thickness (50mm screed &asymp; 1.1 kN/m&sup2;)</td><td>Dead (Gk)</td></tr>
+          <tr><td>Ceiling / services</td><td>Nominal 0.25&ndash;0.5 kN/m&sup2;</td><td>Dead (Gk)</td></tr>
+          <tr><td>Lightweight movable partitions</td><td>UDL allowance per <span class="cl">BS 6399-1 Cl. 5.2</span>, typically 1.0 kN/m&sup2;</td><td>Dead (Gk)</td></tr>
+          <tr><td>Imposed / live load</td><td><span class="cl">BS 6399-1 Table 1</span> (office 2.5, residential 1.5 kN/m&sup2;)</td><td>Live (Qk)</td></tr>
+        </table></div>
+        <div class="formula">n = 1.4G<sub>k</sub> + 1.6Q<sub>k</sub>   (ultimate design load per m&sup2;)
+n<sub>min</sub> = 1.0G<sub>k</sub>   (minimum load case &mdash; pattern loading)</div>
+        <h3>2.2 &mdash; Worked Example</h3>
+        <div class="table-wrap"><table>
+          <tr><th>Item</th><th>Value</th></tr>
+          <tr><td>Slab self-weight, 175mm: 24 &times; 0.175</td><td>4.2 kN/m&sup2;</td></tr>
+          <tr><td>Screed + finishes</td><td>1.2 kN/m&sup2;</td></tr>
+          <tr><td>Ceiling/services allowance</td><td>0.3 kN/m&sup2;</td></tr>
+          <tr><td>Partition allowance</td><td>1.0 kN/m&sup2;</td></tr>
+          <tr><td><strong>Total G<sub>k</sub></strong></td><td><strong>6.7 kN/m&sup2;</strong></td></tr>
+          <tr><td><strong>Q<sub>k</sub> (office)</strong></td><td><strong>2.5 kN/m&sup2;</strong></td></tr>
+          <tr><td><strong>Ultimate n = 1.4(6.7) + 1.6(2.5)</strong></td><td><strong>13.4 kN/m&sup2;</strong></td></tr>
+        </table></div>
+        <div class="warn">Common mistake: applying the wrong imposed load category everywhere without checking individual panels for plant rooms, storage, or corridor loading (which are higher per BS 6399-1 Table 1).</div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="s3">
+        <div class="section-header"><span class="step-num">STEP S3</span><h2>Trial Thickness and Effective Depth</h2></div>
+        <div class="table-wrap"><table>
+          <tr><th>Slab Type</th><th>Typical span/depth (overall h)</th></tr>
+          <tr><td>One-way, simply supported</td><td>span / 25 to span / 28</td></tr>
+          <tr><td>One-way, continuous</td><td>span / 30 to span / 32</td></tr>
+          <tr><td>Two-way, restrained</td><td>span / 34 to span / 38 (short span)</td></tr>
+          <tr><td>Flat slab, no drops</td><td>span / 28 to span / 32</td></tr>
+          <tr><td>Flat slab, with drop panels</td><td>span / 32 to span / 36</td></tr>
+          <tr><td>Ribbed / waffle slab</td><td>span / 22 to span / 26</td></tr>
+          <tr><td>Cantilever slab</td><td>span / 8 to span / 10</td></tr>
+        </table></div>
+        <p>These give a starting depth only &mdash; final depth must satisfy the deflection check (Step S10). d = h &minus; cover &minus; half bar diameter.</p>
+        <h3>Minimum Cover <span class="cl">Table 3.3</span></h3>
+        <p>Typically 20&ndash;25mm internal/mild exposure, checked against fire resistance in <span class="cl">Table 3.4 / Fig 3.2</span>.</p>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="s4">
+        <div class="section-header"><span class="step-num">STEP S4</span><h2>One-Way Spanning Slabs</h2></div>
+        <h3>Simply Supported &mdash; UDL</h3>
+        <div class="formula">M<sub>max</sub> (midspan, per m width) = n &times; l&sup2; / 8
+V<sub>max</sub> (at support, per m width) = n &times; l / 2</div>
+        <h3>Continuous One-Way Slab &mdash; Coefficients <span class="cl">Table 3.12</span></h3>
+        <div class="formula">Conditions: spans approx. equal, loads substantially UDL, Q<sub>k</sub> &le; G<sub>k</sub>, &ge;3 spans
+M = coefficient &times; n &times; l&sup2;
+V = coefficient &times; n &times; l</div>
+        <div class="card blue"><p>Design each metre-wide strip as a beam of unit width &mdash; flexural/shear design follows the same method as Part 2, Steps B6&ndash;B7, per metre run instead of per beam width.</p></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="s5">
+        <div class="section-header"><span class="step-num">STEP S5</span><h2>Two-Way Spanning Slabs &mdash; Simply Supported (Corners Free)</h2></div>
+        <div class="formula">M<sub>sx</sub> = &alpha;<sub>sx</sub> &times; n &times; l<sub>x</sub>&sup2;   (short-span midspan)
+M<sub>sy</sub> = &alpha;<sub>sy</sub> &times; n &times; l<sub>x</sub>&sup2;   (long-span midspan)
+  &alpha;<sub>sx</sub>, &alpha;<sub>sy</sub> from Table 3.13, function of l<sub>y</sub>/l<sub>x</sub></div>
+        <div class="warn">No corner (torsion) steel provided in this case &mdash; corners will lift/crack if not genuinely free of restraint. Only appropriate where corners rest freely (e.g. on masonry walls), not where cast monolithically with beams.</div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="s6">
+        <div class="section-header"><span class="step-num">STEP S6</span><h2>Two-Way Spanning Slabs &mdash; Restrained (Corners Held Down)</h2></div>
+        <h3>Panel Classification <span class="cl">Table 3.14</span></h3>
+        <p>Classify each panel: interior panel, or one/two/three/four edges discontinuous &mdash; each has its own set of moment coefficients.</p>
+        <div class="formula">Midspan (sagging):  M<sub>sx</sub> = &beta;<sub>sx</sub>nl<sub>x</sub>&sup2;,  M<sub>sy</sub> = &beta;<sub>sy</sub>nl<sub>x</sub>&sup2;
+Support (hogging):  M<sub>hx</sub> = &beta;<sub>hx</sub>nl<sub>x</sub>&sup2;,  M<sub>hy</sub> = &beta;<sub>hy</sub>nl<sub>x</sub>&sup2;
+  (&beta; from Table 3.14 by panel type and l<sub>y</sub>/l<sub>x</sub>)</div>
+        <h3>Shear <span class="cl">Table 3.15</span></h3>
+        <div class="formula">V<sub>x</sub> = &beta;<sub>vx</sub> &times; n &times; l<sub>x</sub>   (short edge)
+V<sub>y</sub> = &beta;<sub>vy</sub> &times; n &times; l<sub>x</sub>   (long edge)</div>
+        <h3>Corner (Torsion) Reinforcement <span class="cl">Cl. 3.5.3.5</span></h3>
+        <div class="formula">A<sub>s,corner</sub> = (3/4) &times; A<sub>sx</sub> (max short-span steel)
+Extend l<sub>x</sub>/5 both directions from corner; both faces at discontinuous corners</div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="s7">
+        <div class="section-header"><span class="step-num">STEP S7</span><h2>Flat Slabs</h2></div>
+        <div class="formula">Divide each panel into:
+  column strip  (0.5 &times; panel width, centred on column line)
+  middle strip  (the remainder)</div>
+        <div class="table-wrap"><table>
+          <tr><th>Method</th><th>When Used</th></tr>
+          <tr><td>Equivalent frame method</td><td>Standard &mdash; analyse each direction as a frame of columns and slab strips</td></tr>
+          <tr><td>Simplified coefficients</td><td>Regular grid, &ge;3 spans, UDL, restricted per <span class="cl">Cl. 3.7.2.7</span></td></tr>
+          <tr><td>Finite element / grillage</td><td>Irregular grids, large openings, transfer conditions</td></tr>
+        </table></div>
+        <h3>Punching Shear <span class="cl">Cl. 3.7.7</span></h3>
+        <div class="formula">Check on a perimeter at 1.5d from the column face:
+v = V<sub>eff</sub> / (u &times; d)
+V<sub>eff</sub> = V<sub>t</sub> &times; [1 + 1.5(M<sub>t</sub>/V<sub>t</sub>)(1/x)]
+Compare v against v<sub>c</sub> (Table 3.8)</div>
+        <div class="warn">Punching shear governs flat slab design far more often than flexure &mdash; always check every column, especially edge/corner columns.</div>
+        <h3>Integrity Steel <span class="cl">Cl. 3.7.3</span></h3>
+        <p>At least two bottom bars in each direction should pass through each column, continuous or well lapped, for robustness.</p>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="s8">
+        <div class="section-header"><span class="step-num">STEP S8</span><h2>Ribbed and Waffle Slabs</h2></div>
+        <div class="table-wrap"><table>
+          <tr><th>Element</th><th>Typical Limit</th></tr>
+          <tr><td>Rib spacing</td><td>&le; 1.5m centres</td></tr>
+          <tr><td>Rib width</td><td>&ge; 125mm typical</td></tr>
+          <tr><td>Topping thickness</td><td>&ge; 40mm, often 50&ndash;75mm with light mesh</td></tr>
+        </table></div>
+        <p>Analyse the slab as a solid slab or series of beams (as Steps S4&ndash;S6), then design each rib as a flanged (T) beam using the topping as the compression flange &mdash; see Part 2, Step B6.</p>
+        <div class="formula">b<sub>eff</sub> per rib = b<sub>w</sub> + l<sub>z</sub>/5 each side (&le; rib spacing)</div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="s9">
+        <div class="section-header"><span class="step-num">STEP S9</span><h2>Cantilever Slabs</h2></div>
+        <div class="formula">M<sub>max</sub> (fixed support, hogging, per m) = n &times; l&sup2; / 2
+V<sub>max</sub> (at fixed support) = n &times; l</div>
+        <div class="formula">Basic span/effective-depth ratio = 7 (most conservative of all slab types)</div>
+        <p>Cantilevers are almost always deflection-critical &mdash; check early. Anchor top steel a full anchorage length past the point of contraflexure into the back span.</p>
+        <div class="warn">Never assume a cantilever's self-weight alone "counterbalances" the load &mdash; verify the back-span/support has adequate capacity and continuity explicitly.</div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="s10">
+        <div class="section-header"><span class="step-num">STEP S10</span><h2>Flexural Design, Shear, and Deflection (All Types)</h2></div>
+        <div class="formula">K = M / (1000 &times; d&sup2; &times; f<sub>cu</sub>)   (b = 1000mm per metre strip)
+z = d[0.5 + &radic;(0.25 &minus; K/0.9)] &le; 0.95d
+A<sub>s</sub> = M / (0.87f<sub>y</sub>z)  per metre width</div>
+        <div class="table-wrap"><table>
+          <tr><th>Condition</th><th>Limit</th></tr>
+          <tr><td>Minimum steel, each direction (f<sub>y</sub>=460)</td><td>0.13% of gross section</td></tr>
+          <tr><td>Max bar spacing, main steel</td><td>3d or 400mm, lesser</td></tr>
+          <tr><td>Max bar spacing, secondary steel</td><td>3.5d or 450mm</td></tr>
+        </table></div>
+        <div class="formula">Allowable span/d = basic ratio (Table 3.9) &times; mod. factor tension steel (3.10) &times; mod. factor compression steel (3.11)
+Check: actual span/d &le; allowable span/d</div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="s11">
+        <div class="section-header"><span class="step-num">STEP S11</span><h2>Detailing (All Slab Types)</h2></div>
+        <ul class="check">
+          <li>Simply supported: extend &ge;50% of midspan steel to within 0.1l of each support; rest may stop at 0.15l from support.</li>
+          <li>Continuous: extend top steel &ge;0.15l into span at interior supports; stop half at 0.25l.</li>
+          <li>Anchorage at simple ends: &ge;50% of midspan steel, anchored &ge;12&phi; past face of support.</li>
+          <li>Secondary steel: 0.13% of gross area for one-way slabs (distribution/shrinkage steel).</li>
+          <li>Flat slabs: top steel over column heads per column-strip requirements, integrity steel through columns.</li>
+          <li>Ribbed slabs: check bar spacing within the rib, provide links in ribs as for a beam where shear requires.</li>
+          <li>Cantilevers: never terminate top bars at/before the support &mdash; full anchorage into back span.</li>
+        </ul>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+    </div>
+
+    <!-- ===================== PART 2 — BEAMS ===================== -->
+    <div class="part-bar">
+      <div class="part-bar-inner"><span class="part-label">Part 2</span><h2>Beams &mdash; All Types</h2></div>
+    </div>
+    <nav class="section-nav" aria-label="Beams sections">
+      <div class="section-nav-inner">
+        <a href="#b1">B1 &middot; Classification</a>
+        <a href="#b2">B2 &middot; Loading</a>
+        <a href="#b3">B3 &middot; Span/Depth</a>
+        <a href="#b4">B4 &middot; Analysis</a>
+        <a href="#b5">B5 &middot; Moments &amp; Shear</a>
+        <a href="#b6">B6 &middot; Flexure</a>
+        <a href="#b7">B7 &middot; Shear</a>
+        <a href="#b8">B8 &middot; Deflection</a>
+        <a href="#b9">B9 &middot; Cracking</a>
+        <a href="#b10">B10 &middot; Detailing</a>
+      </div>
+    </nav>
+
+    <div class="content-wrap">
+
+      <section id="b1">
+        <div class="section-header"><span class="step-num">STEP B1</span><h2>Classify the Beam</h2></div>
+        <div class="table-wrap"><table>
+          <tr><th>Type</th><th>Criterion</th><th>BS 8110 Clause</th></tr>
+          <tr><td>Simply supported beam</td><td>Single span, free rotation at both ends</td><td><span class="cl">3.4.1</span></td></tr>
+          <tr><td>Continuous beam</td><td>Two or more spans over intermediate supports</td><td><span class="cl">3.4.3, Table 3.5/3.6</span></td></tr>
+          <tr><td>Cantilever beam</td><td>Fixed one end, free the other &mdash; hogging throughout</td><td><span class="cl">3.4.6</span></td></tr>
+          <tr><td>Rectangular beam</td><td>Solid rectangular section, no flange contribution</td><td><span class="cl">3.4.4.1</span></td></tr>
+          <tr><td>Flanged beam (T/L)</td><td>Cast monolithically with slab &mdash; slab acts as compression flange</td><td><span class="cl">3.4.1.5</span></td></tr>
+        </table></div>
+        <h3>Also Establish</h3>
+        <ul class="check">
+          <li>Primary (carries slab reactions + secondary beams) or secondary (slab only)?</li>
+          <li>Point loads from other beams landing on it, or purely distributed?</li>
+          <li>Part of a moment frame (rigid column connection) or simple beam-on-support?</li>
+          <li>Openings, cantilevered projections, or section changes along its length?</li>
+        </ul>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="b2">
+        <div class="section-header"><span class="step-num">STEP B2</span><h2>Determine the Loading on a Beam</h2></div>
+        <div class="table-wrap"><table>
+          <tr><th>Source</th><th>How it Loads the Beam</th><th>Load Type</th></tr>
+          <tr><td>Self-weight</td><td>w = &gamma;<sub>c</sub> &times; b &times; h</td><td>Dead (Gk)</td></tr>
+          <tr><td>Slab reaction (one-way)</td><td>UDL from half the slab span each side of the beam</td><td>Dead + Live</td></tr>
+          <tr><td>Slab reaction (two-way)</td><td>Triangular/trapezoidal, via &beta;<sub>vx</sub>, &beta;<sub>vy</sub> <span class="cl">Table 3.15</span></td><td>Dead + Live</td></tr>
+          <tr><td>Walls carried directly</td><td>w = &gamma;<sub>wall</sub> &times; thickness &times; height</td><td>Dead (Gk)</td></tr>
+          <tr><td>Secondary beam landing on primary</td><td>Point load = secondary beam's reaction at that support</td><td>Dead + Live</td></tr>
+          <tr><td>Finishes/services</td><td>UDL per m&sup2; of tributary area, converted to per-metre run</td><td>Dead (Gk)</td></tr>
+        </table></div>
+        <h3>Tributary Loads from Slabs</h3>
+        <div class="formula">One-way slab, beam along short edge: w<sub>beam</sub> = n &times; (l<sub>x</sub>/2)
+
+Two-way restrained slab (Table 3.15):
+  V<sub>x</sub> = &beta;<sub>vx</sub> &times; n &times; l<sub>x</sub>  (short edge, triangular)
+  V<sub>y</sub> = &beta;<sub>vy</sub> &times; n &times; l<sub>x</sub>  (long edge, trapezoidal)
+
+Equivalent UDL, triangular load:   w<sub>eq</sub> = (1/2) &times; w<sub>max</sub>
+Equivalent UDL, trapezoidal load:  w<sub>eq</sub> = w<sub>max</sub> &times; [1 &minus; (1/3)(l<sub>x</sub>/l<sub>y</sub>)&sup2;]
+  where w<sub>max</sub> = n &times; l<sub>x</sub> / 2</div>
+        <div class="formula">G<sub>k</sub> = self-weight + finishes + walls + slab dead reaction
+Q<sub>k</sub> = slab live reaction + any direct imposed load
+w<sub>u</sub> = 1.4G<sub>k</sub> + 1.6Q<sub>k</sub>   <span>(Table 2.1)</span></div>
+        <h3>Worked Example: Load Take-Down onto a Primary Beam</h3>
+        <div class="table-wrap"><table>
+          <tr><th>Item</th><th>Calculation</th><th>Value</th></tr>
+          <tr><td>Beam self-weight (300&times;500mm)</td><td>24 &times; 0.3 &times; 0.5</td><td>3.6 kN/m</td></tr>
+          <tr><td>Slab dead reaction (l<sub>x</sub>=4m, Gk=4.5 kN/m&sup2;)</td><td>4.5 &times; (4/2)</td><td>9.0 kN/m</td></tr>
+          <tr><td>Slab live reaction (Qk=2.5 kN/m&sup2;)</td><td>2.5 &times; (4/2)</td><td>5.0 kN/m</td></tr>
+          <tr><td>Block wall (150mm, 2.8m, &gamma;=19, less openings)</td><td>19&times;0.15&times;2.8&times;0.85</td><td>6.8 kN/m</td></tr>
+          <tr><td><strong>Total G<sub>k</sub></strong></td><td>3.6+9.0+6.8</td><td><strong>19.4 kN/m</strong></td></tr>
+          <tr><td><strong>Total Q<sub>k</sub></strong></td><td>&mdash;</td><td><strong>5.0 kN/m</strong></td></tr>
+          <tr><td><strong>Ultimate w<sub>u</sub></strong></td><td>1.4(19.4)+1.6(5.0)</td><td><strong>35.2 kN/m</strong></td></tr>
+        </table></div>
+        <div class="warn">Don't forget point loads: a secondary beam reaction mid-span, a column on a transfer beam, or plant load must be added as discrete point loads &mdash; not smeared into the UDL.</div>
+        <h3>Common Mistakes</h3>
+        <ul class="check">
+          <li>Double-counting slab load on both beam and column directly.</li>
+          <li>Using gross wall height instead of clear height between slab soffit and beam/floor below.</li>
+          <li>Forgetting the partition allowance (typically 1.0 kN/m&sup2;).</li>
+          <li>Applying live load reduction where it doesn't belong (that's a column-level effect, see Part 3).</li>
+          <li>Ignoring construction-stage loading (wet concrete + formwork on a propped beam below).</li>
+        </ul>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="b3">
+        <div class="section-header"><span class="step-num">STEP B3</span><h2>Effective Span and Trial Depth</h2></div>
+        <div class="formula">Simply supported: l<sub>eff</sub> = min(clear span + d, centre-to-centre of supports)
+Continuous:       l<sub>eff</sub> = centre-to-centre of supports
+Cantilever:       l<sub>eff</sub> = length to face of support + d/2</div>
+        <div class="table-wrap"><table>
+          <tr><th>Beam Type</th><th>Typical span/depth (overall h)</th></tr>
+          <tr><td>Simply supported</td><td>span / 12 to span / 15</td></tr>
+          <tr><td>Continuous</td><td>span / 15 to span / 18</td></tr>
+          <tr><td>Cantilever</td><td>span / 6 to span / 8</td></tr>
+        </table></div>
+        <p>Confirm final depth against the deflection check in Step B8. d = h &minus; cover &minus; link diameter &minus; half main bar diameter.</p>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="b4">
+        <div class="section-header"><span class="step-num">STEP B4</span><h2>Select the Analysis Method</h2></div>
+        <div class="table-wrap"><table>
+          <tr><th>Method</th><th>When to Use</th><th>Clause</th></tr>
+          <tr><td>Simply supported formula</td><td>Single span, standard UDL/point loads</td><td>Basic statics</td></tr>
+          <tr><td>Moment/shear coefficients</td><td>Approx. equal spans (&plusmn;15%), UDL dominant, &ge;3 spans</td><td><span class="cl">Table 3.5/3.6</span></td></tr>
+          <tr><td>Moment distribution (manual)</td><td>Unequal spans, mixed loading</td><td><span class="cl">3.4.3</span></td></tr>
+          <tr><td>Computer frame/grillage</td><td>Beams part of a rigid frame with columns, complex loads</td><td><span class="cl">3.2.1</span></td></tr>
+        </table></div>
+        <div class="card"><p><strong>Conditions for Table 3.5/3.6 coefficients:</strong> spans approximately equal, loads substantially UDL, Q<sub>k</sub> &le; G<sub>k</sub>. Otherwise, run a proper elastic/moment-distribution analysis with pattern loading.</p></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="b5">
+        <div class="section-header"><span class="step-num">STEP B5</span><h2>Bending Moments and Shear Forces</h2></div>
+        <div class="formula">Simply supported, UDL:          M<sub>max</sub> = w<sub>u</sub>l&sup2;/8,   V<sub>max</sub> = w<sub>u</sub>l/2
+Simply supported, point at mid: M<sub>max</sub> = Pl/4,      V<sub>max</sub> = P/2
+Cantilever, UDL:                M<sub>max</sub> = w<sub>u</sub>l&sup2;/2,   V<sub>max</sub> = w<sub>u</sub>l</div>
+        <div class="warn">Pattern loading (beams not qualifying for coefficients): run full load on all spans, and alternate spans loaded with 1.4G<sub>k</sub>+1.6Q<sub>k</sub> while others carry 1.0G<sub>k</sub>, to capture true maximum span and support moments.</div>
+        <h3>Redistribution <span class="cl">Cl. 3.2.2</span></h3>
+        <p>Elastic moments may be redistributed up to 30% (x/d &le; 0.6 after redistribution), provided equilibrium is maintained and envelopes adjusted accordingly.</p>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="b6">
+        <div class="section-header"><span class="step-num">STEP B6</span><h2>Flexural (Bending) Design</h2></div>
+        <div class="formula">K = M / (bd&sup2;f<sub>cu</sub>);  K' = 0.156
+If K &le; K': z = d[0.5 + &radic;(0.25 &minus; K/0.9)] &le; 0.95d
+A<sub>s</sub> = M / (0.87f<sub>y</sub>z)</div>
+        <h3>Doubly Reinforced Section (K &gt; K')</h3>
+        <div class="formula">A<sub>s</sub>' = (K&minus;K')f<sub>cu</sub>bd&sup2; / [0.87f<sub>y</sub>(d&minus;d')]
+A<sub>s</sub>  = K'f<sub>cu</sub>bd&sup2; / (0.87f<sub>y</sub>z') + A<sub>s</sub>'   (z' at K'=0.156 &rarr; z'=0.775d)</div>
+        <h3>Flanged (T/L) Beams <span class="cl">Cl. 3.4.1.5</span></h3>
+        <div class="formula">b<sub>eff</sub> (T-beam) = b<sub>w</sub> + l<sub>z</sub>/5 each side
+b<sub>eff</sub> (L-beam) = b<sub>w</sub> + l<sub>z</sub>/10
+  l<sub>z</sub> &asymp; 0.7 &times; span (continuous)</div>
+        <div class="table-wrap"><table>
+          <tr><th>Condition</th><th>Limit</th></tr>
+          <tr><td>Min tension steel, rectangular (f<sub>y</sub>=460)</td><td>0.13% of b&times;h</td></tr>
+          <tr><td>Min tension steel, flanged (web tension)</td><td>0.18&ndash;0.26% of b<sub>w</sub>&times;h</td></tr>
+          <tr><td>Max tension or compression steel</td><td>4% of gross area</td></tr>
+        </table></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="b7">
+        <div class="section-header"><span class="step-num">STEP B7</span><h2>Shear Design</h2></div>
+        <div class="formula">v = V / (b<sub>v</sub>d) &le; 0.8&radic;f<sub>cu</sub> or 5 N/mm&sup2; (lesser)
+v<sub>c</sub> = 0.79[100A<sub>s</sub>/(b<sub>v</sub>d)]&sup1;&sol;&sup3;(400/d)&frac14;/&gamma;<sub>m</sub> &times; (f<sub>cu</sub>/25)&sup1;&sol;&sup3;</div>
+        <div class="table-wrap"><table>
+          <tr><th>Condition</th><th>Provision</th></tr>
+          <tr><td>v &lt; 0.5v<sub>c</sub></td><td>Nominal links only</td></tr>
+          <tr><td>0.5v<sub>c</sub> &le; v &lt; (v<sub>c</sub>+0.4)</td><td>Min links: A<sub>sv</sub>/s<sub>v</sub> = 0.4b<sub>v</sub>/(0.87f<sub>yv</sub>)</td></tr>
+          <tr><td>v &ge; (v<sub>c</sub>+0.4)</td><td>Design links: A<sub>sv</sub>/s<sub>v</sub> = b<sub>v</sub>(v&minus;v<sub>c</sub>)/(0.87f<sub>yv</sub>)</td></tr>
+          <tr><td>v &gt; 0.8&radic;f<sub>cu</sub> or 5N/mm&sup2;</td><td>Section too small &mdash; increase b or d</td></tr>
+        </table></div>
+        <div class="formula">Max link spacing s<sub>v</sub> &le; 0.75d;  max lateral leg spacing &le; d</div>
+        <div class="card blue"><p><strong>Critical section:</strong> checked at distance d from the face of the support.</p></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="b8">
+        <div class="section-header"><span class="step-num">STEP B8</span><h2>Deflection Check</h2></div>
+        <div class="table-wrap"><table>
+          <tr><th>Support Condition</th><th>Basic span/d</th></tr>
+          <tr><td>Cantilever</td><td>7</td></tr>
+          <tr><td>Simply supported</td><td>20</td></tr>
+          <tr><td>Continuous</td><td>26</td></tr>
+        </table></div>
+        <div class="formula">Allowable span/d = basic ratio &times; mod. factor (tension, Table 3.10) &times; mod. factor (compression, Table 3.11)
+Check: actual span/d &le; allowable span/d</div>
+        <p>Flanged beams with b<sub>w</sub>/b &lt; 0.3: apply the additional reduction factor <span class="cl">Cl. 3.4.6.4</span>. Spans &gt;10m: apply the correction factor 10/span.</p>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="b9">
+        <div class="section-header"><span class="step-num">STEP B9</span><h2>Cracking / Crack Control</h2></div>
+        <div class="formula">Clear bar spacing &le; 47000/f<sub>s</sub> (mm), &le; 300mm
+  (simplified: max clear spacing 155&ndash;300mm depending on redistribution &mdash; Table 3.30)</div>
+        <p>Side face bars required where overall depth &gt;750mm: spacing &le;250mm, &ge;0.5% of side face area per zone <span class="cl">Cl. 3.12.11.2.6</span>.</p>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="b10">
+        <div class="section-header"><span class="step-num">STEP B10</span><h2>Detailing and Curtailment</h2></div>
+        <ul class="check">
+          <li>Simply supported: extend &ge;50% of bottom steel to within 0.1l of each support end; bend the rest up or stop at 0.15l from the support face with a 12&phi; anchorage.</li>
+          <li>Continuous &mdash; midspan steel: stop 50% at 0.15l from each support face; rest continues to within 0.1l of the far support.</li>
+          <li>Continuous &mdash; support steel (hogging): extend &ge;0.15l into the span on each side; lap with midspan steel where needed.</li>
+          <li>Cantilever: all top steel must extend a full anchorage length into the back span or supporting member &mdash; do not stop at the root face.</li>
+          <li>Link spacing: &le;0.75d throughout; increase near supports where shear is high and reduce toward midspan where shear drops.</li>
+          <li>Minimum 2 top bars + 2 bottom bars throughout regardless of moment (for handling and concrete placement).</li>
+          <li>Bar spacing limits: main bars not closer than h<sub>agg</sub>+5mm; not more than the cracking spacing from Step B9.</li>
+        </ul>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+    </div>
+
+    <!-- ===================== PART 3 — COLUMNS ===================== -->
+    <div class="part-bar">
+      <div class="part-bar-inner"><span class="part-label">Part 3</span><h2>Columns &mdash; All Types</h2></div>
+    </div>
+    <nav class="section-nav" aria-label="Columns sections">
+      <div class="section-nav-inner">
+        <a href="#c1">C1 &middot; Classification</a>
+        <a href="#c2">C2 &middot; Loading</a>
+        <a href="#c3">C3 &middot; Slenderness</a>
+        <a href="#c4">C4 &middot; Design Moments</a>
+        <a href="#c5">C5 &middot; Axial + Uniaxial</a>
+        <a href="#c6">C6 &middot; Biaxial Bending</a>
+        <a href="#c7">C7 &middot; Shear</a>
+        <a href="#c8">C8 &middot; Design Charts</a>
+        <a href="#c9">C9 &middot; Detailing</a>
+      </div>
+    </nav>
+
+    <div class="content-wrap">
+
+      <section id="c1">
+        <div class="section-header"><span class="step-num">STEP C1</span><h2>Classify the Column</h2></div>
+        <div class="table-wrap"><table>
+          <tr><th>Classification</th><th>Criterion</th><th>BS 8110</th></tr>
+          <tr><td>Short column</td><td>l<sub>e</sub>/h &le; 15 (braced) or l<sub>e</sub>/h &le; 10 (unbraced)</td><td><span class="cl">Cl. 3.8.1.3</span></td></tr>
+          <tr><td>Slender column</td><td>l<sub>e</sub>/h &gt; the short-column limits &mdash; additional moment M<sub>add</sub> required</td><td><span class="cl">Cl. 3.8.3</span></td></tr>
+          <tr><td>Braced column</td><td>Lateral load carried by shear walls/cores, not by this column</td><td><span class="cl">Cl. 3.8.1.5</span></td></tr>
+          <tr><td>Unbraced column</td><td>Column itself contributes to lateral stability &mdash; sway frame</td><td><span class="cl">Cl. 3.8.1.5</span></td></tr>
+        </table></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="c2">
+        <div class="section-header"><span class="step-num">STEP C2</span><h2>Determine Loading on the Column</h2></div>
+        <p>Columns accumulate load from every floor above. The load at any level is the sum of reactions from all beams framing in from that floor, plus the self-weight of the column length at that storey, plus the column load already accumulated from the floors above.</p>
+        <div class="formula">N<sub>floor</sub> = &Sigma;(beam reactions framing in at that level) + column self-weight for storey
+N<sub>total</sub> = &Sigma; N<sub>floor</sub> for all floors above (cumulative)</div>
+        <div class="formula">Column self-weight: N<sub>sw</sub> = 24 &times; b &times; h &times; storey-height  (kN, b and h in m)</div>
+        <h3>Live Load Reduction <span class="cl">BS 6399-1 Cl. 6.2</span></h3>
+        <p>For columns supporting more than one floor, the imposed (live) load may be reduced by a percentage that increases with the number of floors, because statistically not all floors are simultaneously fully loaded. Check the table in BS 6399-1 Cl. 6.2 for the applicable reduction factor.</p>
+        <div class="card"><p><strong>Minimum eccentricity:</strong> BS 8110 requires that at minimum, a column is designed for an eccentricity of 0.05h or 20mm (whichever is greater) even if the analysis gives a smaller moment &mdash; giving a minimum design moment M<sub>min</sub> = N &times; e<sub>min</sub>.</p></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="c3">
+        <div class="section-header"><span class="step-num">STEP C3</span><h2>Slenderness and Effective Length</h2></div>
+        <div class="formula">l<sub>e</sub> = &beta; &times; l<sub>clear</sub>   (effective length)
+  &beta; factors (Table 3.21):
+    Both ends fixed in position and direction &rarr; &beta; = 0.65
+    One end fixed, other pinned in direction  &rarr; &beta; = 0.80
+    Both ends pinned in direction             &rarr; &beta; = 1.00
+    One end fixed, other free (cantilever)   &rarr; &beta; = 2.20</div>
+        <div class="formula">Slenderness ratio: l<sub>e</sub>/h (about the minor axis typically governs)
+Short (braced):   l<sub>e</sub>/h &le; 15
+Short (unbraced): l<sub>e</sub>/h &le; 10</div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="c4">
+        <div class="section-header"><span class="step-num">STEP C4</span><h2>Design Moments</h2></div>
+        <h3>Short Columns</h3>
+        <p>Use the moments directly from the analysis (beam reactions &times; eccentricity, frame analysis, or minimum eccentricity &mdash; whichever is greater).</p>
+        <h3>Slender Columns &mdash; Additional Moment <span class="cl">Cl. 3.8.3</span></h3>
+        <div class="formula">M<sub>add</sub> = N &times; a<sub>u</sub>
+a<sub>u</sub>  = &beta;<sub>a</sub> &times; h &times; (l<sub>e</sub>/h)&sup2; / 2000   (&beta;<sub>a</sub> from Table 3.22)
+Design moment: M<sub>i</sub> = M<sub>2</sub> + M<sub>add</sub> (at mid-height critical point, braced slender columns)</div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="c5">
+        <div class="section-header"><span class="step-num">STEP C5</span><h2>Axial Load + Uniaxial Bending</h2></div>
+        <p>With N and M in one axis, enter the design chart (Part 3c, Fig 3.12&ndash;3.21 or tabulated equivalents) with:</p>
+        <div class="formula">N / (bh&middot;f<sub>cu</sub>)   (normalised axial load)
+M / (bh&sup2;&middot;f<sub>cu</sub>)  (normalised moment)
+&rarr; read off  100A<sub>sc</sub> / (bh)  (required steel percentage)</div>
+        <div class="card"><p><strong>Minimum steel:</strong> 0.4% of gross section. <strong>Maximum steel:</strong> 6% of gross section (or 10% at laps), per <span class="cl">Cl. 3.12.5</span>.</p></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="c6">
+        <div class="section-header"><span class="step-num">STEP C6</span><h2>Biaxial Bending</h2></div>
+        <p>Where moments exist in both axes simultaneously, use the BS 8110 equivalent uniaxial moment approach <span class="cl">Cl. 3.8.4.5</span>:</p>
+        <div class="formula">If M<sub>x</sub>/h' &ge; M<sub>y</sub>/b':
+  Design for M<sub>x</sub>' = M<sub>x</sub> + &beta;(h'/b')M<sub>y</sub>  (about x-x axis only)
+If M<sub>x</sub>/h' &lt; M<sub>y</sub>/b':
+  Design for M<sub>y</sub>' = M<sub>y</sub> + &beta;(b'/h')M<sub>x</sub>  (about y-y axis only)
+
+&beta; from Table 3.24 &mdash; function of N/(bhf<sub>cu</sub>), ranges 0.30&ndash;0.60
+h' and b' = effective depth to the compression reinforcement in each direction</div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="c7">
+        <div class="section-header"><span class="step-num">STEP C7</span><h2>Shear in Columns</h2></div>
+        <p>Columns rarely require shear reinforcement for gravity loads alone &mdash; shear usually governs only in unbraced/sway frames under wind or seismic loading. Check using the same method as beams (Step B7).</p>
+        <div class="formula">v = H / (b<sub>v</sub>d) &mdash; where H is the storey shear at that level
+Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="c8">
+        <div class="section-header"><span class="step-num">STEP C8</span><h2>Using the Design Charts</h2></div>
+        <p>BS 8110 Part 3 provides interaction charts for rectangular and circular sections with symmetric reinforcement. To use them:</p>
+        <div class="flow">
+          <div class="flow-item"><strong>Step 1</strong>Calculate N/(bh&middot;f<sub>cu</sub>) and M/(bh&sup2;&middot;f<sub>cu</sub>)</div>
+          <div class="flow-item"><strong>Step 2</strong>Select the chart matching d'/h (ratio of cover to compression steel, to total depth)</div>
+          <div class="flow-item"><strong>Step 3</strong>Plot the point (N-axis, M-axis) on the chart</div>
+          <div class="flow-item"><strong>Step 4</strong>Read across to the nearest steel-percentage curve &mdash; round up to a practical bar arrangement</div>
+          <div class="flow-item"><strong>Step 5</strong>Verify that the chosen bar arrangement satisfies the minimum and maximum steel limits, and check link requirements</div>
+        </div>
+        <div class="card blue"><p>If the point plots below the lowest curve (0.4%), minimum steel governs. If it plots outside the chart boundary, the section is too small &mdash; increase b or h and repeat.</p></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="c9">
+        <div class="section-header"><span class="step-num">STEP C9</span><h2>Detailing &mdash; Columns</h2></div>
+        <ul class="check">
+          <li>Minimum 4 bars (rectangular sections), 6 bars (circular) &mdash; one bar per corner minimum.</li>
+          <li>Main bar diameter &ge; 12mm; link diameter &ge; 6mm or &frac14; &times; main bar diameter.</li>
+          <li>Link spacing &le; 12 &times; main bar diameter, &le; the lesser column dimension, and &le; 300mm.</li>
+          <li>At laps: reduce link spacing to &le; 0.6 &times; normal spacing, with min. 3 sets of links in the lap zone.</li>
+          <li>Where column dimensions change, provide adequate lapping and starter-bar length to maintain load path continuity.</li>
+          <li>At beam-column junctions: provide horizontal links (confinement) within the joint zone per Cl. 3.12.8.1.</li>
+          <li>Kicker: provide a concrete kicker &ge; 75mm above the slab/foundation &mdash; steel starter bars must extend adequately past the kicker for the column above.</li>
+        </ul>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+    </div>
+
+    <!-- ===================== PART 4 ===================== -->
+    <div class="part-bar">
+      <div class="part-bar-inner"><span class="part-label">Part 4</span><h2>Whole-Building Guidance &amp; Quick Reference</h2></div>
+    </div>
+
+    <div class="content-wrap">
+
+      <section id="building">
+        <div class="section-header"><span class="step-num">STEP W1</span><h2>Guidelines for Designing a Full Structure</h2></div>
+
+        <div class="building-card">
+          <h3>Phase 1 &mdash; Establish the Structural System</h3>
+          <ul>
+            <li>Choose the structural form: beam-and-slab, flat slab, or combination.</li>
+            <li>Identify bracing: shear walls, cores, or moment frames for lateral stability.</li>
+            <li>Establish grid: typical bay sizes 5&ndash;9m for beams, 4&ndash;7m for flat slabs.</li>
+            <li>Choose materials: f<sub>cu</sub>, f<sub>y</sub>, cover class <span class="cl">(Table 3.3/3.4)</span>.</li>
+          </ul>
+        </div>
+
+        <div class="building-card">
+          <h3>Phase 2 &mdash; Load Take-Down Floor by Floor</h3>
+          <ul>
+            <li>Start at the roof: compute G<sub>k</sub> and Q<sub>k</sub> per m&sup2;, determine n.</li>
+            <li>Design the roof slab (Part 1) &rarr; get slab reactions.</li>
+            <li>Transfer slab reactions onto roof-level beams (Part 2).</li>
+            <li>Beam reactions &rarr; column at roof level (Part 3, first floor contribution).</li>
+            <li>Repeat for every floor, accumulating column loads downward.</li>
+            <li>Apply BS 6399-1 live-load reduction to column loads at lower levels.</li>
+          </ul>
+        </div>
+
+        <div class="building-card">
+          <h3>Phase 3 &mdash; Member Design Order</h3>
+          <ul>
+            <li>Slabs (all floors, roof first) &rarr; check deflection, detail bars.</li>
+            <li>Secondary beams &rarr; primary beams (bottom to top of the load path within each floor).</li>
+            <li>Columns: start from top floor and work down, accumulating N.</li>
+            <li>Foundations: design last when all column loads at base are known.</li>
+            <li>Shear walls / cores: design for wind + gravity, check overturning and sliding.</li>
+          </ul>
+        </div>
+
+        <div class="building-card">
+          <h3>Phase 4 &mdash; Robustness and Tying</h3>
+          <ul>
+            <li>Provide horizontal ties (peripheral and internal) per <span class="cl">Cl. 3.12.3</span>.</li>
+            <li>Provide vertical ties in columns/walls per <span class="cl">Cl. 3.12.3.5</span>.</li>
+            <li>Ensure flat slabs have integrity steel through column heads.</li>
+            <li>Check that the structure can survive notional removal of any one element without disproportionate collapse.</li>
+          </ul>
+        </div>
+
+        <div class="card blue"><p><strong>Sanity check at every level:</strong> sum all column loads at that floor level &mdash; it should equal the total factored gravity load on all slabs above (minus the small self-weight of columns themselves). If there's a large discrepancy, trace back to find double-counting or missed load paths.</p></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="quickref">
+        <div class="section-header"><span class="step-num">STEP W2</span><h2>Combined Quick Reference</h2></div>
+
+        <h3>Loads</h3>
+        <div class="table-wrap"><table>
+          <tr><th>Symbol</th><th>Definition</th><th>Typical Range</th></tr>
+          <tr><td>G<sub>k</sub></td><td>Characteristic dead load</td><td>&mdash;</td></tr>
+          <tr><td>Q<sub>k</sub></td><td>Characteristic imposed load</td><td>1.5&ndash;5.0 kN/m&sup2; (floors)</td></tr>
+          <tr><td>n</td><td>Ultimate UDL = 1.4G<sub>k</sub>+1.6Q<sub>k</sub></td><td>&mdash;</td></tr>
+          <tr><td>&gamma;<sub>c</sub></td><td>Unit weight of reinforced concrete</td><td>24 kN/m&sup3;</td></tr>
+        </table></div>
+
+        <h3>Flexure</h3>
+        <div class="table-wrap"><table>
+          <tr><th>Step</th><th>Formula</th><th>Note</th></tr>
+          <tr><td>K factor</td><td>M/(bd&sup2;f<sub>cu</sub>)</td><td>&le; 0.156 singly reinforced</td></tr>
+          <tr><td>Lever arm z</td><td>d[0.5+&radic;(0.25&minus;K/0.9)]</td><td>&le; 0.95d</td></tr>
+          <tr><td>Steel area</td><td>M/(0.87f<sub>y</sub>z)</td><td>Check min/max</td></tr>
+        </table></div>
+
+        <h3>Shear</h3>
+        <div class="table-wrap"><table>
+          <tr><th>Step</th><th>Formula</th><th>Note</th></tr>
+          <tr><td>Applied shear stress</td><td>v = V/(b<sub>v</sub>d)</td><td>&le; 0.8&radic;f<sub>cu</sub> or 5N/mm&sup2;</td></tr>
+          <tr><td>Concrete capacity</td><td>v<sub>c</sub> from Table 3.8</td><td>Depends on steel %</td></tr>
+          <tr><td>Link ratio needed</td><td>A<sub>sv</sub>/s<sub>v</sub> = b<sub>v</sub>(v&minus;v<sub>c</sub>)/(0.87f<sub>yv</sub>)</td><td>If v &ge; v<sub>c</sub>+0.4</td></tr>
+          <tr><td>Max link spacing</td><td>0.75d</td><td>&mdash;</td></tr>
+        </table></div>
+
+        <h3>Deflection (span/d method)</h3>
+        <div class="table-wrap"><table>
+          <tr><th>Support Condition</th><th>Basic span/d</th><th>Multiplied by&hellip;</th></tr>
+          <tr><td>Cantilever</td><td>7</td><td rowspan="3" style="vertical-align:middle">Modification factors from Tables 3.10 &amp; 3.11</td></tr>
+          <tr><td>Simply supported</td><td>20</td></tr>
+          <tr><td>Continuous</td><td>26</td></tr>
+        </table></div>
+
+        <h3>Columns (Key limits)</h3>
+        <div class="table-wrap"><table>
+          <tr><th>Item</th><th>Limit</th></tr>
+          <tr><td>Short/slender boundary (braced)</td><td>l<sub>e</sub>/h = 15</td></tr>
+          <tr><td>Min eccentricity</td><td>0.05h or 20mm</td></tr>
+          <tr><td>Min steel</td><td>0.4% of gross section</td></tr>
+          <tr><td>Max steel</td><td>6% (10% at laps)</td></tr>
+          <tr><td>Max link spacing</td><td>12&phi;<sub>main</sub> or lesser column dim., &le;300mm</td></tr>
+        </table></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="glossary">
+        <div class="section-header"><span class="step-num">STEP W3</span><h2>Glossary of Symbols</h2></div>
+        <dl class="glossary">
+          <dt>A<sub>s</sub></dt><dd>Area of tension reinforcement (mm&sup2;)</dd>
+          <dt>A<sub>s</sub>'</dt><dd>Area of compression reinforcement (mm&sup2;)</dd>
+          <dt>A<sub>sc</sub></dt><dd>Total area of steel in a column (mm&sup2;)</dd>
+          <dt>A<sub>sv</sub></dt><dd>Area of shear link legs in a cross-section (mm&sup2;)</dd>
+          <dt>b</dt><dd>Width of section (mm); for slabs b = 1000mm per metre strip</dd>
+          <dt>b<sub>v</sub></dt><dd>Breadth of section for shear &mdash; same as b except for flanged beams</dd>
+          <dt>b<sub>w</sub></dt><dd>Web width of flanged beam (mm)</dd>
+          <dt>d</dt><dd>Effective depth to centroid of tension steel (mm)</dd>
+          <dt>d'</dt><dd>Effective depth to centroid of compression steel (mm)</dd>
+          <dt>f<sub>cu</sub></dt><dd>Characteristic cube compressive strength of concrete (N/mm&sup2;)</dd>
+          <dt>f<sub>y</sub></dt><dd>Characteristic yield strength of main steel (N/mm&sup2;) &mdash; typically 460</dd>
+          <dt>f<sub>yv</sub></dt><dd>Characteristic yield strength of link steel (N/mm&sup2;)</dd>
+          <dt>G<sub>k</sub></dt><dd>Characteristic dead load (kN or kN/m or kN/m&sup2;)</dd>
+          <dt>h</dt><dd>Overall depth of section (mm)</dd>
+          <dt>K</dt><dd>Non-dimensional moment factor = M/(bd&sup2;f<sub>cu</sub>)</dd>
+          <dt>K'</dt><dd>Maximum K for singly reinforced section = 0.156 (no redistribution)</dd>
+          <dt>l</dt><dd>Span length (m or mm &mdash; be consistent)</dd>
+          <dt>l<sub>e</sub></dt><dd>Effective length of a column (mm)</dd>
+          <dt>l<sub>x</sub></dt><dd>Short span of a two-way slab panel (m)</dd>
+          <dt>l<sub>y</sub></dt><dd>Long span of a two-way slab panel (m)</dd>
+          <dt>M</dt><dd>Design bending moment (kNm)</dd>
+          <dt>M<sub>add</sub></dt><dd>Additional moment due to column slenderness (kNm)</dd>
+          <dt>n</dt><dd>Ultimate design load per unit area on slab = 1.4G<sub>k</sub>+1.6Q<sub>k</sub> (kN/m&sup2;)</dd>
+          <dt>N</dt><dd>Design axial force in a column (kN)</dd>
+          <dt>Q<sub>k</sub></dt><dd>Characteristic imposed (live) load (kN or kN/m or kN/m&sup2;)</dd>
+          <dt>s<sub>v</sub></dt><dd>Spacing of links/stirrups along the member axis (mm)</dd>
+          <dt>v</dt><dd>Applied shear stress = V/(b<sub>v</sub>d) (N/mm&sup2;)</dd>
+          <dt>v<sub>c</sub></dt><dd>Design concrete shear capacity (N/mm&sup2;), from Table 3.8</dd>
+          <dt>V</dt><dd>Design shear force (kN)</dd>
+          <dt>w<sub>u</sub></dt><dd>Ultimate UDL on a beam = 1.4G<sub>k</sub>+1.6Q<sub>k</sub> (kN/m)</dd>
+          <dt>x</dt><dd>Neutral axis depth (mm)</dd>
+          <dt>z</dt><dd>Lever arm between tension and compression forces (mm)</dd>
+          <dt>&gamma;<sub>m</sub></dt><dd>Partial safety factor for material</dd>
+          <dt>&phi;</dt><dd>Bar diameter (mm)</dd>
+        </dl>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+    </div>
+
+    <footer>
+      BS 8110-1:1997 &middot; Manual Design Guide &middot; For educational reference only &middot; Always verify against the current standard
+    </footer>
+
+  </div><!-- /main-content -->
+</div><!-- /app-layout -->
+
+<script>
+// ── Sidebar toggle (mobile) ──
+function toggleSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  var btn = document.getElementById('menuToggle');
+  var isOpen = sidebar.classList.contains('open');
+  if (isOpen) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('visible');
+    btn.innerHTML = '&#9776;';
+    btn.setAttribute('aria-label', 'Open navigation');
+  } else {
+    sidebar.classList.add('open');
+    overlay.classList.add('visible');
+    btn.innerHTML = '&#10005;';
+    btn.setAttribute('aria-label', 'Close navigation');
+  }
+}
+function closeSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  var btn = document.getElementById('menuToggle');
+  sidebar.classList.remove('open');
+  overlay.classList.remove('visible');
+  btn.innerHTML = '&#9776;';
+}
+
+// Close sidebar when a link is clicked on mobile
+document.querySelectorAll('.sidebar-link').forEach(function(link) {
+  link.addEventListener('click', function() {
+    if (window.innerWidth <= 700) closeSidebar();
+  });
+});
+
+// ── Active sidebar link highlighting ──
+var sections = document.querySelectorAll('section[id]');
+var sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+function updateActiveLink() {
+  var currentId = '';
+  var offset = 90;
+  sections.forEach(function(sec) {
+    var top = sec.getBoundingClientRect().top;
+    if (top <= offset) currentId = sec.id;
+  });
+  sidebarLinks.forEach(function(link) {
+    var href = link.getAttribute('href').slice(1);
+    if (href === currentId) {
+      link.classList.add('active');
+    } else {
+      link.classList.remove('active');
+    }
+  });
+}
+
+window.addEventListener('scroll', updateActiveLink, { passive: true });
+updateActiveLink();
+</script>
+</body>
+</html>
