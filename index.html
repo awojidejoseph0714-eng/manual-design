@@ -3,8 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BS 8110 — Complete Manual Design Guide</title>
-<meta name="description" content="A complete step-by-step manual design guide for structural concrete slabs, beams, and columns under BS 8110-1:1997.">
+
+<!-- ═══════════ PRIMARY SEO ═══════════ -->
+<title>BS 8110 Manual Design Guide — Slabs, Beams &amp; Columns (Step-by-Step)</title>
+<meta name="description" content="A complete step-by-step manual design reference for structural concrete under BS 8110-1:1997. Covers one-way and two-way slabs, flat slabs, beams, and columns — from load take-down to detailing.">
+<meta name="keywords" content="BS 8110, structural concrete design, manual design, slab design, beam design, column design, RC design, reinforced concrete, BS 8110-1 1997, limit state design, one-way slab, two-way slab, flat slab, ribbed slab, cantilever, K value, lever arm, shear design, deflection check, punching shear, biaxial bending">
+<meta name="author" content="Manual Structural Design">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<link rel="canonical" href="https://manual-design.vercel.app/">
+
+<!-- ═══════════ FAVICON ═══════════ -->
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+
+<!-- ═══════════ OPEN GRAPH (Facebook / LinkedIn) ═══════════ -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manual-design.vercel.app/">
+<meta property="og:title" content="BS 8110 Manual Design Guide — Slabs, Beams &amp; Columns">
+<meta property="og:description" content="A complete step-by-step manual design reference for structural concrete under BS 8110-1:1997. Covers slabs, beams, and columns from load take-down to detailing.">
+<meta property="og:image" content="https://manual-design.vercel.app/favicon.png">
+<meta property="og:site_name" content="Manual Structural Design">
+<meta property="og:locale" content="en_GB">
+
+<!-- ═══════════ TWITTER / X CARD ═══════════ -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BS 8110 Manual Design Guide — Slabs, Beams &amp; Columns">
+<meta name="twitter:description" content="Complete step-by-step manual design reference for RC concrete under BS 8110-1:1997.">
+<meta name="twitter:image" content="https://manual-design.vercel.app/favicon.png">
+
+<!-- ═══════════ JSON-LD STRUCTURED DATA ═══════════ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "BS 8110 Manual Design Guide — Slabs, Beams & Columns",
+  "description": "A complete step-by-step manual design reference for structural reinforced concrete under BS 8110-1:1997, covering slabs, beams, and columns from load take-down to detailing.",
+  "url": "https://manual-design.vercel.app/",
+  "image": "https://manual-design.vercel.app/favicon.png",
+  "author": {
+    "@type": "Organization",
+    "name": "Manual Structural Design"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Manual Structural Design",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://manual-design.vercel.app/favicon.png"
+    }
+  },
+  "datePublished": "2026-07-20",
+  "dateModified": "2026-07-20",
+  "inLanguage": "en-GB",
+  "about": [
+    { "@type": "Thing", "name": "Reinforced Concrete Design" },
+    { "@type": "Thing", "name": "BS 8110-1:1997" },
+    { "@type": "Thing", "name": "Structural Engineering" },
+    { "@type": "Thing", "name": "Slab Design" },
+    { "@type": "Thing", "name": "Beam Design" },
+    { "@type": "Thing", "name": "Column Design" }
+  ],
+  "teaches": "Structural concrete manual design under BS 8110-1:1997",
+  "educationalLevel": "Professional"
+}
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -698,16 +760,18 @@ footer {
         <p>Every calculation in this guide uses <strong>limit state design</strong>: real (characteristic) loads and material strengths are each factored to a "worst realistic case" before being combined, so the structure has a built-in margin against the things you can't predict exactly.</p>
         <h3>Material Partial Safety Factors <span class="cl">Table 2.2</span></h3>
         <div class="table-wrap"><table>
-          <tr><th>Material / Effect</th><th>&gamma;<sub>m</sub></th></tr>
-          <tr><td>Concrete in flexure or axial load</td><td>1.5</td></tr>
-          <tr><td>Reinforcement (all types)</td><td>1.05</td></tr>
-          <tr><td>Concrete in shear (design v<sub>c</sub>)</td><td>1.25</td></tr>
+          <tr><th>Material / Effect</th><th>&gamma;<sub>m</sub> (Post-Amd 3, 2005)</th><th>&gamma;<sub>m</sub> (Pre-Amd 3, Original)</th></tr>
+          <tr><td>Concrete in flexure or axial load</td><td>1.5</td><td>1.5</td></tr>
+          <tr><td>Reinforcement (all types)</td><td>1.05</td><td>1.15</td></tr>
+          <tr><td>Concrete in shear (design v<sub>c</sub>)</td><td>1.25</td><td>1.25</td></tr>
         </table></div>
         <h3>Common Material Grades</h3>
         <div class="formula">f<sub>cu</sub> = characteristic concrete cube strength &mdash; typically 25, 30, 35, 40 N/mm&sup2; for RC frames
 f<sub>y</sub>  = characteristic steel yield strength &mdash; 460 N/mm&sup2; (high yield), 250 N/mm&sup2; (mild steel)
 E<sub>c</sub>  &asymp; 20 to 30 kN/mm&sup2; depending on f<sub>cu</sub> (for deflection/stiffness calcs)</div>
-        <div class="card"><p><strong>Design strength</strong> is always characteristic strength &divide; &gamma;<sub>m</sub>: e.g. design steel stress = 0.87f<sub>y</sub> (since 1/1.05 &asymp; 0.95, and BS 8110 rounds the steel design stress factor to 0.87 to also fold in a small additional margin used in the stress-block derivation).</p></div>
+        <div class="card"><p><strong>Design strength</strong> is characteristic strength &divide; &gamma;<sub>m</sub>. For reinforcement, BS 8110-1:1997 Amendment 3 changed &gamma;<sub>m</sub> from 1.15 to 1.05. This gives:<br>
+        &bull; <strong>Post-Amendment 3 (Current):</strong> Design steel stress = 1/1.05 &times; f<sub>y</sub> &asymp; <strong>0.95f<sub>y</sub></strong><br>
+        &bull; <strong>Pre-Amendment 3 (Older/Textbook):</strong> Design steel stress = 1/1.15 &times; f<sub>y</sub> &asymp; <strong>0.87f<sub>y</sub></strong> (still widely taught in many universities)</p></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
@@ -742,7 +806,7 @@ Minimum dead (uplift / stability / pattern): 1.0G<sub>k</sub></div>
           <div class="flow-item"><strong>1 &mdash; Compute K</strong>K = M / (bd&sup2;f<sub>cu</sub>) &mdash; a non-dimensional measure of how hard the section is being worked.</div>
           <div class="flow-item"><strong>2 &mdash; Compare to K'</strong>K' = 0.156 (singly reinforced limit, no redistribution). If K &le; K', section works with tension steel alone. If K &gt; K', compression steel is needed too.</div>
           <div class="flow-item"><strong>3 &mdash; Find lever arm z</strong>z = d[0.5 + &radic;(0.25 &minus; K/0.9)], capped at 0.95d.</div>
-          <div class="flow-item"><strong>4 &mdash; Solve for steel</strong>A<sub>s</sub> = M / (0.87f<sub>y</sub>z)</div>
+          <div class="flow-item"><strong>4 &mdash; Solve for steel</strong>A<sub>s</sub> = M / (0.95f<sub>y</sub>z) &mdash; or M / (0.87f<sub>y</sub>z) for pre-amendment.</div>
           <div class="flow-item"><strong>5 &mdash; Check limits</strong>Compare A<sub>s</sub> against the minimum and maximum steel percentages for that member type.</div>
         </div>
         <div class="card blue"><p>For slabs, b = 1000mm (design a 1-metre-wide strip). For beams, b = actual beam width (or effective flange width for T/L sections). For columns, the same stress-block logic underlies the design charts in Part 3, just combined with axial load N.</p></div>
@@ -851,15 +915,16 @@ n<sub>min</sub> = 1.0G<sub>k</sub>   (minimum load case &mdash; pattern loading)
 
       <section id="s3">
         <div class="section-header"><span class="step-num">STEP S3</span><h2>Trial Thickness and Effective Depth</h2></div>
+        <h3>Preliminary Sizing — Basic Span/Overall Depth Ratios <span class="cl">Cl. 3.4.6 / Table 3.9</span></h3>
         <div class="table-wrap"><table>
-          <tr><th>Slab Type</th><th>Typical span/depth (overall h)</th></tr>
-          <tr><td>One-way, simply supported</td><td>span / 25 to span / 28</td></tr>
-          <tr><td>One-way, continuous</td><td>span / 30 to span / 32</td></tr>
-          <tr><td>Two-way, restrained</td><td>span / 34 to span / 38 (short span)</td></tr>
-          <tr><td>Flat slab, no drops</td><td>span / 28 to span / 32</td></tr>
-          <tr><td>Flat slab, with drop panels</td><td>span / 32 to span / 36</td></tr>
-          <tr><td>Ribbed / waffle slab</td><td>span / 22 to span / 26</td></tr>
-          <tr><td>Cantilever slab</td><td>span / 8 to span / 10</td></tr>
+          <tr><th>Slab Type</th><th>Typical span/depth (overall h)</th><th>Basic span/eff. depth</th></tr>
+          <tr><td>One-way, simply supported</td><td>span / 25 to span / 28</td><td>20</td></tr>
+          <tr><td>One-way, continuous</td><td>span / 30 to span / 32</td><td>26</td></tr>
+          <tr><td>Two-way, restrained (short span)</td><td>span / 34 to span / 38</td><td>26</td></tr>
+          <tr><td>Flat slab, no drops</td><td>span / 28 to span / 32</td><td>24</td></tr>
+          <tr><td>Flat slab, with drop panels</td><td>span / 32 to span / 36</td><td>26</td></tr>
+          <tr><td>Ribbed / waffle slab</td><td>span / 22 to span / 26</td><td>20–26 (as one-way)</td></tr>
+          <tr><td>Cantilever slab</td><td>span / 8 to span / 10</td><td>7</td></tr>
         </table></div>
         <p>These give a starting depth only &mdash; final depth must satisfy the deflection check (Step S10). d = h &minus; cover &minus; half bar diameter.</p>
         <h3>Minimum Cover <span class="cl">Table 3.3</span></h3>
@@ -954,14 +1019,14 @@ V<sub>max</sub> (at fixed support) = n &times; l</div>
         <div class="section-header"><span class="step-num">STEP S10</span><h2>Flexural Design, Shear, and Deflection (All Types)</h2></div>
         <div class="formula">K = M / (1000 &times; d&sup2; &times; f<sub>cu</sub>)   (b = 1000mm per metre strip)
 z = d[0.5 + &radic;(0.25 &minus; K/0.9)] &le; 0.95d
-A<sub>s</sub> = M / (0.87f<sub>y</sub>z)  per metre width</div>
+A<sub>s</sub> = M / (0.95f<sub>y</sub>z) per metre width &mdash; or M / (0.87f<sub>y</sub>z) for pre-amendment</div>
         <div class="table-wrap"><table>
-          <tr><th>Condition</th><th>Limit</th></tr>
-          <tr><td>Minimum steel, each direction (f<sub>y</sub>=460)</td><td>0.13% of gross section</td></tr>
-          <tr><td>Max bar spacing, main steel</td><td>3d or 400mm, lesser</td></tr>
-          <tr><td>Max bar spacing, secondary steel</td><td>3.5d or 450mm</td></tr>
+          <tr><th>Condition</th><th>Limit</th><th>Reference</th></tr>
+          <tr><td>Minimum steel, each direction (f<sub>y</sub>=460)</td><td>0.13% of gross section</td><td><span class="cl">Table 3.25</span></td></tr>
+          <tr><td>Max bar spacing, main steel</td><td>3d or 750mm, lesser (note: designers often use 250-300mm to control cracks)</td><td><span class="cl">Cl. 3.12.11.2.7</span></td></tr>
+          <tr><td>Max bar spacing, secondary steel</td><td>3d or 750mm, lesser</td><td><span class="cl">Cl. 3.12.11.2.8</span></td></tr>
         </table></div>
-        <div class="formula">Allowable span/d = basic ratio (Table 3.9) &times; mod. factor tension steel (3.10) &times; mod. factor compression steel (3.11)
+        <div class="formula">Allowable span/d = basic ratio (Table 3.9) &times; mod. factor tension steel (Table 3.10) &times; mod. factor compression steel (Table 3.11)
 Check: actual span/d &le; allowable span/d</div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -1113,19 +1178,20 @@ Cantilever, UDL:                M<sub>max</sub> = w<sub>u</sub>l&sup2;/2,   V<su
         <div class="section-header"><span class="step-num">STEP B6</span><h2>Flexural (Bending) Design</h2></div>
         <div class="formula">K = M / (bd&sup2;f<sub>cu</sub>);  K' = 0.156
 If K &le; K': z = d[0.5 + &radic;(0.25 &minus; K/0.9)] &le; 0.95d
-A<sub>s</sub> = M / (0.87f<sub>y</sub>z)</div>
+A<sub>s</sub> = M / (0.95f<sub>y</sub>z) &mdash; or M / (0.87f<sub>y</sub>z) for pre-amendment</div>
         <h3>Doubly Reinforced Section (K &gt; K')</h3>
-        <div class="formula">A<sub>s</sub>' = (K&minus;K')f<sub>cu</sub>bd&sup2; / [0.87f<sub>y</sub>(d&minus;d')]
-A<sub>s</sub>  = K'f<sub>cu</sub>bd&sup2; / (0.87f<sub>y</sub>z') + A<sub>s</sub>'   (z' at K'=0.156 &rarr; z'=0.775d)</div>
+        <div class="formula">A<sub>s</sub>' = (K&minus;K')f<sub>cu</sub>bd&sup2; / [0.95f<sub>y</sub>(d&minus;d')]   (or 0.87f<sub>y</sub> for pre-amendment)
+A<sub>s</sub>  = K'f<sub>cu</sub>bd&sup2; / (0.95f<sub>y</sub>z') + A<sub>s</sub>'   (z' = 0.775d; or 0.87f<sub>y</sub> for pre-amendment)</div>
         <h3>Flanged (T/L) Beams <span class="cl">Cl. 3.4.1.5</span></h3>
-        <div class="formula">b<sub>eff</sub> (T-beam) = b<sub>w</sub> + l<sub>z</sub>/5 each side
-b<sub>eff</sub> (L-beam) = b<sub>w</sub> + l<sub>z</sub>/10
-  l<sub>z</sub> &asymp; 0.7 &times; span (continuous)</div>
+        <div class="formula">b<sub>eff</sub> (T-beam) = b<sub>w</sub> + l<sub>z</sub>/5   (or actual flange width, whichever is less; note: this is l<sub>z</sub>/10 on each side of the web)
+b<sub>eff</sub> (L-beam) = b<sub>w</sub> + l<sub>z</sub>/10  (or actual flange width, whichever is less; note: this is l<sub>z</sub>/10 on one side of the web)
+  l<sub>z</sub> &asymp; 0.7 &times; effective span for a continuous beam</div>
         <div class="table-wrap"><table>
-          <tr><th>Condition</th><th>Limit</th></tr>
-          <tr><td>Min tension steel, rectangular (f<sub>y</sub>=460)</td><td>0.13% of b&times;h</td></tr>
-          <tr><td>Min tension steel, flanged (web tension)</td><td>0.18&ndash;0.26% of b<sub>w</sub>&times;h</td></tr>
-          <tr><td>Max tension or compression steel</td><td>4% of gross area</td></tr>
+          <tr><th>Condition</th><th>Limit (f<sub>y</sub> = 460)</th><th>Reference</th></tr>
+          <tr><td>Min tension steel, rectangular</td><td>0.13% of b &times; h</td><td><span class="cl">Table 3.25</span></td></tr>
+          <tr><td>Min tension steel, flanged (web in tension)</td><td>b<sub>w</sub>/b &lt; 0.4: 0.18% of b<sub>w</sub>&times;h<br>b<sub>w</sub>/b &ge; 0.4: 0.13% of b<sub>w</sub>&times;h</td><td><span class="cl">Table 3.25</span></td></tr>
+          <tr><td>Min tension steel, flanged (flange in tension)</td><td>T-beam: 0.26% of b<sub>w</sub>&times;h<br>L-beam: 0.20% of b<sub>w</sub>&times;h</td><td><span class="cl">Table 3.25</span></td></tr>
+          <tr><td>Max tension or compression steel</td><td>4% of gross area each (tension &amp; compression)</td><td><span class="cl">Cl. 3.12.6.1</span></td></tr>
         </table></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -1137,8 +1203,8 @@ v<sub>c</sub> = 0.79[100A<sub>s</sub>/(b<sub>v</sub>d)]&sup1;&sol;&sup3;(400/d)&
         <div class="table-wrap"><table>
           <tr><th>Condition</th><th>Provision</th></tr>
           <tr><td>v &lt; 0.5v<sub>c</sub></td><td>Nominal links only</td></tr>
-          <tr><td>0.5v<sub>c</sub> &le; v &lt; (v<sub>c</sub>+0.4)</td><td>Min links: A<sub>sv</sub>/s<sub>v</sub> = 0.4b<sub>v</sub>/(0.87f<sub>yv</sub>)</td></tr>
-          <tr><td>v &ge; (v<sub>c</sub>+0.4)</td><td>Design links: A<sub>sv</sub>/s<sub>v</sub> = b<sub>v</sub>(v&minus;v<sub>c</sub>)/(0.87f<sub>yv</sub>)</td></tr>
+          <tr><td>0.5v<sub>c</sub> &le; v &lt; (v<sub>c</sub>+0.4)</td><td>Min links: A<sub>sv</sub>/s<sub>v</sub> = 0.4b<sub>v</sub>/(0.95f<sub>yv</sub>)  [or 0.87 for pre-amendment]</td></tr>
+          <tr><td>v &ge; (v<sub>c</sub>+0.4)</td><td>Design links: A<sub>sv</sub>/s<sub>v</sub> = b<sub>v</sub>(v&minus;v<sub>c</sub>)/(0.95f<sub>yv</sub>)  [or 0.87 for pre-amendment]</td></tr>
           <tr><td>v &gt; 0.8&radic;f<sub>cu</sub> or 5N/mm&sup2;</td><td>Section too small &mdash; increase b or d</td></tr>
         </table></div>
         <div class="formula">Max link spacing s<sub>v</sub> &le; 0.75d;  max lateral leg spacing &le; d</div>
@@ -1149,10 +1215,10 @@ v<sub>c</sub> = 0.79[100A<sub>s</sub>/(b<sub>v</sub>d)]&sup1;&sol;&sup3;(400/d)&
       <section id="b8">
         <div class="section-header"><span class="step-num">STEP B8</span><h2>Deflection Check</h2></div>
         <div class="table-wrap"><table>
-          <tr><th>Support Condition</th><th>Basic span/d</th></tr>
-          <tr><td>Cantilever</td><td>7</td></tr>
-          <tr><td>Simply supported</td><td>20</td></tr>
-          <tr><td>Continuous</td><td>26</td></tr>
+          <tr><th>Support Condition</th><th>Basic span/d</th><th>Reference</th></tr>
+          <tr><td>Cantilever</td><td>7</td><td><span class="cl">Table 3.9</span></td></tr>
+          <tr><td>Simply supported</td><td>20</td><td><span class="cl">Table 3.9</span></td></tr>
+          <tr><td>Continuous</td><td>26</td><td><span class="cl">Table 3.9</span></td></tr>
         </table></div>
         <div class="formula">Allowable span/d = basic ratio &times; mod. factor (tension, Table 3.10) &times; mod. factor (compression, Table 3.11)
 Check: actual span/d &le; allowable span/d</div>
@@ -1162,9 +1228,10 @@ Check: actual span/d &le; allowable span/d</div>
 
       <section id="b9">
         <div class="section-header"><span class="step-num">STEP B9</span><h2>Cracking / Crack Control</h2></div>
-        <div class="formula">Clear bar spacing &le; 47000/f<sub>s</sub> (mm), &le; 300mm
-  (simplified: max clear spacing 155&ndash;300mm depending on redistribution &mdash; Table 3.30)</div>
-        <p>Side face bars required where overall depth &gt;750mm: spacing &le;250mm, &ge;0.5% of side face area per zone <span class="cl">Cl. 3.12.11.2.6</span>.</p>
+        <div class="formula">Clear bar spacing &le; 47000/f<sub>s</sub> (mm), &le; 300mm   <span class="cl">Cl. 3.12.11.2.3 / Table 3.28</span>
+  f<sub>s</sub> = service stress in tension steel (N/mm&sup2;) = (2/3)f<sub>y</sub> &times; (A<sub>s,req</sub>/A<sub>s,prov</sub>) &times; (1/&beta;<sub>b</sub>)
+  (simplified: max clear spacing 155&ndash;300mm depending on redistribution &mdash; <span class="cl">Table 3.28</span>)</div>
+        <p>Side face bars required where overall depth &gt;750mm: spacing &le;250mm, &ge;0.1% of side face area (b &times; 2 &times; (h&minus;x)/3 zone) per side <span class="cl">Cl. 3.12.11.2.6</span>.</p>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
@@ -1208,8 +1275,9 @@ Check: actual span/d &le; allowable span/d</div>
         <div class="section-header"><span class="step-num">STEP C1</span><h2>Classify the Column</h2></div>
         <div class="table-wrap"><table>
           <tr><th>Classification</th><th>Criterion</th><th>BS 8110</th></tr>
-          <tr><td>Short column</td><td>l<sub>e</sub>/h &le; 15 (braced) or l<sub>e</sub>/h &le; 10 (unbraced)</td><td><span class="cl">Cl. 3.8.1.3</span></td></tr>
-          <tr><td>Slender column</td><td>l<sub>e</sub>/h &gt; the short-column limits &mdash; additional moment M<sub>add</sub> required</td><td><span class="cl">Cl. 3.8.3</span></td></tr>
+          <tr><td>Short column (braced)</td><td>l<sub>e</sub>/b &le; 15 <em>and</em> l<sub>e</sub>/h &le; 15</td><td><span class="cl">Cl. 3.8.1.3</span></td></tr>
+          <tr><td>Short column (unbraced)</td><td>l<sub>e</sub>/b &le; 10 <em>and</em> l<sub>e</sub>/h &le; 10</td><td><span class="cl">Cl. 3.8.1.3</span></td></tr>
+          <tr><td>Slender column</td><td>Exceeds the short-column limits above &mdash; additional moment M<sub>add</sub> required</td><td><span class="cl">Cl. 3.8.3</span></td></tr>
           <tr><td>Braced column</td><td>Lateral load carried by shear walls/cores, not by this column</td><td><span class="cl">Cl. 3.8.1.5</span></td></tr>
           <tr><td>Unbraced column</td><td>Column itself contributes to lateral stability &mdash; sway frame</td><td><span class="cl">Cl. 3.8.1.5</span></td></tr>
         </table></div>
@@ -1224,18 +1292,19 @@ N<sub>total</sub> = &Sigma; N<sub>floor</sub> for all floors above (cumulative)<
         <div class="formula">Column self-weight: N<sub>sw</sub> = 24 &times; b &times; h &times; storey-height  (kN, b and h in m)</div>
         <h3>Live Load Reduction <span class="cl">BS 6399-1 Cl. 6.2</span></h3>
         <p>For columns supporting more than one floor, the imposed (live) load may be reduced by a percentage that increases with the number of floors, because statistically not all floors are simultaneously fully loaded. Check the table in BS 6399-1 Cl. 6.2 for the applicable reduction factor.</p>
-        <div class="card"><p><strong>Minimum eccentricity:</strong> BS 8110 requires that at minimum, a column is designed for an eccentricity of 0.05h or 20mm (whichever is greater) even if the analysis gives a smaller moment &mdash; giving a minimum design moment M<sub>min</sub> = N &times; e<sub>min</sub>.</p></div>
+        <div class="card"><p><strong>Minimum eccentricity:</strong> BS 8110 requires that at minimum, a column is designed for an eccentricity of 0.05h or 20mm (whichever is the <strong>lesser</strong>) even if the analysis gives a smaller moment &mdash; giving a minimum design moment M<sub>min</sub> = N &times; e<sub>min</sub> <span class="cl">Cl. 3.8.2.4</span>.</p></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
       <section id="c3">
         <div class="section-header"><span class="step-num">STEP C3</span><h2>Slenderness and Effective Length</h2></div>
         <div class="formula">l<sub>e</sub> = &beta; &times; l<sub>clear</sub>   (effective length)
-  &beta; factors (Table 3.21):
-    Both ends fixed in position and direction &rarr; &beta; = 0.65
-    One end fixed, other pinned in direction  &rarr; &beta; = 0.80
-    Both ends pinned in direction             &rarr; &beta; = 1.00
-    One end fixed, other free (cantilever)   &rarr; &beta; = 2.20</div>
+  &beta; factors for braced columns (Table 3.19):
+    Both ends Condition 1 (fully fixed/rigid joints) &rarr; &beta; = 0.75
+    One end Condition 1, other Condition 2 &rarr; &beta; = 0.80
+    Both ends Condition 2 (semi-rigid/nominal joints) &rarr; &beta; = 0.85
+    Both ends Condition 3 (pinned/simple joints) &rarr; &beta; = 1.00
+  &beta; factors for unbraced columns (Table 3.20): range from 1.2 to 2.2+ (cantilever = 2.20)</div>
         <div class="formula">Slenderness ratio: l<sub>e</sub>/h (about the minor axis typically governs)
 Short (braced):   l<sub>e</sub>/h &le; 15
 Short (unbraced): l<sub>e</sub>/h &le; 10</div>
@@ -1248,7 +1317,9 @@ Short (unbraced): l<sub>e</sub>/h &le; 10</div>
         <p>Use the moments directly from the analysis (beam reactions &times; eccentricity, frame analysis, or minimum eccentricity &mdash; whichever is greater).</p>
         <h3>Slender Columns &mdash; Additional Moment <span class="cl">Cl. 3.8.3</span></h3>
         <div class="formula">M<sub>add</sub> = N &times; a<sub>u</sub>
-a<sub>u</sub>  = &beta;<sub>a</sub> &times; h &times; (l<sub>e</sub>/h)&sup2; / 2000   (&beta;<sub>a</sub> from Table 3.22)
+a<sub>u</sub>  = &beta;<sub>a</sub> &times; K &times; h
+  &beta;<sub>a</sub> = (1/2000) &times; (l<sub>e</sub>/h)&sup2;
+  K = deflection reduction factor = (N<sub>uz</sub> - N) / (N<sub>uz</sub> - N<sub>bal</sub>) &le; 1.0
 Design moment: M<sub>i</sub> = M<sub>2</sub> + M<sub>add</sub> (at mid-height critical point, braced slender columns)</div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -1259,7 +1330,7 @@ Design moment: M<sub>i</sub> = M<sub>2</sub> + M<sub>add</sub> (at mid-height cr
         <div class="formula">N / (bh&middot;f<sub>cu</sub>)   (normalised axial load)
 M / (bh&sup2;&middot;f<sub>cu</sub>)  (normalised moment)
 &rarr; read off  100A<sub>sc</sub> / (bh)  (required steel percentage)</div>
-        <div class="card"><p><strong>Minimum steel:</strong> 0.4% of gross section. <strong>Maximum steel:</strong> 6% of gross section (or 10% at laps), per <span class="cl">Cl. 3.12.5</span>.</p></div>
+        <div class="card"><p><strong>Minimum steel:</strong> 0.4% of gross section <span class="cl">Table 3.25</span>. <strong>Maximum steel:</strong> 6% of gross section for vertically cast columns, 8% for horizontally cast columns (or 10% at laps in both cases), per <span class="cl">Cl. 3.12.6.2</span>.</p></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
@@ -1271,7 +1342,7 @@ M / (bh&sup2;&middot;f<sub>cu</sub>)  (normalised moment)
 If M<sub>x</sub>/h' &lt; M<sub>y</sub>/b':
   Design for M<sub>y</sub>' = M<sub>y</sub> + &beta;(b'/h')M<sub>x</sub>  (about y-y axis only)
 
-&beta; from Table 3.24 &mdash; function of N/(bhf<sub>cu</sub>), ranges 0.30&ndash;0.60
+&beta; from Table 3.22 &mdash; function of N/(bhf<sub>cu</sub>), ranges 1.00 down to 0.30
 h' and b' = effective depth to the compression reinforcement in each direction</div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -1301,10 +1372,10 @@ Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</di
       <section id="c9">
         <div class="section-header"><span class="step-num">STEP C9</span><h2>Detailing &mdash; Columns</h2></div>
         <ul class="check">
-          <li>Minimum 4 bars (rectangular sections), 6 bars (circular) &mdash; one bar per corner minimum.</li>
-          <li>Main bar diameter &ge; 12mm; link diameter &ge; 6mm or &frac14; &times; main bar diameter.</li>
-          <li>Link spacing &le; 12 &times; main bar diameter, &le; the lesser column dimension, and &le; 300mm.</li>
-          <li>At laps: reduce link spacing to &le; 0.6 &times; normal spacing, with min. 3 sets of links in the lap zone.</li>
+          <li>Minimum 4 bars (rectangular sections), 6 bars (circular) &mdash; one bar per corner minimum. <span class="cl">Cl. 3.12.5.3</span></li>
+          <li>Main bar diameter &ge; 12mm; link diameter &ge; 6mm or &frac14; &times; main bar diameter (whichever is greater). <span class="cl">Cl. 3.12.7.1</span></li>
+          <li>Link spacing &le; 12 &times; smallest compression bar diameter, &le; the lesser column dimension, and &le; 300mm. <span class="cl">Cl. 3.12.7.1</span></li>
+          <li>At laps: reduce link spacing to &le; 0.6 &times; normal spacing, with min. 3 sets of links in the lap zone. <span class="cl">Cl. 3.12.8.13</span></li>
           <li>Where column dimensions change, provide adequate lapping and starter-bar length to maintain load path continuity.</li>
           <li>At beam-column junctions: provide horizontal links (confinement) within the joint zone per Cl. 3.12.8.1.</li>
           <li>Kicker: provide a concrete kicker &ge; 75mm above the slab/foundation &mdash; steel starter bars must extend adequately past the kicker for the column above.</li>
@@ -1373,6 +1444,7 @@ Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</di
 
       <section id="quickref">
         <div class="section-header"><span class="step-num">STEP W2</span><h2>Combined Quick Reference</h2></div>
+        <p><strong>Note on Partial Safety Factors (&gamma;<sub>m</sub>):</strong> BS 8110-1:1997 Amendment 3 changed the reinforcement partial safety factor from 1.15 to 1.05. Consequently, steel area calculations moved from using 0.87f<sub>y</sub> (i.e., f<sub>y</sub>/1.15) to 0.95f<sub>y</sub> (i.e., f<sub>y</sub>/1.05). Ensure calculations match the version of the code applied.</p>
 
         <h3>Loads</h3>
         <div class="table-wrap"><table>
@@ -1388,7 +1460,7 @@ Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</di
           <tr><th>Step</th><th>Formula</th><th>Note</th></tr>
           <tr><td>K factor</td><td>M/(bd&sup2;f<sub>cu</sub>)</td><td>&le; 0.156 singly reinforced</td></tr>
           <tr><td>Lever arm z</td><td>d[0.5+&radic;(0.25&minus;K/0.9)]</td><td>&le; 0.95d</td></tr>
-          <tr><td>Steel area</td><td>M/(0.87f<sub>y</sub>z)</td><td>Check min/max</td></tr>
+          <tr><td>Steel area</td><td>M/(0.95f<sub>y</sub>z)</td><td>Check min/max (0.87 for pre-amendment)</td></tr>
         </table></div>
 
         <h3>Shear</h3>
@@ -1396,7 +1468,7 @@ Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</di
           <tr><th>Step</th><th>Formula</th><th>Note</th></tr>
           <tr><td>Applied shear stress</td><td>v = V/(b<sub>v</sub>d)</td><td>&le; 0.8&radic;f<sub>cu</sub> or 5N/mm&sup2;</td></tr>
           <tr><td>Concrete capacity</td><td>v<sub>c</sub> from Table 3.8</td><td>Depends on steel %</td></tr>
-          <tr><td>Link ratio needed</td><td>A<sub>sv</sub>/s<sub>v</sub> = b<sub>v</sub>(v&minus;v<sub>c</sub>)/(0.87f<sub>yv</sub>)</td><td>If v &ge; v<sub>c</sub>+0.4</td></tr>
+          <tr><td>Link ratio needed</td><td>A<sub>sv</sub>/s<sub>v</sub> = b<sub>v</sub>(v&minus;v<sub>c</sub>)/(0.95f<sub>yv</sub>)</td><td>If v &ge; v<sub>c</sub>+0.4 (0.87 for pre-amendment)</td></tr>
           <tr><td>Max link spacing</td><td>0.75d</td><td>&mdash;</td></tr>
         </table></div>
 
@@ -1411,11 +1483,11 @@ Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</di
         <h3>Columns (Key limits)</h3>
         <div class="table-wrap"><table>
           <tr><th>Item</th><th>Limit</th></tr>
-          <tr><td>Short/slender boundary (braced)</td><td>l<sub>e</sub>/h = 15</td></tr>
-          <tr><td>Min eccentricity</td><td>0.05h or 20mm</td></tr>
+          <tr><td>Short/slender boundary (braced)</td><td>l<sub>e</sub>/h = 15 <em>and</em> l<sub>e</sub>/b = 15</td></tr>
+          <tr><td>Min eccentricity</td><td>0.05h or 20mm (lesser)</td></tr>
           <tr><td>Min steel</td><td>0.4% of gross section</td></tr>
-          <tr><td>Max steel</td><td>6% (10% at laps)</td></tr>
-          <tr><td>Max link spacing</td><td>12&phi;<sub>main</sub> or lesser column dim., &le;300mm</td></tr>
+          <tr><td>Max steel</td><td>6% (8% if horizontally cast, 10% at laps)</td></tr>
+          <tr><td>Max link spacing</td><td>12&phi;<sub>smallest compression bar</sub> or lesser column dim., &le;300mm</td></tr>
         </table></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
