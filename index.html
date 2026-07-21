@@ -927,6 +927,13 @@ n<sub>min</sub> = 1.0G<sub>k</sub>   (minimum load case &mdash; pattern loading)
           <tr><td>Cantilever slab</td><td>span / 8 to span / 10</td><td>7</td></tr>
         </table></div>
         <p>These give a starting depth only &mdash; final depth must satisfy the deflection check (Step S10). d = h &minus; cover &minus; half bar diameter.</p>
+        
+        <div class="card"><p><strong>Rule of Thumb for Slab Sizing (Oyenuga &amp; Arya):</strong><br>
+        For fast scheme design of standard building floor slabs, the following overall thicknesses (h) are commonly specified:<br>
+        &bull; <strong>h = 125mm:</strong> Short span panels (&lt;3.0m), e.g., balconies, toilets, corridors.<br>
+        &bull; <strong>h = 150mm:</strong> Standard residential/office slab panels (3.0m to 4.5m) &mdash; <em>the most widely used standard thickness in practice.</em><br>
+        &bull; <strong>h = 175mm to 200mm:</strong> Large span panels (4.5m to 6.0m) or panels carrying heavy masonry partition walls.</p></div>
+        
         <h3>Minimum Cover <span class="cl">Table 3.3</span></h3>
         <p>Typically 20&ndash;25mm internal/mild exposure, checked against fire resistance in <span class="cl">Table 3.4 / Fig 3.2</span>.</p>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
@@ -967,6 +974,8 @@ V<sub>y</sub> = &beta;<sub>vy</sub> &times; n &times; l<sub>x</sub>   (long edge
         <h3>Corner (Torsion) Reinforcement <span class="cl">Cl. 3.5.3.5</span></h3>
         <div class="formula">A<sub>s,corner</sub> = (3/4) &times; A<sub>sx</sub> (max short-span steel)
 Extend l<sub>x</sub>/5 both directions from corner; both faces at discontinuous corners</div>
+        <div class="card"><p><strong>Torsion Steel Detailing (Oyenuga &amp; Arya):</strong><br>
+        Torsion steel must be provided in a grid layout in both the top and bottom faces of the slab. At discontinuous corners (e.g. exterior slab corners), this grid must extend <strong>0.2l<sub>x</sub></strong> in both directions and consist of at least <strong>75%</strong> of the area of reinforcement required for the maximum span moment.</p></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
@@ -1141,12 +1150,15 @@ w<sub>u</sub> = 1.4G<sub>k</sub> + 1.6Q<sub>k</sub>   <span>(Table 2.1)</span></
 Continuous:       l<sub>eff</sub> = centre-to-centre of supports
 Cantilever:       l<sub>eff</sub> = length to face of support + d/2</div>
         <div class="table-wrap"><table>
-          <tr><th>Beam Type</th><th>Typical span/depth (overall h)</th></tr>
-          <tr><td>Simply supported</td><td>span / 12 to span / 15</td></tr>
-          <tr><td>Continuous</td><td>span / 15 to span / 18</td></tr>
-          <tr><td>Cantilever</td><td>span / 6 to span / 8</td></tr>
+          <tr><th>Beam Type</th><th>Typical span/depth (overall h)</th><th>Basic span/d limit <span class="cl">Table 3.9</span></th></tr>
+          <tr><td>Simply supported</td><td>span / 12 to span / 15</td><td>20</td></tr>
+          <tr><td>Continuous</td><td>span / 15 to span / 18</td><td>26</td></tr>
+          <tr><td>Cantilever</td><td>span / 6 to span / 8</td><td>7</td></tr>
         </table></div>
         <p>Confirm final depth against the deflection check in Step B8. d = h &minus; cover &minus; link diameter &minus; half main bar diameter.</p>
+        <div class="card"><p><strong>Rule of Thumb for Beam Sizing (Chanakya Arya):</strong><br>
+        &bull; <strong>Overall Depth (h):</strong> Choose a starting depth of <strong>span / 12</strong> (simply supported) or <strong>span / 15</strong> (continuous) to ensure deflection is easily satisfied.<br>
+        &bull; <strong>Web Width (b<sub>w</sub>):</strong> Typically select b<sub>w</sub> between <strong>0.3h and 0.5h</strong>. In local practice (Oyenuga's manual), widths are standard at <strong>225mm</strong> (to sit flush with 9-inch sandcrete block walling) or <strong>300mm</strong>.</p></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
@@ -1208,6 +1220,10 @@ v<sub>c</sub> = 0.79[100A<sub>s</sub>/(b<sub>v</sub>d)]&sup1;&sol;&sup3;(400/d)&
           <tr><td>v &gt; 0.8&radic;f<sub>cu</sub> or 5N/mm&sup2;</td><td>Section too small &mdash; increase b or d</td></tr>
         </table></div>
         <div class="formula">Max link spacing s<sub>v</sub> &le; 0.75d;  max lateral leg spacing &le; d</div>
+        <div class="card"><p><strong>Practical Detailing of Shear Links (Oyenuga Manual):</strong><br>
+        &bull; <strong>Link Diameter:</strong> Use high-yield steel links of at least <strong>8mm diameter</strong> (10mm if beam width &gt;300mm or load is heavy).<br>
+        &bull; <strong>Practical Spacing:</strong> Spacings are rounded to clean structural multiples &mdash; e.g., 100mm, 150mm, 200mm, 250mm, or 300mm.<br>
+        &bull; <strong>Link Zoning:</strong> Since shear is maximum at support faces and drops rapidly toward midspan, design links are concentrated near the supports (up to 1.5d to 2.0d from the face) and transitioned to nominal/minimum links at 250-300mm spacing for the remainder of the span.</p></div>
         <div class="card blue"><p><strong>Critical section:</strong> checked at distance d from the face of the support.</p></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -1325,8 +1341,26 @@ Design moment: M<sub>i</sub> = M<sub>2</sub> + M<sub>add</sub> (at mid-height cr
       </section>
 
       <section id="c5">
-        <div class="section-header"><span class="step-num">STEP C5</span><h2>Axial Load + Uniaxial Bending</h2></div>
-        <p>With N and M in one axis, enter the design chart (Part 3c, Fig 3.12&ndash;3.21 or tabulated equivalents) with:</p>
+        <div class="section-header"><span class="step-num">STEP C5</span><h2>Axial Load + Uniaxial Bending (Simplified &amp; Chart Methods)</h2></div>
+        
+        <h3>1 &mdash; Simplified Symmetrical Design (No charts needed) <span class="cl">Cl. 3.8.4.3 &amp; 3.8.4.4</span></h3>
+        <p>In standard multi-storey building frames, columns are often braced and carry approximately symmetrical loads. BS 8110 (and Oyenuga's manual) provides two highly useful simplified hand equations to design these columns directly without interaction charts:</p>
+        
+        <div class="card"><p><strong>Case A: Symmetrical Beam Layout (Spans differ by &le;15%) <span class="cl">Cl. 3.8.4.3</span></strong><br>
+        If the column supports beams of approximately equal spans, carrying uniform loads, design for axial load alone using:<br>
+        <span style="font-family:var(--mono); font-size:13.5px; display:block; margin-top:8px;">N = 0.35f<sub>cu</sub>A<sub>c</sub> + 0.67f<sub>y</sub>A<sub>sc</sub></span></p></div>
+        
+        <div class="card"><p><strong>Case B: Nominal Eccentricity / Unequal Spans <span class="cl">Cl. 3.8.4.4</span></strong><br>
+        If the column carries nominal moments (e.g. slight beam asymmetry or single floor reactions), use the reduced concrete factor to account for eccentricity:<br>
+        <span style="font-family:var(--mono); font-size:13.5px; display:block; margin-top:8px;">N = 0.30f<sub>cu</sub>A<sub>c</sub> + 0.67f<sub>y</sub>A<sub>sc</sub></span></p></div>
+        
+        <p>Where:<br>
+        &bull; <strong>A<sub>c</sub>:</strong> net concrete area = A<sub>g</sub> - A<sub>sc</sub> (mm&sup2;)<br>
+        &bull; <strong>A<sub>sc</sub>:</strong> total area of longitudinal steel (mm&sup2;)<br>
+        &bull; <strong>N:</strong> design ultimate axial load (N)</p>
+        
+        <h3>2 &mdash; General Bending / Chart Method</h3>
+        <p>If the column is subjected to significant bending moments (Case A/B limits exceeded), design for combined axial load and uniaxial bending using the design charts. Enter the chart (Part 3c, Fig 3.12&ndash;3.21) with:</p>
         <div class="formula">N / (bh&middot;f<sub>cu</sub>)   (normalised axial load)
 M / (bh&sup2;&middot;f<sub>cu</sub>)  (normalised moment)
 &rarr; read off  100A<sub>sc</sub> / (bh)  (required steel percentage)</div>
