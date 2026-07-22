@@ -101,12 +101,16 @@ export default function CommunityNotes() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
 
-  // Submission Form State
+  // Modal States
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [question, setQuestion] = useState('');
   const [honeypot, setHoneypot] = useState(''); // website hidden honeypot
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState({ text: '', isError: false });
+  
+  // Feedback results
+  const [feedbackType, setFeedbackType] = useState<'none' | 'strong' | 'moderate' | null>(null);
+  const [suggestedArticle, setSuggestedArticle] = useState<Article | null>(null);
 
   // 1. Fetch community notes from Sanity or fallback
   useEffect(() => {
@@ -181,8 +185,6 @@ export default function CommunityNotes() {
   function applyHighlight(text: string, indices: readonly [number, number][]) {
     let result = '';
     let lastIndex = 0;
-    
-    // Sort indices just in case
     const sortedIndices = [...indices].sort((a, b) => a[0] - b[0]);
 
     for (const [start, end] of sortedIndices) {
@@ -194,32 +196,63 @@ export default function CommunityNotes() {
     return result;
   }
 
-  // 4. Form Submit handler
+  // 4. Form Submit & Smart Feedback Handler
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitMessage({ text: '', isError: false });
     setSubmitLoading(true);
 
     try {
+      // Run similarity check using Fuse.js locally over user question
+      const fuse = new Fuse(articles, {
+        keys: ['title', 'answer'],
+        includeScore: true,
+        threshold: 0.7, // liberal threshold to capture weak matches
+      });
+
+      const searchHits = fuse.search(question);
+      let type: 'none' | 'strong' | 'moderate' = 'none';
+      let suggested: Article | null = null;
+
+      if (searchHits.length > 0) {
+        const topHit = searchHits[0];
+        const score = topHit.score || 1;
+        suggested = topHit.item;
+
+        if (score < 0.4) {
+          type = 'strong';
+        } else if (score < 0.7) {
+          type = 'moderate';
+        }
+      }
+
+      // POST to API handler
       const res = await fetch('/api/questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, question, website: honeypot }),
       });
 
-      const data = await res.json();
       if (!res.ok) {
+        const data = await res.json();
         throw new Error(data.error || 'Failed to submit question');
       }
 
-      setSubmitMessage({ text: 'Thank you! Your question has been submitted. We will reply to your email shortly.', isError: false });
+      // Trigger feedback states
+      setFeedbackType(type);
+      setSuggestedArticle(suggested);
       setEmail('');
       setQuestion('');
     } catch (err: any) {
-      setSubmitMessage({ text: err.message, isError: true });
+      alert(err.message);
     } finally {
       setSubmitLoading(false);
     }
+  };
+
+  const closeFeedbackModal = () => {
+    setIsModalOpen(false);
+    setFeedbackType(null);
+    setSuggestedArticle(null);
   };
 
   return (
@@ -236,109 +269,8 @@ export default function CommunityNotes() {
         </p>
       </header>
 
-      {/* Ask / Issue Submission Form */}
-      <div style={{
-        background: 'var(--light-bg)',
-        border: '1px solid var(--rule)',
-        borderRadius: 'var(--radius)',
-        padding: '24px',
-        marginBottom: '40px'
-      }}>
-        <h3 style={{ fontFamily: 'Lora, serif', fontSize: '18px', fontWeight: '400', color: 'var(--black)', marginBottom: '8px' }}>Have a Confusing Question or Issue?</h3>
-        <p style={{ fontSize: '13.5px', color: 'var(--mid-gray)', marginBottom: '18px', lineHeight: '1.5' }}>
-          Drop your email and describe the issue or question. We will review it, answer you directly in your email, and post a notes article in the directory.
-        </p>
-
-        {submitMessage.text && (
-          <div style={{
-            borderLeft: `3px solid ${submitMessage.isError ? '#e05a5a' : 'var(--accent)'}`,
-            background: submitMessage.isError ? '#fdf2f2' : 'var(--accent-bg)',
-            color: submitMessage.isError ? '#e05a5a' : 'var(--accent)',
-            padding: '12px',
-            fontSize: '13px',
-            marginBottom: '20px',
-            borderRadius: '0 var(--radius) var(--radius) 0'
-          }}>
-            {submitMessage.text}
-          </div>
-        )}
-
-        <form onSubmit={handleFormSubmit}>
-          {/* Honeypot field (hidden from users) */}
-          <div style={{ display: 'none' }}>
-            <label htmlFor="website">Leave this blank</label>
-            <input type="text" id="website" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div>
-              <input
-                type="email"
-                required
-                placeholder="Enter your email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  border: '1px solid var(--rule)',
-                  borderRadius: 'var(--radius)',
-                  fontFamily: 'var(--sans)',
-                  fontSize: '13.5px',
-                  outline: 'none',
-                  background: 'var(--white)'
-                }}
-              />
-            </div>
-
-            <div>
-              <textarea
-                required
-                rows={3}
-                placeholder="Describe your design confusion or raise an issue..."
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  border: '1px solid var(--rule)',
-                  borderRadius: 'var(--radius)',
-                  fontFamily: 'var(--sans)',
-                  fontSize: '13.5px',
-                  outline: 'none',
-                  background: 'var(--white)',
-                  resize: 'vertical'
-                }}
-              />
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                disabled={submitLoading}
-                style={{
-                  background: 'var(--black)',
-                  color: 'var(--white)',
-                  border: 'none',
-                  borderRadius: 'var(--radius)',
-                  padding: '10px 20px',
-                  fontFamily: 'var(--mono)',
-                  fontSize: '11px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  cursor: 'pointer',
-                  opacity: submitLoading ? 0.7 : 1
-                }}
-              >
-                {submitLoading ? 'Submitting...' : 'Submit Inquiry'}
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-
       {/* Search and Tag Controls */}
-      <div style={{ marginBottom: '30px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ marginBottom: '40px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <input
           type="text"
           value={searchQuery}
@@ -440,6 +372,191 @@ export default function CommunityNotes() {
           })
         )}
       </main>
+
+      {/* Floating Ask Question Button */}
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="floating-faq-btn"
+        aria-label="Ask a question"
+        style={{ right: '24px', left: 'auto' }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={{ marginTop: "-1px" }}><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+        Ask Question
+      </button>
+
+      {/* Modal Overlay & Card */}
+      {isModalOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.4)',
+          backdropFilter: 'blur(2px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#ffffff',
+            border: '1px solid #0f0f0f',
+            borderRadius: 'var(--radius)',
+            padding: '28px',
+            width: '100%',
+            maxWidth: '500px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
+          }}>
+            
+            {/* ── STEP 1: Input Form ── */}
+            {feedbackType === null ? (
+              <>
+                <h3 style={{ fontFamily: 'Lora, serif', fontSize: '20px', fontWeight: '400', marginBottom: '8px' }}>Ask a Question</h3>
+                <p style={{ fontSize: '13px', color: 'var(--mid-gray)', marginBottom: '20px', lineHeight: '1.5' }}>
+                  Have a point of structural confusion? Ask here. We will check our notes and send a reply directly to your inbox.
+                </p>
+
+                <form onSubmit={handleFormSubmit}>
+                  {/* Honeypot field (hidden from users) */}
+                  <div style={{ display: 'none' }}>
+                    <label htmlFor="website">Leave this blank</label>
+                    <input type="text" id="website" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '10.5px', fontFamily: 'var(--mono)', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Your Email</label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="email@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--rule)', borderRadius: 'var(--radius)', fontSize: '13.5px', outline: 'none' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '10.5px', fontFamily: 'var(--mono)', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Describe your question</label>
+                      <textarea
+                        required
+                        rows={4}
+                        placeholder="What are you confused about in the design? Be specific..."
+                        value={question}
+                        onChange={(e) => setQuestion(e.target.value)}
+                        style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--rule)', borderRadius: 'var(--radius)', fontSize: '13.5px', outline: 'none', resize: 'vertical' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                    <button type="button" onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: '1px solid var(--rule)', cursor: 'pointer', padding: '8px 16px', borderRadius: 'var(--radius)', fontFamily: 'var(--mono)', fontSize: '11px', textTransform: 'uppercase' }}>Cancel</button>
+                    <button
+                      type="submit"
+                      disabled={submitLoading}
+                      style={{
+                        background: 'var(--black)',
+                        color: 'var(--white)',
+                        border: 'none',
+                        borderRadius: 'var(--radius)',
+                        padding: '8px 20px',
+                        fontFamily: 'var(--mono)',
+                        fontSize: '11px',
+                        textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        opacity: submitLoading ? 0.7 : 1
+                      }}
+                    >
+                      {submitLoading ? 'Submitting...' : 'Submit Inquiry'}
+                    </button>
+                  </div>
+                </form>
+              </>
+            ) : (
+              /* ── STEP 2: Intelligent Feedback ── */
+              <div style={{ textAlign: 'left' }}>
+                <h3 style={{ fontFamily: 'Lora, serif', fontSize: '20px', fontWeight: '400', marginBottom: '14px', color: 'var(--black)' }}>Inquiry Submitted</h3>
+                
+                {feedbackType === 'strong' && suggestedArticle && (
+                  <div style={{ borderLeft: '3px solid var(--accent)', background: 'var(--accent-bg)', padding: '16px', borderRadius: '0 var(--radius) var(--radius) 0', marginBottom: '24px' }}>
+                    <p style={{ fontSize: '14px', color: 'var(--black)', marginBottom: '12px', fontWeight: 600 }}>
+                      💡 We found an answer to your question in our notes!
+                    </p>
+                    <p style={{ fontSize: '13.5px', color: 'var(--dark-gray)', marginBottom: '14px' }}>
+                      You can read the full article immediately:
+                    </p>
+                    <Link
+                      href={`/community-notes/${typeof suggestedArticle.slug === 'string' ? suggestedArticle.slug : suggestedArticle.slug.current}`}
+                      style={{
+                        fontSize: '14px',
+                        color: 'var(--accent)',
+                        textDecoration: 'underline',
+                        fontWeight: 600,
+                        display: 'inline-block'
+                      }}
+                      onClick={closeFeedbackModal}
+                    >
+                      {suggestedArticle.title} &rarr;
+                    </Link>
+                  </div>
+                )}
+
+                {feedbackType === 'moderate' && suggestedArticle && (
+                  <div style={{ borderLeft: '3px solid var(--accent)', background: 'var(--accent-bg)', padding: '16px', borderRadius: '0 var(--radius) var(--radius) 0', marginBottom: '24px' }}>
+                    <p style={{ fontSize: '14px', color: 'var(--black)', marginBottom: '8px', fontWeight: 600 }}>
+                      💡 Here is a note similar to your query:
+                    </p>
+                    <Link
+                      href={`/community-notes/${typeof suggestedArticle.slug === 'string' ? suggestedArticle.slug : suggestedArticle.slug.current}`}
+                      style={{
+                        fontSize: '13.5px',
+                        color: 'var(--accent)',
+                        textDecoration: 'underline',
+                        fontWeight: 600,
+                        display: 'inline-block',
+                        marginBottom: '14px'
+                      }}
+                      onClick={closeFeedbackModal}
+                    >
+                      {suggestedArticle.title} &rarr;
+                    </Link>
+                    <p style={{ fontSize: '12.5px', color: '#6b6b6b', margin: 0 }}>
+                      If this does not resolve your query, don't worry! We have also logged your question and will send a reply directly to your inbox.
+                    </p>
+                  </div>
+                )}
+
+                {feedbackType === 'none' && (
+                  <div style={{ borderLeft: '3px solid #6b6b6b', background: 'var(--light-bg)', padding: '16px', borderRadius: '0 var(--radius) var(--radius) 0', marginBottom: '24px' }}>
+                    <p style={{ fontSize: '13.5px', color: 'var(--dark-gray)', margin: 0 }}>
+                      Thank you! We've successfully received your question. Our engineering team will review it and reply to your email shortly.
+                    </p>
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <button
+                    onClick={closeFeedbackModal}
+                    style={{
+                      background: 'var(--black)',
+                      color: 'var(--white)',
+                      border: 'none',
+                      borderRadius: 'var(--radius)',
+                      padding: '8px 20px',
+                      fontFamily: 'var(--mono)',
+                      fontSize: '11px',
+                      textTransform: 'uppercase',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Continue Reading
+                  </button>
+                </div>
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
 
     </div>
   );

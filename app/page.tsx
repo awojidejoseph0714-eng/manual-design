@@ -152,7 +152,7 @@ export default function Home() {
       <a class="sidebar-link" href="#glossary"><span class="link-num">W4</span>Glossary of Symbols</a>
 
       <div class="sidebar-section-label">Extras</div>
-      <a class="sidebar-link" href="journal.html" style="font-weight: 600; color: var(--accent);"><span class="link-num">&rarr;</span>FAQ Journal</a>
+      <a class="sidebar-link" href="/community-notes" style="font-weight: 600; color: var(--accent);"><span class="link-num">&rarr;</span>Community Notes</a>
     </nav>
   </aside>
 
@@ -163,7 +163,7 @@ export default function Home() {
       <div class="header-inner">
         <div class="header-label">Structural Concrete &mdash; Complete Manual Design Guide</div>
         <h1>Designing Slabs, Beams &amp; Columns<br><em>by Hand, under BS 8110</em></h1>
-        <p class="header-sub">BS 8110-1:1997 &middot; One combined, step-by-step reference from load take-down to detailing &middot; <a href="journal.html" style="color: var(--accent); text-decoration: underline; font-weight: 600;">Browse FAQ Journal &rarr;</a></p>
+        <p class="header-sub">BS 8110-1:1997 &middot; One combined, step-by-step reference from load take-down to detailing</p>
       </div>
     </header>
 
@@ -1288,9 +1288,9 @@ For a square footing, width B = &radic;1.4 &asymp; 1.18m &rarr; Specify a 1.2m &
 </div><!-- /app-layout -->
 
 
-<a href="journal.html" class="floating-faq-btn" aria-label="Open FAQ Journal">
+<a href="/community-notes" class="floating-faq-btn" aria-label="Open Community Notes">
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: -1px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-  FAQ Journal
+  Community Notes
 </a>
 ` }} />
   );
