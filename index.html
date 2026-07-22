@@ -650,6 +650,45 @@ footer {
   .formula { background: #f0f0f0; color: #111; border: 1px solid #ccc; white-space: pre-wrap; }
   th { background: #111; color: #fff; -webkit-print-color-adjust: exact; }
 }
+
+/* Floating FAQ Journal Button */
+.floating-faq-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--white);
+  color: var(--black);
+  border: 1px solid var(--black);
+  border-radius: var(--radius);
+  padding: 10px 18px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 999;
+  transition: all 0.2s ease;
+}
+.floating-faq-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(47,93,138,0.12);
+}
+@media (max-width: 700px) {
+  .floating-faq-btn {
+    bottom: 16px;
+    right: 16px;
+    padding: 8px 14px;
+    font-size: 10px;
+  }
+}
 </style>
 </head>
 <body>
@@ -715,6 +754,9 @@ footer {
       <a class="sidebar-link" href="#worked-example"><span class="link-num">W2</span>G+1 Worked Example</a>
       <a class="sidebar-link" href="#quickref"><span class="link-num">W3</span>Quick Reference</a>
       <a class="sidebar-link" href="#glossary"><span class="link-num">W4</span>Glossary of Symbols</a>
+
+      <div class="sidebar-section-label">Extras</div>
+      <a class="sidebar-link" href="journal.html" style="font-weight: 600; color: var(--accent);"><span class="link-num">&rarr;</span>FAQ Journal</a>
     </nav>
   </aside>
 
@@ -725,7 +767,7 @@ footer {
       <div class="header-inner">
         <div class="header-label">Structural Concrete &mdash; Complete Manual Design Guide</div>
         <h1>Designing Slabs, Beams &amp; Columns<br><em>by Hand, under BS 8110</em></h1>
-        <p class="header-sub">BS 8110-1:1997 &middot; One combined, step-by-step reference from load take-down to detailing</p>
+        <p class="header-sub">BS 8110-1:1997 &middot; One combined, step-by-step reference from load take-down to detailing &middot; <a href="journal.html" style="color: var(--accent); text-decoration: underline; font-weight: 600;">Browse FAQ Journal &rarr;</a></p>
       </div>
     </header>
 
@@ -1908,5 +1950,9 @@ function updateActiveLink() {
 window.addEventListener('scroll', updateActiveLink, { passive: true });
 updateActiveLink();
 </script>
+<a href="journal.html" class="floating-faq-btn" aria-label="Open FAQ Journal">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: -1px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+  FAQ Journal
+</a>
 </body>
 </html>
