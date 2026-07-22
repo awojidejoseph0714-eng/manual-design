@@ -384,6 +384,16 @@ export default function CommunityNotes() {
         Ask Question
       </button>
 
+      {/* Floating Back to Guide Button (Left) */}
+      <Link
+        href="/"
+        className="floating-faq-btn-left"
+        aria-label="Back to guide"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={{ marginTop: "-1px" }}><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Guide
+      </Link>
+
       {/* Modal Overlay & Card */}
       {isModalOpen && (
         <div style={{

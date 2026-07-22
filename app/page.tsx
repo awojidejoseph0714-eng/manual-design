@@ -1,9 +1,106 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Fuse from 'fuse.js';
+import { sanityClient } from '@/lib/sanity';
+
+const defaultFAQs = [
+  { title: "If a wall sits directly on a slab (not on a beam), how does the slab 'see' that load?", slug: "wall-load-on-slab" },
+  { title: "Do you always need to check a slab for punching shear, or only flat slabs?", slug: "punching-shear-necessity" },
+  { title: "If two beams intersect at right angles at midspan (not at a column), how do you handle the load transfer?", slug: "beam-intersection-midspan" },
+  { title: "Does a slab's live load (Q_k) ever get reduced, the way column live load is?", slug: "slab-live-load-reduction" },
+  { title: "If a column is bigger at the bottom of the building than the top, does that count as 'slender' differently at each level?", slug: "column-slenderness-variation" },
+  { title: "Why does a cantilever need such a conservative span/depth ratio (7, versus 20 for simply supported)?", slug: "cantilever-span-depth-ratio" },
+  { title: "Does the choice of f_cu (concrete grade) change how you calculate loads, or only how you design the section?", slug: "concrete-grade-load-effect" },
+  { title: "If a beam has different reinforcement top and bottom at midspan, does that mean it's doubly reinforced?", slug: "beam-reinforcement-doubly-reinforced" },
+  { title: "Do you need to check deflection separately for a slab if you've already checked it for the beam supporting it?", slug: "slab-vs-beam-deflection" }
+];
 
 export default function Home() {
+  // Modal States
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [question, setQuestion] = useState('');
+  const [honeypot, setHoneypot] = useState('');
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [articles, setArticles] = useState<any[]>([]);
+
+  // Feedback states
+  const [feedbackType, setFeedbackType] = useState<'none' | 'strong' | 'moderate' | null>(null);
+  const [suggestedArticle, setSuggestedArticle] = useState<any | null>(null);
+
+  useEffect(() => {
+    async function loadNotes() {
+      try {
+        const query = '*[_type == "communityNote"] | order(date desc)';
+        const fetched = await sanityClient.fetch(query);
+        if (fetched && fetched.length > 0) {
+          setArticles(fetched);
+        } else {
+          setArticles(defaultFAQs);
+        }
+      } catch (err) {
+        setArticles(defaultFAQs);
+      }
+    }
+    loadNotes();
+  }, []);
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitLoading(true);
+
+    try {
+      const fuse = new Fuse(articles, {
+        keys: ['title', 'answer'],
+        includeScore: true,
+        threshold: 0.7,
+      });
+
+      const searchHits = fuse.search(question);
+      let type: 'none' | 'strong' | 'moderate' = 'none';
+      let suggested: any = null;
+
+      if (searchHits.length > 0) {
+        const topHit = searchHits[0];
+        const score = topHit.score || 1;
+        suggested = topHit.item;
+
+        if (score < 0.4) {
+          type = 'strong';
+        } else if (score < 0.7) {
+          type = 'moderate';
+        }
+      }
+
+      const res = await fetch('/api/questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, question, website: honeypot }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to submit question');
+      }
+
+      setFeedbackType(type);
+      setSuggestedArticle(suggested);
+      setEmail('');
+      setQuestion('');
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
+
+  const closeFeedbackModal = () => {
+    setIsModalOpen(false);
+    setFeedbackType(null);
+    setSuggestedArticle(null);
+  };
   useEffect(() => {
     // ── Mobile Responsive Sidebar Actions ──
     const sidebar = document.getElementById('sidebar');
@@ -1293,5 +1390,192 @@ For a square footing, width B = &radic;1.4 &asymp; 1.18m &rarr; Specify a 1.2m &
   Community Notes
 </a>
 ` }} />
+
+      {/* Floating Ask Question Button (Left) */}
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="floating-faq-btn-left"
+        aria-label="Ask a question"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={{ marginTop: "-1px" }}><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+        Ask Question
+      </button>
+
+      {/* Modal Overlay & Card */}
+      {isModalOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.4)',
+          backdropFilter: 'blur(2px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#ffffff',
+            border: '1px solid #0f0f0f',
+            borderRadius: 'var(--radius)',
+            padding: '28px',
+            width: '100%',
+            maxWidth: '500px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            color: '#0f0f0f',
+            fontFamily: 'Inter, sans-serif'
+          }}>
+            
+            {/* ── STEP 1: Input Form ── */}
+            {feedbackType === null ? (
+              <>
+                <h3 style={{ fontFamily: 'Lora, serif', fontSize: '20px', fontWeight: '400', marginBottom: '8px' }}>Ask a Question</h3>
+                <p style={{ fontSize: '13px', color: '#6b6b6b', marginBottom: '20px', lineHeight: '1.5' }}>
+                  Have a point of structural confusion? Ask here. We will check our notes and send a reply directly to your inbox.
+                </p>
+
+                <form onSubmit={handleFormSubmit}>
+                  {/* Honeypot field */}
+                  <div style={{ display: 'none' }}>
+                    <label htmlFor="website-home">Leave blank</label>
+                    <input type="text" id="website-home" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '10.5px', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Your Email</label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="email@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        style={{ width: '100%', padding: '10px 12px', border: '1px solid #e0e0e0', borderRadius: 'var(--radius)', fontSize: '13.5px', outline: 'none', background: '#ffffff' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '10.5px', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Describe your question</label>
+                      <textarea
+                        required
+                        rows={4}
+                        placeholder="What are you confused about in the design? Be specific..."
+                        value={question}
+                        onChange={(e) => setQuestion(e.target.value)}
+                        style={{ width: '100%', padding: '10px 12px', border: '1px solid #e0e0e0', borderRadius: 'var(--radius)', fontSize: '13.5px', outline: 'none', resize: 'vertical', background: '#ffffff' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                    <button type="button" onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: '1px solid #e0e0e0', cursor: 'pointer', padding: '8px 16px', borderRadius: 'var(--radius)', fontFamily: 'monospace', fontSize: '11px', textTransform: 'uppercase' }}>Cancel</button>
+                    <button
+                      type="submit"
+                      disabled={submitLoading}
+                      style={{
+                        background: '#0f0f0f',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: 'var(--radius)',
+                        padding: '8px 20px',
+                        fontFamily: 'monospace',
+                        fontSize: '11px',
+                        textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        opacity: submitLoading ? 0.7 : 1
+                      }}
+                    >
+                      {submitLoading ? 'Submitting...' : 'Submit Inquiry'}
+                    </button>
+                  </div>
+                </form>
+              </>
+            ) : (
+              /* ── STEP 2: Intelligent Feedback ── */
+              <div style={{ textAlign: 'left' }}>
+                <h3 style={{ fontFamily: 'Lora, serif', fontSize: '20px', fontWeight: '400', marginBottom: '14px', color: '#0f0f0f' }}>Inquiry Submitted</h3>
+                
+                {feedbackType === 'strong' && suggestedArticle && (
+                  <div style={{ borderLeft: '3px solid #2f5d8a', background: '#eef3f7', padding: '16px', borderRadius: '0 var(--radius) var(--radius) 0', marginBottom: '24px' }}>
+                    <p style={{ fontSize: '14px', color: '#0f0f0f', marginBottom: '12px', fontWeight: 600 }}>
+                      💡 We found an answer to your question in our notes!
+                    </p>
+                    <p style={{ fontSize: '13.5px', color: '#2d2d2d', marginBottom: '14px' }}>
+                      You can read the full article immediately:
+                    </p>
+                    <Link
+                      href={`/community-notes/${suggestedArticle.slug.current || suggestedArticle.slug}`}
+                      style={{
+                        fontSize: '14px',
+                        color: '#2f5d8a',
+                        textDecoration: 'underline',
+                        fontWeight: 600,
+                        display: 'inline-block'
+                      }}
+                      onClick={closeFeedbackModal}
+                    >
+                      {suggestedArticle.title} &rarr;
+                    </Link>
+                  </div>
+                )}
+
+                {feedbackType === 'moderate' && suggestedArticle && (
+                  <div style={{ borderLeft: '3px solid #2f5d8a', background: '#eef3f7', padding: '16px', borderRadius: '0 var(--radius) var(--radius) 0', marginBottom: '24px' }}>
+                    <p style={{ fontSize: '14px', color: '#0f0f0f', marginBottom: '8px', fontWeight: 600 }}>
+                      💡 Here is a note similar to your query:
+                    </p>
+                    <Link
+                      href={`/community-notes/${suggestedArticle.slug.current || suggestedArticle.slug}`}
+                      style={{
+                        fontSize: '13.5px',
+                        color: '#2f5d8a',
+                        textDecoration: 'underline',
+                        fontWeight: 600,
+                        display: 'inline-block',
+                        marginBottom: '14px'
+                      }}
+                      onClick={closeFeedbackModal}
+                    >
+                      {suggestedArticle.title} &rarr;
+                    </Link>
+                    <p style={{ fontSize: '12.5px', color: '#6b6b6b', margin: 0 }}>
+                      If this does not resolve your query, don't worry! We have also logged your question and will send a reply directly to your inbox.
+                    </p>
+                  </div>
+                )}
+
+                {feedbackType === 'none' && (
+                  <div style={{ borderLeft: '3px solid #6b6b6b', background: '#f7f7f5', padding: '16px', borderRadius: '0 var(--radius) var(--radius) 0', marginBottom: '24px' }}>
+                    <p style={{ fontSize: '13.5px', color: '#2d2d2d', margin: 0 }}>
+                      Thank you! We've successfully received your question. Our engineering team will review it and reply to your email shortly.
+                    </p>
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <button
+                    onClick={closeFeedbackModal}
+                    style={{
+                      background: '#0f0f0f',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: 'var(--radius)',
+                      padding: '8px 20px',
+                      fontFamily: 'monospace',
+                      fontSize: '11px',
+                      textTransform: 'uppercase',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Continue Reading
+                  </button>
+                </div>
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
+    </>
   );
 }
