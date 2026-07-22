@@ -184,7 +184,8 @@ export default function Home() {
   }, []);
 
   return (
-    <div dangerouslySetInnerHTML={{ __html: `
+    <>
+      <div dangerouslySetInnerHTML={{ __html: `
 
 <a href="#main-content" class="skip-link">Skip to content</a>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
