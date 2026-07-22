@@ -101,10 +101,11 @@ export default function Home() {
     setFeedbackType(null);
     setSuggestedArticle(null);
   };
+
   useEffect(() => {
     // ── Mobile Responsive Sidebar Actions ──
     const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay'); // Fix id reference
+    const overlay = document.getElementById('sidebarOverlay');
     const toggleBtn = document.getElementById('menuToggle');
 
     function openSidebar() {
@@ -160,20 +161,32 @@ export default function Home() {
     window.addEventListener('scroll', updateActiveLink, { passive: true });
     updateActiveLink();
 
-    // ── Initialize Mermaid JS in Browser ──
+    // ── Initialize Mermaid JS and render diagrams after DOM insertion ──
     if (typeof window !== 'undefined') {
       const script = document.createElement('script');
       script.src = 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js';
       script.async = true;
       script.onload = () => {
         // @ts-ignore
-        window.mermaid?.initialize({
-          startOnLoad: true,
-          theme: 'neutral',
-          securityLevel: 'loose'
-        });
+        if (window.mermaid) {
+          // @ts-ignore
+          window.mermaid.initialize({
+            startOnLoad: false,
+            theme: 'neutral',
+            securityLevel: 'loose'
+          });
+          // @ts-ignore
+          window.mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+        }
       };
       document.body.appendChild(script);
+    }
+
+    // Trigger MathJax typeset if already loaded on navigation
+    // @ts-ignore
+    if (window.MathJax && window.MathJax.typeset) {
+      // @ts-ignore
+      window.MathJax.typeset();
     }
 
     return () => {
@@ -186,6 +199,7 @@ export default function Home() {
   return (
     <>
       <div dangerouslySetInnerHTML={{ __html: `
+
 
 <a href="#main-content" class="skip-link">Skip to content</a>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
@@ -250,7 +264,7 @@ export default function Home() {
       <a class="sidebar-link" href="#glossary"><span class="link-num">W4</span>Glossary of Symbols</a>
 
       <div class="sidebar-section-label">Extras</div>
-      <a class="sidebar-link" href="/community-notes" style="font-weight: 600; color: var(--accent);"><span class="link-num">&rarr;</span>Community Notes</a>
+      <a class="sidebar-link" href="journal.html" style="font-weight: 600; color: var(--accent);"><span class="link-num">&rarr;</span>FAQ Journal</a>
     </nav>
   </aside>
 
@@ -261,7 +275,7 @@ export default function Home() {
       <div class="header-inner">
         <div class="header-label">Structural Concrete &mdash; Complete Manual Design Guide</div>
         <h1>Designing Slabs, Beams &amp; Columns<br><em>by Hand, under BS 8110</em></h1>
-        <p class="header-sub">BS 8110-1:1997 &middot; One combined, step-by-step reference from load take-down to detailing</p>
+        <p class="header-sub">BS 8110-1:1997 &middot; One combined, step-by-step reference from load take-down to detailing &middot; <a href="journal.html" style="color: var(--accent); text-decoration: underline; font-weight: 600;">Browse FAQ Journal &rarr;</a></p>
       </div>
     </header>
 
@@ -786,8 +800,8 @@ w<sub>u</sub> = 1.4G<sub>k</sub> + 1.6Q<sub>k</sub>   <span>(Table 2.1)</span></
             
             <h4>Bending Moment comparison:</h4>
             <ul>
-              <li><strong>Point Load at Midspan (P):</strong> Max Moment \(M = \frac{P L}{4}\)</li>
-              <li><strong>Equivalent Smeared UDL (w = P/L):</strong> Max Moment \(M = \frac{w L^2}{8} = \frac{P L}{8}\) (Underestimates bending by <strong>50%!</strong>)</li>
+              <li><strong>Point Load at Midspan (P):</strong> Max Moment \\(M = \\frac{P L}{4}\\)</li>
+              <li><strong>Equivalent Smeared UDL (w = P/L):</strong> Max Moment \\(M = \\frac{w L^2}{8} = \\frac{P L}{8}\\) (Underestimates bending by <strong>50%!</strong>)</li>
             </ul>
           </div>
         </details>
@@ -1169,45 +1183,45 @@ Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</di
         </div>
 
         <h3>2 &mdash; Slab Panel S1 Design (Two-Way Restrained)</h3>
-        <p>We design Slab Panel S1 (\(L_x = 4.0\)m, \(L_y = 5.0\)m) as a two-way restrained panel since it is cast monolithically with supporting beams on all four sides, and \(L_y / L_x = 5.0 / 4.0 = 1.25 \le 2.0\).</p>
+        <p>We design Slab Panel S1 (\\(L_x = 4.0\\)m, \\(L_y = 5.0\\)m) as a two-way restrained panel since it is cast monolithically with supporting beams on all four sides, and \\(L_y / L_x = 5.0 / 4.0 = 1.25 \\le 2.0\\).</p>
         
         <ul class="check">
-          <li><strong>Trial Thickness (h):</strong> Choose \(150\)mm (\(L_x / 26 = 4000/26 = 153\)mm, so \(150\)mm is close and typical).</li>
-          <li><strong>Effective Depth (d):</strong> \(d = 150 - 20\text{mm cover} - 5\text{mm (half of 10mm bar)} = 125\)mm.</li>
-          <li><strong>Concrete Strength:</strong> \(f_{cu} = 25\) N/mm&sup2;, <strong>Steel Strength:</strong> \(f_y = 460\) N/mm&sup2;.</li>
+          <li><strong>Trial Thickness (h):</strong> Choose \\(150\\)mm (\\(L_x / 26 = 4000/26 = 153\\)mm, so \\(150\\)mm is close and typical).</li>
+          <li><strong>Effective Depth (d):</strong> \\(d = 150 - 20\\text{mm cover} - 5\\text{mm (half of 10mm bar)} = 125\\)mm.</li>
+          <li><strong>Concrete Strength:</strong> \\(f_{cu} = 25\\) N/mm&sup2;, <strong>Steel Strength:</strong> \\(f_y = 460\\) N/mm&sup2;.</li>
         </ul>
 
         <h4>Load Take-Down (ULS per m&sup2;)</h4>
         <div class="table-wrap"><table>
           <tr><th>Load Source</th><th>Calculation</th><th>Characteristic Load</th></tr>
-          <tr><td>Slab Self-Weight</td><td>\(24\text{ kN/m}^3 \times 0.15\text{m}\)</td><td>3.6 kN/m&sup2; (G<sub>k</sub>)</td></tr>
+          <tr><td>Slab Self-Weight</td><td>\\(24\\text{ kN/m}^3 \\times 0.15\\text{m}\\)</td><td>3.6 kN/m&sup2; (G<sub>k</sub>)</td></tr>
           <tr><td>Screed &amp; Finishes</td><td>Nominal allowance</td><td>1.2 kN/m&sup2; (G<sub>k</sub>)</td></tr>
           <tr><td>Ceiling &amp; Services</td><td>Nominal allowance</td><td>0.3 kN/m&sup2; (G<sub>k</sub>)</td></tr>
           <tr><td>Partition Allowance</td><td>UDL per code</td><td>1.0 kN/m&sup2; (G<sub>k</sub>)</td></tr>
-          <tr><td><strong>Total Dead Load (G<sub>k</sub>)</strong></td><td>\(\sum\) above</td><td><strong>6.1 kN/m&sup2;</strong></td></tr>
+          <tr><td><strong>Total Dead Load (G<sub>k</sub>)</strong></td><td>\\(\\sum\\) above</td><td><strong>6.1 kN/m&sup2;</strong></td></tr>
           <tr><td><strong>Imposed Live Load (Q<sub>k</sub>)</strong></td><td>Residential occupancy</td><td><strong>1.5 kN/m&sup2;</strong></td></tr>
         </table></div>
         
         <div class="formula">Design load (ULS): n = 1.4G<sub>k</sub> + 1.6Q<sub>k</sub> = 1.4(6.1) + 1.6(1.5) = 10.94 kN/m&sup2;</div>
 
         <h4>Bending Moments &amp; Flexural Steel</h4>
-        <p>Using Table 3.14 coefficients for a typical interior panel (\(L_y/L_x = 1.25\)):</p>
+        <p>Using Table 3.14 coefficients for a typical interior panel (\\(L_y/L_x = 1.25\\)):</p>
         <ul>
-          <li>Short-span mid-span moment coefficient \(\beta_{sx} = 0.038 \implies M_{sx} = \beta_{sx} n L_x^2 = 0.038 \times 10.94 \times 4.0^2 = 6.65\) kNm/m.</li>
-          <li>Short-span support (hogging) moment coefficient \(\beta_{hx} = 0.050 \implies M_{hx} = \beta_{hx} n L_x^2 = 0.050 \times 10.94 \times 4.0^2 = 8.75\) kNm/m.</li>
+          <li>Short-span mid-span moment coefficient \\(\\beta_{sx} = 0.038 \\implies M_{sx} = \\beta_{sx} n L_x^2 = 0.038 \\times 10.94 \\times 4.0^2 = 6.65\\) kNm/m.</li>
+          <li>Short-span support (hogging) moment coefficient \\(\\beta_{hx} = 0.050 \\implies M_{hx} = \\beta_{hx} n L_x^2 = 0.050 \\times 10.94 \\times 4.0^2 = 8.75\\) kNm/m.</li>
         </ul>
-        <p>For the critical support moment \(M_{hx} = 8.75\) kNm/m:</p>
+        <p>For the critical support moment \\(M_{hx} = 8.75\\) kNm/m:</p>
         <div class="formula">K = M / (bd&sup2;f<sub>cu</sub>) = 8.75 &times; 10⁶ / (1000 &times; 125&sup2; &times; 25) = 0.0224 &le; 0.156 (Singly reinforced)
 z = d[0.5 + &radic;(0.25 - K/0.9)] = 0.97d &rarr; Cap at 0.95d = 118.75mm
 A<sub>s</sub> = M / (0.95f<sub>y</sub>z) = 8.75 &times; 10⁶ / (0.95 &times; 460 &times; 118.75) = 168.5 mm&sup2;/m</div>
-        <p>Check minimum area of steel: \(0.13\% \times b \times h = 0.0013 \times 1000 \times 150 = 195\) mm&sup2;/m. Min steel governs. Provide **Y10 @ 250mm spacing** (\(314\) mm&sup2;/m) to comfortably satisfy minimum steel and control cracking.</p>
+        <p>Check minimum area of steel: \\(0.13\\% \\times b \\times h = 0.0013 \\times 1000 \\times 150 = 195\\) mm&sup2;/m. Min steel governs. Provide **Y10 @ 250mm spacing** (\\(314\\) mm&sup2;/m) to comfortably satisfy minimum steel and control cracking.</p>
 
         <h3>3 &mdash; Beam B1 Design (Long Edge Beam, L = 5.0m)</h3>
         <p>Edge Beam B1 carries its own self-weight, the weight of the masonry block wall above, and the load transferred from the floor slab. The slab load distributes as a trapezoidal load along the long edge.</p>
 
         <ul class="check">
-          <li><strong>Dimensions:</strong> \(225\)mm web width (\(b_w\)), \(450\)mm overall depth (\(h\)).</li>
-          <li><strong>Effective depth (d):</strong> \(d = 450 - 25\text{ cover} - 10\text{ link} - 10\text{ (half of 20mm bar)} = 405\)mm.</li>
+          <li><strong>Dimensions:</strong> \\(225\\)mm web width (\\(b_w\\)), \\(450\\)mm overall depth (\\(h\\)).</li>
+          <li><strong>Effective depth (d):</strong> \\(d = 450 - 25\\text{ cover} - 10\\text{ link} - 10\\text{ (half of 20mm bar)} = 405\\)mm.</li>
         </ul>
 
         <h4>Load Take-Down (ULS per m run)</h4>
@@ -1218,11 +1232,11 @@ Slab live UDL = Q<sub>k</sub> * (L_x/2) * 0.787 = 1.5 * 2.0 * 0.787 = 2.36 kN/m<
 
         <div class="table-wrap"><table>
           <tr><th>Load Source</th><th>ULS Factored Calculation</th><th>ULS Factored load</th></tr>
-          <tr><td>Beam Self-Weight</td><td>\(1.4 \times (24\text{ kN/m}^3 \times 0.225\text{m} \times 0.45\text{m})\)</td><td>3.40 kN/m (Dead)</td></tr>
-          <tr><td>Sandcrete Block Wall</td><td>\(1.4 \times (18\text{ kN/m}^3 \times 0.225\text{m} \times 2.7\text{m wall height})\)</td><td>15.31 kN/m (Dead)</td></tr>
-          <tr><td>Slab Dead Portion</td><td>\(1.4 \times 9.60\text{ kN/m}\)</td><td>13.44 kN/m (Dead)</td></tr>
-          <tr><td>Slab Live Portion</td><td>\(1.6 \times 2.36\text{ kN/m}\)</td><td>3.78 kN/m (Live)</td></tr>
-          <tr><td><strong>Total Factored load (w<sub>u</sub>)</strong></td><td>\(\sum\) above</td><td><strong>35.93 kN/m</strong></td></tr>
+          <tr><td>Beam Self-Weight</td><td>\\(1.4 \\times (24\\text{ kN/m}^3 \\times 0.225\\text{m} \\times 0.45\\text{m})\\)</td><td>3.40 kN/m (Dead)</td></tr>
+          <tr><td>Sandcrete Block Wall</td><td>\\(1.4 \\times (18\\text{ kN/m}^3 \\times 0.225\\text{m} \\times 2.7\\text{m wall height})\\)</td><td>15.31 kN/m (Dead)</td></tr>
+          <tr><td>Slab Dead Portion</td><td>\\(1.4 \\times 9.60\\text{ kN/m}\\)</td><td>13.44 kN/m (Dead)</td></tr>
+          <tr><td>Slab Live Portion</td><td>\\(1.6 \\times 2.36\\text{ kN/m}\\)</td><td>3.78 kN/m (Live)</td></tr>
+          <tr><td><strong>Total Factored load (w<sub>u</sub>)</strong></td><td>\\(\\sum\\) above</td><td><strong>35.93 kN/m</strong></td></tr>
         </table></div>
 
         <h4>Bending Moment, Shear &amp; Reinforcement</h4>
@@ -1232,30 +1246,30 @@ Design ultimate shear: V<sub>max</sub> = w<sub>u</sub> L / 2 = 35.93 &times; 5.0
         <div class="formula">K = M / (bd&sup2;f<sub>cu</sub>) = 112.28 &times; 10⁶ / (225 &times; 405&sup2; &times; 25) = 0.121 &le; 0.156 (Singly reinforced)
 z = d[0.5 + &radic;(0.25 - K/0.9)] = 0.84d = 340.2mm
 A<sub>s</sub> = M / (0.95f<sub>y</sub>z) = 112.28 &times; 10⁶ / (0.95 &times; 460 &times; 340.2) = 755.7 mm&sup2;</div>
-        <p>Provide **3Y20 bottom bars** (\(A_{s,prov} = 942\) mm&sup2;) to carry the midspan tension.</p>
+        <p>Provide **3Y20 bottom bars** (\\(A_{s,prov} = 942\\) mm&sup2;) to carry the midspan tension.</p>
 
         <h4>Shear Links</h4>
         <div class="formula">Shear stress: v = V / (b<sub>w</sub> d) = 89.83 &times; 10&sup3; / (225 &times; 405) = 0.98 N/mm&sup2; &le; 0.8&radic;f<sub>cu</sub> = 4.0 N/mm&sup2;
 100As/(b_w d) = 100 * 942 / (225 * 405) = 1.03
 Concrete capacity (Table 3.8): v<sub>c</sub> = 0.63 N/mm&sup2; (Since 0.5v<sub>c</sub> &le; v &lt; v<sub>c</sub>+0.4, minimum links govern)
 Link ratio: A<sub>sv</sub>/s<sub>v</sub> = 0.4b<sub>w</sub> / (0.95f<sub>yv</sub>) = 0.4 * 225 / (0.95 * 250) = 0.379 mm&sup2;/mm</div>
-        <p>Using 2-legged \(\phi 8\) links (\(A_{sv} = 100.6\) mm&sup2;), the maximum spacing \(s_v = 100.6 / 0.379 = 265\) mm. Spacing limit \(\le 0.75d = 303\) mm. Provide **Y8 shear links @ 250mm spacing**.</p>
+        <p>Using 2-legged \\(\\phi 8\\) links (\\(A_{sv} = 100.6\\) mm&sup2;), the maximum spacing \\(s_v = 100.6 / 0.379 = 265\\) mm. Spacing limit \\(\\le 0.75d = 303\\) mm. Provide **Y8 shear links @ 250mm spacing**.</p>
 
         <h3>4 &mdash; Column C1 Design (Ground Floor Corner Column)</h3>
         <p>Column C1 accumulates loads from both the Roof Level and the First Floor Level.</p>
 
         <ul class="check">
-          <li><strong>Dimensions:</strong> \(225\)mm &times; \(225\)mm square column (\(A_g = 50625\) mm&sup2;).</li>
-          <li><strong>Height:</strong> Braced clear height \(l_{clear} = 2.7\)m. Effective length \(l_e = 0.75 \times 2.7 = 2.025\)m (\(l_e/h = 2025/225 = 9.0 \le 15\), column is **braced short**).</li>
+          <li><strong>Dimensions:</strong> \\(225\\)mm &times; \\(225\\)mm square column (\\(A_g = 50625\\) mm&sup2;).</li>
+          <li><strong>Height:</strong> Braced clear height \\(l_{clear} = 2.7\\)m. Effective length \\(l_e = 0.75 \\times 2.7 = 2.025\\)m (\\(l_e/h = 2025/225 = 9.0 \\le 15\\), column is **braced short**).</li>
         </ul>
 
         <h4>Load Accumulation (ULS axial force at base)</h4>
         <ul>
-          <li><strong>Roof Slab Load:</strong> Factored roof load (4.5 dead + 1.5 live) \(= 1.4(4.5)+1.6(1.5) = 8.7\) kN/m&sup2;. Tributary area \(= 2.0\text{m} \times 2.5\text{m} = 5.0\) m&sup2; \(\implies N_{roof} = 8.7 \times 5.0 = 43.5\) kN.</li>
-          <li><strong>First Floor Slab Load:</strong> Factored slab load \(= 10.94\) kN/m&sup2; &times; \(5.0\) m&sup2; tributary area \(\implies N_{floor} = 54.7\) kN.</li>
-          <li><strong>Perimeter Wall Load:</strong> Cumulative wall load \(= 1.4 \times (18\text{ kN/m}^3 \times 0.225\text{m} \times 2.7\text{m}) \times 4.5\text{m perimeter length} \times 2\text{ storeys} = 137.8\) kN.</li>
-          <li><strong>Beam Self-Weights:</strong> Cumulative beam UDLs \(= 1.4 \times 2.43\text{ kN/m} \times 4.5\text{m length} \times 2\text{ storeys} = 30.6\) kN.</li>
-          <li><strong>Column Self-Weight:</strong> \(1.4 \times (24\text{ kN/m}^3 \times 0.225\text{m} \times 0.225\text{m} \times 3.0\text{m height} \times 2\text{ storeys}) = 10.2\) kN.</li>
+          <li><strong>Roof Slab Load:</strong> Factored roof load (4.5 dead + 1.5 live) \\(= 1.4(4.5)+1.6(1.5) = 8.7\\) kN/m&sup2;. Tributary area \\(= 2.0\\text{m} \\times 2.5\\text{m} = 5.0\\) m&sup2; \\(\\implies N_{roof} = 8.7 \\times 5.0 = 43.5\\) kN.</li>
+          <li><strong>First Floor Slab Load:</strong> Factored slab load \\(= 10.94\\) kN/m&sup2; &times; \\(5.0\\) m&sup2; tributary area \\(\\implies N_{floor} = 54.7\\) kN.</li>
+          <li><strong>Perimeter Wall Load:</strong> Cumulative wall load \\(= 1.4 \\times (18\\text{ kN/m}^3 \\times 0.225\\text{m} \\times 2.7\\text{m}) \\times 4.5\\text{m perimeter length} \\times 2\\text{ storeys} = 137.8\\) kN.</li>
+          <li><strong>Beam Self-Weights:</strong> Cumulative beam UDLs \\(= 1.4 \\times 2.43\\text{ kN/m} \\times 4.5\\text{m length} \\times 2\\text{ storeys} = 30.6\\) kN.</li>
+          <li><strong>Column Self-Weight:</strong> \\(1.4 \\times (24\\text{ kN/m}^3 \\times 0.225\\text{m} \\times 0.225\\text{m} \\times 3.0\\text{m height} \\times 2\\text{ storeys}) = 10.2\\) kN.</li>
         </ul>
         <div class="formula">Total accumulated ULS axial force: N<sub>u</sub> = 43.5 + 54.7 + 137.8 + 30.6 + 10.2 = 276.8 kN</div>
 
@@ -1267,14 +1281,14 @@ Link ratio: A<sub>sv</sub>/s<sub>v</sub> = 0.4b<sub>w</sub> / (0.95f<sub>yv</sub
 -166169 = 299.45 A<sub>sc</sub> &rarr; A<sub>sc</sub> is negative (Concrete alone carries the load!)</div>
         <p>Since concrete alone can carry the axial load, minimum steel reinforcement governs:</p>
         <div class="formula">A<sub>sc,min</sub> = 0.4% &times; A<sub>g</sub> = 0.004 &times; 50625 = 202.5 mm&sup2;</div>
-        <p>Provide **4Y12 longitudinal bars** (\(A_{sc,prov} = 452\) mm&sup2;), placing one bar in each corner. For column links, spacing \(s_v \le 12 \times \phi_{main} = 144\)mm, cap at 300mm. Provide **Y6 links @ 125mm spacing**.</p>
+        <p>Provide **4Y12 longitudinal bars** (\\(A_{sc,prov} = 452\\) mm&sup2;), placing one bar in each corner. For column links, spacing \\(s_v \\le 12 \\times \\phi_{main} = 144\\)mm, cap at 300mm. Provide **Y6 links @ 125mm spacing**.</p>
 
         <h3>5 &mdash; Foundation Pad Footing F1 Design</h3>
         <p>Sizing the square concrete foundation pad directly below Column C1:</p>
         
         <ul class="check">
-          <li><strong>Soil Bearing Capacity:</strong> \(q_{allow} = 150\) kN/m&sup2; (Working capacity).</li>
-          <li><strong>Service Load at Base:</strong> \(N_{service} \approx N_u / 1.45 = 276.8 / 1.45 = 190.9\) kN. Add \(10\%\) for footing self-weight allowance \(\approx 210\) kN.</li>
+          <li><strong>Soil Bearing Capacity:</strong> \\(q_{allow} = 150\\) kN/m&sup2; (Working capacity).</li>
+          <li><strong>Service Load at Base:</strong> \\(N_{service} \\approx N_u / 1.45 = 276.8 / 1.45 = 190.9\\) kN. Add \\(10\\%\\) for footing self-weight allowance \\(\\approx 210\\) kN.</li>
         </ul>
 
         <h4>Footing Sizing &amp; Base Area</h4>
@@ -1386,11 +1400,12 @@ For a square footing, width B = &radic;1.4 &asymp; 1.18m &rarr; Specify a 1.2m &
 </div><!-- /app-layout -->
 
 
-<a href="/community-notes" class="floating-faq-btn" aria-label="Open Community Notes">
+<a href="journal.html" class="floating-faq-btn" aria-label="Open FAQ Journal">
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: -1px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-  Community Notes
+  FAQ Journal
 </a>
-` }} />
+
+      ` }} />
 
       {/* Floating Ask Question Button (Left) */}
       <button

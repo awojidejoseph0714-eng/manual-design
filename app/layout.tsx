@@ -17,6 +17,15 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+        <script dangerouslySetInnerHTML={{__html: `
+          window.MathJax = {
+            tex: {
+              inlineMath: [['\\\\(', '\\\\)']],
+              displayMath: [['\\\\[', '\\\\]']]
+            }
+          };
+        `}} />
+        <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       </head>
       <body>
         {children}

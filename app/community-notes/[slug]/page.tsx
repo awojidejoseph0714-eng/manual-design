@@ -89,10 +89,10 @@ const defaultFAQs: Record<string, Article> = {
              <h3>1. The Mathematics of Cantilever Deflection</h3>
              <p>To understand the difference, let's compare the elastic deflection formulas for a simply supported beam versus a cantilever of the same span length (L) under a uniform load (w):</p>
              <ul>
-               <li><strong>Simply Supported Beam Deflection:</strong> \[\delta_{ss} = \frac{5 w L^4}{384 EI}\]</li>
-               <li><strong>Cantilever Beam Deflection:</strong> \[\delta_{cant} = \frac{w L^4}{8 EI}\]</li>
+               <li><strong>Simply Supported Beam Deflection:</strong> \\[\\delta_{ss} = \\frac{5 w L^4}{384 EI}\\]</li>
+               <li><strong>Cantilever Beam Deflection:</strong> \\[\\delta_{cant} = \\frac{w L^4}{8 EI}\\]</li>
              </ul>
-             <p>Dividing the cantilever deflection by the simply supported deflection reveals: \[\frac{\delta_{cant}}{\delta_{ss}} = \frac{1/8}{5/384} = \frac{48}{5} = 9.6\]</p>
+             <p>Dividing the cantilever deflection by the simply supported deflection reveals: \\[\\frac{\\delta_{cant}}{\\delta_{ss}} = \\frac{1/8}{5/384} = \\frac{48}{5} = 9.6\\]</p>
              <p>For the exact same span length, cross-section, and loading, a cantilever will deflect <strong>9.6 times more</strong> than a simply supported beam! Additionally, any rotation at the fixed support translates directly into linear deflection at the free tip.</p>
              <h3>2. Span-to-Depth Ratio Limits</h3>
              <p>To control this deflection, BS 8110 imposes strict span-to-effective-depth (L/d) limits:</p>
@@ -112,7 +112,7 @@ const defaultFAQs: Record<string, Article> = {
              <ul>
                <li>It determines the depth of the concrete compression block in flexure.</li>
                <li>It governs the ultimate concrete shear stress capacity (v_c) per Cl. 3.4.5.4.</li>
-               <li>It determines the axial capacity of columns: \[N = 0.4 f_{cu} A_c + 0.8 f_y A_{sc}\]</li>
+               <li>It determines the axial capacity of columns: \\[N = 0.4 f_{cu} A_c + 0.8 f_y A_{sc}\\]</li>
              </ul>
              <h3>2. Indirect Loading Effects</h3>
              <p>While the weight of concrete is assumed constant at <strong>24 kN/m³</strong> (or 25 kN/m³ for fully reinforced concrete) regardless of whether it is Grade 20, 25, or 35, the choice of <em>f_cu</em> indirectly changes the dead load calculations:</p>

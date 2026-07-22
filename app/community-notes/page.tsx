@@ -259,7 +259,7 @@ export default function CommunityNotes() {
     <div className="notes-container" style={{ padding: '60px 0 100px 0', fontFamily: 'Inter, sans-serif' }}>
       
       {/* Header */}
-      <header style={{ borderBottom: '1px solid var(--rule)', paddingBottom: '30px', marginBottom: '40px' }}>
+      <div style={{ borderBottom: '1px solid var(--rule)', paddingBottom: '30px', marginBottom: '40px' }}>
         <Link href="/" className="back-btn" style={{ textDecoration: 'none', color: 'var(--mid-gray)', fontSize: '11px', fontFamily: 'var(--mono)', letterSpacing: '0.1em', display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '24px' }}>
           &larr; Back to Manual Design Guide
         </Link>
@@ -267,7 +267,7 @@ export default function CommunityNotes() {
         <p style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--mid-gray)', letterSpacing: '0.04em' }}>
           Browse shared knowledge, clarifications, and textbooks guidance
         </p>
-      </header>
+      </div>
 
       {/* Search and Tag Controls */}
       <div style={{ marginBottom: '40px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
