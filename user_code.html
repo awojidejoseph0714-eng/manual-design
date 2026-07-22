@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ═══════════ PRIMARY SEO ═══════════ -->
+<title>BS 8110 Manual Design Guide — Slabs, Beams &amp; Columns (Step-by-Step)</title>
+<meta name="description" content="A complete step-by-step manual design reference for structural concrete under BS 8110-1:1997. Covers one-way and two-way slabs, flat slabs, beams, and columns — from load take-down to detailing.">
+<meta name="keywords" content="BS 8110, structural concrete design, manual design, slab design, beam design, column design, RC design, reinforced concrete, BS 8110-1 1997, limit state design, one-way slab, two-way slab, flat slab, ribbed slab, cantilever, K value, lever arm, shear design, deflection check, punching shear, biaxial bending">
+<meta name="author" content="Manual Structural Design">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<link rel="canonical" href="https://manual-design.vercel.app/">
+
+<!-- ═══════════ FAVICON ═══════════ -->
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+
+<!-- ═══════════ OPEN GRAPH (Facebook / LinkedIn) ═══════════ -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manual-design.vercel.app/">
+<meta property="og:title" content="BS 8110 Manual Design Guide — Slabs, Beams &amp; Columns">
+<meta property="og:description" content="A complete step-by-step manual design reference for structural concrete under BS 8110-1:1997. Covers slabs, beams, and columns from load take-down to detailing.">
+<meta property="og:image" content="https://manual-design.vercel.app/favicon.png">
+<meta property="og:site_name" content="Manual Structural Design">
+<meta property="og:locale" content="en_GB">
+
+<!-- ═══════════ TWITTER / X CARD ═══════════ -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BS 8110 Manual Design Guide — Slabs, Beams &amp; Columns">
+<meta name="twitter:description" content="Complete step-by-step manual design reference for RC concrete under BS 8110-1:1997.">
+<meta name="twitter:image" content="https://manual-design.vercel.app/favicon.png">
+
+<!-- ═══════════ JSON-LD STRUCTURED DATA ═══════════ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "BS 8110 Manual Design Guide — Slabs, Beams & Columns",
+  "description": "A complete step-by-step manual design reference for structural reinforced concrete under BS 8110-1:1997, covering slabs, beams, and columns from load take-down to detailing.",
+  "url": "https://manual-design.vercel.app/",
+  "image": "https://manual-design.vercel.app/favicon.png",
+  "author": {
+    "@type": "Organization",
+    "name": "Manual Structural Design"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Manual Structural Design",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://manual-design.vercel.app/favicon.png"
+    }
+  },
+  "datePublished": "2026-07-20",
+  "dateModified": "2026-07-20",
+  "inLanguage": "en-GB",
+  "about": [
+    { "@type": "Thing", "name": "Reinforced Concrete Design" },
+    { "@type": "Thing", "name": "BS 8110-1:1997" },
+    { "@type": "Thing", "name": "Structural Engineering" },
+    { "@type": "Thing", "name": "Slab Design" },
+    { "@type": "Thing", "name": "Beam Design" },
+    { "@type": "Thing", "name": "Column Design" }
+  ],
+  "teaches": "Structural concrete manual design under BS 8110-1:1997",
+  "educationalLevel": "Professional"
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'neutral',
+      securityLevel: 'loose',
+      flowchart: {
+        useMaxWidth: true,
+        htmlLabels: true
+      }
+    });
+  });
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* =====================================
+   DESIGN TOKENS - Notion-like B&W
+   ===================================== */
+:root {
+  --black:      #0f0f0f;
+  --off-black:  #1a1a1a;
+  --dark-gray:  #2d2d2d;
+  --mid-gray:   #6b6b6b;
+  --rule:       #e0e0e0;
+  --light-bg:   #f7f7f5;
+  --white:      #ffffff;
+  --highlight:  #f0f0ee;
+  --code-bg:    #1a1a1a;
+  --code-text:  #e8e8e8;
+  --code-yellow:#e8d088;
+
+  /* Signature accent — blueprint chalk-line blue, used sparingly */
+  --accent:      #2f5d8a;
+  --accent-dim:  #7996ab;
+  --accent-bg:   #eef3f7;
+
+  /* Per-Part identity colors (sidebar rail + part-bar underline only) */
+  --part-0: #6b6b6b;
+  --part-1: #2f5d8a;
+  --part-2: #8a5a2f;
+  --part-3: #4f7a52;
+  --part-4: #0f0f0f;
+
+  --mono:  'IBM Plex Mono', monospace;
+  --serif: 'Lora', serif;
+  --sans:  'Inter', sans-serif;
+
+  --radius: 4px;
+  --max-w:  860px;
+}
+
+/* =====================================
+   RESET & BASE
+   ===================================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  background: var(--white);
+  color: var(--black);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute; top: -999px; left: 0;
+  background: var(--black); color: var(--white);
+  padding: 8px 16px; font-family: var(--mono); font-size: 12px;
+  z-index: 9999;
+}
+.skip-link:focus { top: 0; }
+
+/* =====================================
+   APP LAYOUT
+   ===================================== */
+.app-layout { display: flex; min-height: 100vh; }
+
+/* =====================================
+   SIDEBAR
+   ===================================== */
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: var(--light-bg);
+  border-right: 1px solid var(--rule);
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+.sidebar-header {
+  padding: 20px 16px 14px;
+  border-bottom: 1px solid var(--rule);
+  flex-shrink: 0;
+}
+.sidebar-logo {
+  font-family: var(--mono);
+  font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--mid-gray); margin-bottom: 4px;
+}
+.sidebar-title { font-size: 13px; font-weight: 600; color: var(--black); line-height: 1.4; }
+
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 0 32px; }
+
+.sidebar-section-label {
+  font-family: var(--mono);
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--mid-gray); padding: 14px 16px 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.sidebar-section-label::before {
+  content: ''; display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--dot, var(--black)); border-radius: 50%; flex-shrink: 0;
+}
+.sidebar-nav > .sidebar-section-label:nth-of-type(1) { --dot: var(--part-0); }
+.sidebar-nav > .sidebar-section-label:nth-of-type(2) { --dot: var(--part-1); }
+.sidebar-nav > .sidebar-section-label:nth-of-type(3) { --dot: var(--part-2); }
+.sidebar-nav > .sidebar-section-label:nth-of-type(4) { --dot: var(--part-3); }
+.sidebar-nav > .sidebar-section-label:nth-of-type(5) { --dot: var(--part-4); }
+
+.sidebar-link {
+  display: flex; align-items: center;
+  padding: 5px 14px 5px 24px;
+  font-size: 13px; color: var(--dark-gray);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  line-height: 1.45; gap: 6px;
+}
+.sidebar-link:hover { background: var(--rule); color: var(--black); }
+.sidebar-link.active { background: var(--accent-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+.link-num {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--mid-gray); flex-shrink: 0; width: 20px;
+}
+.sidebar-link:hover .link-num,
+.sidebar-link.active .link-num { color: inherit; opacity: 0.6; }
+
+/* Sidebar overlay (mobile) */
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 99;
+  backdrop-filter: blur(2px);
+}
+.sidebar-overlay.visible { display: block; }
+
+/* Mobile FAB toggle */
+.mobile-menu-toggle {
+  display: none;
+  position: fixed; bottom: 20px; right: 20px; z-index: 200;
+  background: var(--accent); color: var(--white);
+  border: none; width: 48px; height: 48px; border-radius: 50%;
+  cursor: pointer; font-size: 18px;
+  align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+.mobile-menu-toggle:hover { transform: scale(1.08); }
+
+/* =====================================
+   MAIN CONTENT
+   ===================================== */
+.main-content { margin-left: 260px; flex: 1; min-width: 0; }
+
+/* =====================================
+   HEADER
+   ===================================== */
+header {
+  background: var(--black); color: var(--white);
+  padding: 52px 24px 44px;
+  position: relative; overflow: hidden;
+}
+header::after {
+  content: ''; position: absolute; right: -80px; top: -80px;
+  width: 300px; height: 300px; border-radius: 50%;
+  border: 60px solid rgba(255,255,255,0.04);
+  pointer-events: none;
+}
+.header-inner { max-width: var(--max-w); margin: 0 auto; }
+.header-label {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4); margin-bottom: 14px;
+}
+header h1 {
+  font-family: var(--serif);
+  font-size: clamp(22px, 5vw, 40px);
+  font-weight: 400; line-height: 1.2; margin-bottom: 12px;
+}
+header h1 em { font-style: italic; color: rgba(255,255,255,0.65); }
+.header-sub {
+  font-family: var(--mono); font-size: 11px;
+  color: rgba(255,255,255,0.3); letter-spacing: 0.05em;
+}
+
+/* =====================================
+   PART DIVIDER BAR
+   ===================================== */
+.part-bar {
+  background: var(--black); color: var(--white);
+  padding: 18px 24px;
+  border-bottom: 3px solid var(--stripe, rgba(255,255,255,0.06));
+}
+.part-bar.p0 { --stripe: var(--part-0); }
+.part-bar.p1 { --stripe: var(--part-1); }
+.part-bar.p2 { --stripe: var(--part-2); }
+.part-bar.p3 { --stripe: var(--part-3); }
+.part-bar.p4 { --stripe: var(--part-4); }
+.part-bar-inner {
+  max-width: var(--max-w); margin: 0 auto;
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+}
+.part-label {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.08);
+  padding: 2px 8px; border-radius: 2px; white-space: nowrap;
+}
+.part-bar h2 {
+  font-family: var(--serif);
+  font-size: clamp(17px, 3vw, 23px); font-weight: 400;
+}
+
+/* =====================================
+   SECTION NAV BAR
+   ===================================== */
+.section-nav {
+  border-bottom: 1px solid var(--rule);
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  background: var(--white);
+  position: sticky; top: 0; z-index: 50;
+}
+.section-nav::-webkit-scrollbar { display: none; }
+.section-nav-inner {
+  display: flex; padding: 0;
+  max-width: var(--max-w); margin: 0 auto;
+}
+.section-nav a {
+  display: block; padding: 10px 13px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em;
+  color: var(--mid-gray); text-decoration: none; white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s; flex-shrink: 0;
+}
+.section-nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* =====================================
+   CONTENT WRAP
+   ===================================== */
+.content-wrap {
+  max-width: var(--max-w); margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* =====================================
+   TOC BLOCK
+   ===================================== */
+.toc-block {
+  max-width: var(--max-w); margin: 0 auto;
+  padding: 36px 24px 0;
+}
+.toc-heading {
+  font-family: var(--serif); font-size: clamp(18px, 3vw, 22px); font-weight: 400;
+  border-bottom: 1px solid var(--black); padding-bottom: 10px; margin-bottom: 18px;
+}
+.toc-intro { font-size: 14px; color: var(--dark-gray); margin-bottom: 18px; line-height: 1.8; }
+.toc-note {
+  background: var(--accent-bg); border: 1px solid #d5e2ec;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; font-size: 13.5px; margin-bottom: 24px; line-height: 1.7;
+}
+.toc-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden;
+  margin-bottom: 10px;
+}
+.toc-card { background: var(--white); padding: 16px 18px; border-top: 3px solid var(--black); }
+.toc-card:nth-child(1) { border-top-color: var(--part-0); }
+.toc-card:nth-child(2) { border-top-color: var(--part-1); }
+.toc-card:nth-child(3) { border-top-color: var(--part-2); }
+.toc-card:nth-child(4) { border-top-color: var(--part-3); }
+.toc-card:nth-child(5) { border-top-color: var(--part-4); }
+.toc-card h3 {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--mid-gray); margin-bottom: 10px; font-weight: 600;
+}
+.toc-card ol { padding-left: 14px; font-size: 12.5px; color: var(--dark-gray); }
+.toc-card ol li { margin-bottom: 4px; }
+.toc-card a { color: var(--dark-gray); text-decoration: none; }
+.toc-card a:hover { color: var(--accent); text-decoration: underline; }
+
+/* =====================================
+   SECTIONS
+   ===================================== */
+section { margin-bottom: 48px; padding-top: 28px; }
+
+.section-header {
+  display: flex; align-items: flex-start;
+  gap: 12px; margin-bottom: 20px;
+  border-bottom: 1px solid var(--black); padding-bottom: 10px;
+}
+.step-num {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--mid-gray); letter-spacing: 0.08em; white-space: nowrap;
+  border: 1px solid var(--rule); padding: 2px 7px; border-radius: 2px;
+  flex-shrink: 0; margin-top: 3px;
+}
+.section-header h2 {
+  font-family: var(--serif);
+  font-size: clamp(17px, 2.5vw, 21px); font-weight: 400; line-height: 1.25;
+}
+
+h3 {
+  font-family: var(--sans); font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--mid-gray); margin: 22px 0 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+h3::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+
+p { margin-bottom: 12px; font-size: 14.5px; color: var(--dark-gray); }
+p strong { color: var(--black); }
+
+/* =====================================
+   CLAUSE BADGE
+   ===================================== */
+.cl {
+  display: inline-block; background: var(--accent); color: var(--white);
+  font-family: var(--mono); font-size: 9.5px; padding: 1px 6px;
+  border-radius: 2px; letter-spacing: 0.04em;
+  vertical-align: middle; margin: 0 2px; white-space: nowrap;
+}
+
+/* =====================================
+   CARDS
+   ===================================== */
+.card {
+  background: var(--light-bg); border: 1px solid var(--rule);
+  border-left: 3px solid var(--black);
+  padding: 14px 18px; margin: 14px 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.card.blue { border-left-color: var(--mid-gray); }
+.card p { margin-bottom: 6px; font-size: 13.5px; }
+.card p:last-child { margin-bottom: 0; }
+
+/* =====================================
+   FORMULA / CODE BLOCK
+   ===================================== */
+.formula {
+  background: var(--code-bg); color: var(--code-text);
+  font-family: var(--mono); font-size: 12.5px;
+  padding: 16px 20px; margin: 14px 0;
+  border-radius: var(--radius); line-height: 2;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  white-space: pre;
+}
+.formula span { color: var(--code-yellow); }
+
+/* =====================================
+   TABLES
+   ===================================== */
+.table-wrap {
+  width: 100%; overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 14px 0;
+  border-radius: var(--radius);
+  border: 1px solid var(--rule);
+}
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 380px; }
+th {
+  background: var(--black); color: var(--white);
+  text-align: left; padding: 9px 14px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.07em; font-weight: 400;
+}
+td { padding: 9px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; color: var(--dark-gray); }
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) td { background: var(--light-bg); }
+
+@media (max-width: 600px) {
+  .table-wrap { border-radius: 0; margin: 14px -16px; width: calc(100% + 32px); }
+}
+
+/* =====================================
+   CHECKLIST
+   ===================================== */
+ul.check {
+  list-style: none; padding: 0;
+  border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; margin: 14px 0;
+}
+ul.check li {
+  padding: 10px 14px 10px 40px; position: relative;
+  border-bottom: 1px solid var(--rule);
+  font-size: 13.5px; color: var(--dark-gray); line-height: 1.55;
+}
+ul.check li:last-child { border-bottom: none; }
+ul.check li::before {
+  content: '□'; position: absolute; left: 14px;
+  color: var(--mid-gray); font-size: 14px; line-height: 1.55;
+}
+
+/* =====================================
+   FLOW DIAGRAM
+   ===================================== */
+.flow {
+  display: flex; flex-direction: column; gap: 0; margin: 16px 0;
+  border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden;
+}
+.flow-item {
+  background: var(--white); padding: 12px 16px;
+  font-size: 13px; position: relative; border-bottom: 1px solid var(--rule);
+}
+.flow-item:last-child { border-bottom: none; }
+.flow-item::after {
+  content: '↓'; display: block;
+  text-align: center; color: var(--mid-gray); font-size: 14px;
+  padding: 4px 0 2px; background: var(--light-bg);
+  border-bottom: 1px solid var(--rule);
+  margin: 12px -16px -12px; position: relative;
+}
+.flow-item:last-child::after { display: none; }
+.flow-item strong {
+  font-family: var(--mono); font-size: 10px; color: var(--mid-gray);
+  display: block; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;
+}
+
+/* =====================================
+   WARNING
+   ===================================== */
+.warn {
+  background: #fbf3e7; border: 1px solid #ecdcc0;
+  border-left: 3px solid #a8641f;
+  padding: 12px 16px; margin: 14px 0; font-size: 13px;
+  color: #5c4322; border-radius: 0 var(--radius) var(--radius) 0; line-height: 1.7;
+}
+.warn::before { content: '\26A0 '; font-size: 14px; color: #a8641f; }
+
+/* =====================================
+   TYPE CARD (slab types etc.)
+   ===================================== */
+.type-card {
+  border: 1px solid var(--rule); border-top: 2px solid var(--black);
+  padding: 16px 18px; margin: 12px 0;
+  border-radius: 0 0 var(--radius) var(--radius); background: var(--white);
+}
+.type-card .meta {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--mid-gray); margin-bottom: 6px;
+}
+.type-card h3 {
+  font-family: var(--serif); font-size: 16px; font-weight: 400;
+  text-transform: none; letter-spacing: 0; color: var(--black);
+  margin: 0 0 6px; display: block;
+}
+.type-card h3::after { display: none; }
+.type-card p { margin-bottom: 0; font-size: 13px; }
+
+/* =====================================
+   BUILDING CARD
+   ===================================== */
+.building-card {
+  background: var(--black); color: var(--white);
+  padding: 22px 24px; margin: 14px 0; border-radius: var(--radius);
+}
+.building-card h3 {
+  color: rgba(255,255,255,0.5); margin-top: 0; margin-bottom: 10px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.building-card h3::after { background: rgba(255,255,255,0.1); }
+.building-card ul { padding-left: 18px; }
+.building-card ul li { margin-bottom: 6px; font-size: 13.5px; line-height: 1.65; color: rgba(255,255,255,0.82); }
+.building-card .cl { background: rgba(255,255,255,0.15); color: var(--white); }
+
+/* =====================================
+   GLOSSARY
+   ===================================== */
+.glossary {
+  border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden;
+}
+.glossary dt {
+  font-family: var(--mono); font-size: 12px; color: var(--black);
+  padding: 8px 14px 2px; border-top: 1px solid var(--rule); background: var(--light-bg);
+}
+.glossary dt:first-child { border-top: none; }
+.glossary dd { margin: 0; padding: 2px 14px 8px; font-size: 13px; color: var(--dark-gray); background: var(--white); }
+
+/* =====================================
+   BACK TO TOP
+   ===================================== */
+.backtotop { margin: 8px 0 0; text-align: right; }
+.backtotop a {
+  font-family: var(--mono); font-size: 10px; color: var(--mid-gray);
+  text-decoration: none; letter-spacing: 0.05em;
+  border: 1px solid var(--rule); padding: 3px 10px; border-radius: 20px;
+  transition: all 0.15s; display: inline-block;
+}
+.backtotop a:hover { background: var(--accent); color: var(--white); border-color: var(--accent); }
+
+/* =====================================
+   FOOTER
+   ===================================== */
+footer {
+  background: var(--black); color: rgba(255,255,255,0.28);
+  font-family: var(--mono); font-size: 10.5px;
+  text-align: center; padding: 28px 24px;
+  letter-spacing: 0.08em; border-top: 1px solid var(--off-black);
+}
+
+/* =====================================
+   RESPONSIVE — TABLET (<=900px)
+   ===================================== */
+@media (max-width: 900px) {
+  .sidebar { width: 230px; min-width: 230px; }
+  .main-content { margin-left: 230px; }
+}
+
+/* =====================================
+   RESPONSIVE — MOBILE (<=700px)
+   ===================================== */
+@media (max-width: 700px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 280px;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-left: 0; }
+  .mobile-menu-toggle { display: flex; }
+
+  header { padding: 32px 16px 28px; }
+  .toc-block { padding: 24px 16px 0; }
+  .content-wrap { padding: 0 16px 80px; }
+  .part-bar { padding: 14px 16px; }
+  .section-nav a { padding: 10px 11px; font-size: 10px; }
+  .formula { font-size: 11px; padding: 12px 14px; }
+  .section-header { flex-direction: column; gap: 6px; }
+  .step-num { align-self: flex-start; }
+}
+ 
+/* =====================================
+   MERMAID DIAGRAM WRAPPER
+   ===================================== */
+.mermaid {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin: 18px 0;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+ 
+/* =====================================
+   PRINT
+   ===================================== */
+@media print {
+  .sidebar, .mobile-menu-toggle, .sidebar-overlay, .mermaid { display: none; }
+  .main-content { margin-left: 0; }
+  .section-nav { position: static; }
+  .formula { background: #f0f0f0; color: #111; border: 1px solid #ccc; white-space: pre-wrap; }
+  th { background: #111; color: #fff; -webkit-print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<button class="mobile-menu-toggle" id="menuToggle" aria-label="Open navigation" onclick="toggleSidebar()">&#9776;</button>
+
+<div class="app-layout">
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Guide navigation">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">BS 8110 &middot; 1997</div>
+      <div class="sidebar-title">Manual Design Guide</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Part 0 &mdash; Fundamentals</div>
+      <a class="sidebar-link" href="#f0"><span class="link-num">0.0</span>Design Objectives (ULS, SLS)</a>
+      <a class="sidebar-link" href="#f1"><span class="link-num">0.1</span>Materials &amp; Safety Factors</a>
+      <a class="sidebar-link" href="#f2"><span class="link-num">0.2</span>Load Types &amp; Combinations</a>
+      <a class="sidebar-link" href="#f3"><span class="link-num">0.3</span>Universal Flexure Method</a>
+      <a class="sidebar-link" href="#f4"><span class="link-num">0.4</span>The Overall Load Path</a>
+
+      <div class="sidebar-section-label">Part 1 &mdash; Slabs</div>
+      <a class="sidebar-link" href="#s1"><span class="link-num">S1</span>Slab Types</a>
+      <a class="sidebar-link" href="#s2"><span class="link-num">S2</span>Loading</a>
+      <a class="sidebar-link" href="#s3"><span class="link-num">S3</span>Trial Depth</a>
+      <a class="sidebar-link" href="#s4"><span class="link-num">S4</span>One-Way Slabs</a>
+      <a class="sidebar-link" href="#s5"><span class="link-num">S5</span>Two-Way Simply Supported</a>
+      <a class="sidebar-link" href="#s6"><span class="link-num">S6</span>Two-Way Restrained</a>
+      <a class="sidebar-link" href="#s7"><span class="link-num">S7</span>Flat Slabs</a>
+      <a class="sidebar-link" href="#s8"><span class="link-num">S8</span>Ribbed / Waffle</a>
+      <a class="sidebar-link" href="#s9"><span class="link-num">S9</span>Cantilever Slabs</a>
+      <a class="sidebar-link" href="#s10"><span class="link-num">S10</span>Flexure, Shear &amp; Deflection</a>
+      <a class="sidebar-link" href="#s11"><span class="link-num">S11</span>Detailing</a>
+
+      <div class="sidebar-section-label">Part 2 &mdash; Beams</div>
+      <a class="sidebar-link" href="#b1"><span class="link-num">B1</span>Classification</a>
+      <a class="sidebar-link" href="#b2"><span class="link-num">B2</span>Loading</a>
+      <a class="sidebar-link" href="#b3"><span class="link-num">B3</span>Effective Span &amp; Depth</a>
+      <a class="sidebar-link" href="#b4"><span class="link-num">B4</span>Analysis Method</a>
+      <a class="sidebar-link" href="#b5"><span class="link-num">B5</span>Moments &amp; Shear</a>
+      <a class="sidebar-link" href="#b6"><span class="link-num">B6</span>Flexural Design</a>
+      <a class="sidebar-link" href="#b7"><span class="link-num">B7</span>Shear Design</a>
+      <a class="sidebar-link" href="#b8"><span class="link-num">B8</span>Deflection</a>
+      <a class="sidebar-link" href="#b9"><span class="link-num">B9</span>Cracking</a>
+      <a class="sidebar-link" href="#b10"><span class="link-num">B10</span>Detailing</a>
+
+      <div class="sidebar-section-label">Part 3 &mdash; Columns</div>
+      <a class="sidebar-link" href="#c1"><span class="link-num">C1</span>Classification</a>
+      <a class="sidebar-link" href="#c2"><span class="link-num">C2</span>Loading</a>
+      <a class="sidebar-link" href="#c3"><span class="link-num">C3</span>Slenderness</a>
+      <a class="sidebar-link" href="#c4"><span class="link-num">C4</span>Design Moments</a>
+      <a class="sidebar-link" href="#c5"><span class="link-num">C5</span>Axial + Uniaxial</a>
+      <a class="sidebar-link" href="#c6"><span class="link-num">C6</span>Biaxial Bending</a>
+      <a class="sidebar-link" href="#c7"><span class="link-num">C7</span>Shear</a>
+      <a class="sidebar-link" href="#c8"><span class="link-num">C8</span>Design Charts</a>
+      <a class="sidebar-link" href="#c9"><span class="link-num">C9</span>Detailing</a>
+
+      <div class="sidebar-section-label">Part 4 &mdash; Building</div>
+      <a class="sidebar-link" href="#building"><span class="link-num">W1</span>Whole-Building Guide</a>
+      <a class="sidebar-link" href="#worked-example"><span class="link-num">W2</span>G+1 Worked Example</a>
+      <a class="sidebar-link" href="#quickref"><span class="link-num">W3</span>Quick Reference</a>
+      <a class="sidebar-link" href="#glossary"><span class="link-num">W4</span>Glossary of Symbols</a>
+    </nav>
+  </aside>
+
+  <!-- ============================= MAIN ============================= -->
+  <div class="main-content" id="main-content">
+
+    <header id="top">
+      <div class="header-inner">
+        <div class="header-label">Structural Concrete &mdash; Complete Manual Design Guide</div>
+        <h1>Designing Slabs, Beams &amp; Columns<br><em>by Hand, under BS 8110</em></h1>
+        <p class="header-sub">BS 8110-1:1997 &middot; One combined, step-by-step reference from load take-down to detailing</p>
+      </div>
+    </header>
+
+    <!-- TOC -->
+    <div class="toc-block">
+      <h2 class="toc-heading">How This Guide Works</h2>
+      <p class="toc-intro">Structures are designed top-down but built bottom-up. Load starts at the roof, works its way through <strong>slabs</strong>, into <strong>beams</strong>, down through <strong>columns</strong>, and finally into the foundations. This guide follows that exact order &mdash; read it in sequence the first time, then use it as a lookup reference afterward.</p>
+      <div class="toc-note"><strong>New to manual design?</strong> Read Part 0 (Fundamentals) first &mdash; it explains the shared vocabulary (characteristic vs design load, partial safety factors, K and lever-arm method) used identically in every part that follows.</div>
+      <div class="toc-grid">
+        <div class="toc-card">
+          <h3>Part 0 &mdash; Fundamentals</h3>
+          <ol>
+            <li><a href="#f0">Design Objectives (ULS, SLS)</a></li>
+            <li><a href="#f1">Materials &amp; Partial Safety Factors</a></li>
+            <li><a href="#f2">Load Types &amp; Combinations</a></li>
+            <li><a href="#f3">The Universal Flexure Method</a></li>
+            <li><a href="#f4">The Overall Load Path</a></li>
+          </ol>
+        </div>
+        <div class="toc-card">
+          <h3>Part 1 &mdash; Slabs</h3>
+          <ol>
+            <li><a href="#s1">Slab Types</a></li>
+            <li><a href="#s2">Loading</a></li>
+            <li><a href="#s3">Trial Depth</a></li>
+            <li><a href="#s4">One-Way Slabs</a></li>
+            <li><a href="#s5">Two-Way Simply Supported</a></li>
+            <li><a href="#s6">Two-Way Restrained</a></li>
+            <li><a href="#s7">Flat Slabs</a></li>
+            <li><a href="#s8">Ribbed / Waffle Slabs</a></li>
+            <li><a href="#s9">Cantilever Slabs</a></li>
+            <li><a href="#s10">Flexure, Shear &amp; Deflection</a></li>
+            <li><a href="#s11">Detailing</a></li>
+          </ol>
+        </div>
+        <div class="toc-card">
+          <h3>Part 2 &mdash; Beams</h3>
+          <ol>
+            <li><a href="#b1">Classification</a></li>
+            <li><a href="#b2">Loading</a></li>
+            <li><a href="#b3">Effective Span &amp; Depth</a></li>
+            <li><a href="#b4">Analysis Method</a></li>
+            <li><a href="#b5">Moments &amp; Shear</a></li>
+            <li><a href="#b6">Flexural Design</a></li>
+            <li><a href="#b7">Shear Design</a></li>
+            <li><a href="#b8">Deflection</a></li>
+            <li><a href="#b9">Cracking</a></li>
+            <li><a href="#b10">Detailing</a></li>
+          </ol>
+        </div>
+        <div class="toc-card lighter">
+          <h3>Part 3 &mdash; Columns</h3>
+          <ol>
+            <li><a href="#c1">Classification</a></li>
+            <li><a href="#c2">Loading</a></li>
+            <li><a href="#c3">Slenderness</a></li>
+            <li><a href="#c4">Design Moments</a></li>
+            <li><a href="#c5">Axial + Uniaxial</a></li>
+            <li><a href="#c6">Biaxial Bending</a></li>
+            <li><a href="#c7">Shear</a></li>
+            <li><a href="#c8">Design Charts</a></li>
+            <li><a href="#c9">Detailing</a></li>
+          </ol>
+        </div>
+        <div class="toc-card lighter">
+          <h3>Part 4 &mdash; Building</h3>
+          <ol>
+            <li><a href="#building">Whole-Building Guidelines</a></li>
+            <li><a href="#worked-example">G+1 Worked Example</a></li>
+            <li><a href="#quickref">Combined Quick Reference</a></li>
+            <li><a href="#glossary">Glossary of Symbols</a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== PART 0 ===================== -->
+    <div class="part-bar p0">
+      <div class="part-bar-inner">
+        <span class="part-label">Part 0</span>
+        <h2>Fundamentals &mdash; Read This First</h2>
+      </div>
+    </div>
+
+    <div class="content-wrap" style="padding-top:24px;">
+
+      <section id="f0">
+        <div class="section-header">
+          <span class="step-num">0.0</span>
+          <h2>Objectives of Structural Design (ULS, SLS &amp; Durability)</h2>
+        </div>
+        <p>Structural design is the systematic engineering process of sizing members and specifying reinforcement to ensure a building safely transfers loads to the ground without excessive deformation, cracking, or deterioration over its design life.</p>
+        
+        <h3>1 &mdash; Ultimate Limit State (ULS)</h3>
+        <p>ULS is concerned with safety and structural collapse. The structure must be capable of carrying the design ultimate loads without failure. This includes checks for bending (flexure), shear, axial compression, torsion, and overall sliding/overturning stability.</p>
+
+        <h3>2 &mdash; Serviceability Limit State (SLS)</h3>
+        <p>SLS is concerned with the appearance, comfort, and usability of the structure under service (working) loads. In concrete, the primary checks are:<br>
+        &bull; <strong>Deflection:</strong> Slabs and beams must not sag excessively (visual alarm, damage to partitions). Controlled via span-to-depth limits.<br>
+        &bull; <strong>Cracking:</strong> Cracks must be limited to prevent water ingress and steel corrosion. Controlled via maximum bar spacing limits.</p>
+
+        <h3>3 &mdash; Durability &amp; Fire Protection <span class="cl">Table 3.3 / Table 3.4</span></h3>
+        <p>Concrete acts as a protective shield for steel. Cover is chosen based on exposure class (mild, moderate, severe) and required fire resistance (typically 1 to 2 hours). Minimum cover ranges from 20mm (mild internal exposure) up to 40mm+ (severe external/coastal exposure).</p>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="f1">
+        <div class="section-header">
+          <span class="step-num">0.1</span>
+          <h2>Materials and Partial Safety Factors</h2>
+        </div>
+        <p>Every calculation in this guide uses <strong>limit state design</strong>: real (characteristic) loads and material strengths are each factored to a "worst realistic case" before being combined, so the structure has a built-in margin against the things you can't predict exactly.</p>
+        <h3>Material Partial Safety Factors <span class="cl">Table 2.2</span></h3>
+        <div class="table-wrap"><table>
+          <tr><th>Material / Effect</th><th>&gamma;<sub>m</sub> (Post-Amd 3, 2005)</th><th>&gamma;<sub>m</sub> (Pre-Amd 3, Original)</th></tr>
+          <tr><td>Concrete in flexure or axial load</td><td>1.5</td><td>1.5</td></tr>
+          <tr><td>Reinforcement (all types)</td><td>1.05</td><td>1.15</td></tr>
+          <tr><td>Concrete in shear (design v<sub>c</sub>)</td><td>1.25</td><td>1.25</td></tr>
+        </table></div>
+        <h3>Common Material Grades</h3>
+        <div class="formula">f<sub>cu</sub> = characteristic concrete cube strength &mdash; typically 25, 30, 35, 40 N/mm&sup2; for RC frames
+f<sub>y</sub>  = characteristic steel yield strength &mdash; 460 N/mm&sup2; (high yield), 250 N/mm&sup2; (mild steel)
+E<sub>c</sub>  &asymp; 20 to 30 kN/mm&sup2; depending on f<sub>cu</sub> (for deflection/stiffness calcs)</div>
+        <div class="card"><p><strong>Design strength</strong> is characteristic strength &divide; &gamma;<sub>m</sub>. For reinforcement, BS 8110-1:1997 Amendment 3 changed &gamma;<sub>m</sub> from 1.15 to 1.05. This gives:<br>
+        &bull; <strong>Post-Amendment 3 (Current):</strong> Design steel stress = 1/1.05 &times; f<sub>y</sub> &asymp; <strong>0.95f<sub>y</sub></strong><br>
+        &bull; <strong>Pre-Amendment 3 (Older/Textbook):</strong> Design steel stress = 1/1.15 &times; f<sub>y</sub> &asymp; <strong>0.87f<sub>y</sub></strong> (still widely taught in many universities)</p></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="f2">
+        <div class="section-header">
+          <span class="step-num">0.2</span>
+          <h2>Load Types and Combinations</h2>
+        </div>
+        <div class="table-wrap"><table>
+          <tr><th>Symbol</th><th>Meaning</th></tr>
+          <tr><td>G<sub>k</sub></td><td>Characteristic dead load &mdash; self-weight of the structure and everything permanently attached (finishes, services, fixed partitions)</td></tr>
+          <tr><td>Q<sub>k</sub></td><td>Characteristic imposed (live) load &mdash; people, furniture, movable partitions, stored goods; from <span class="cl">BS 6399-1</span></td></tr>
+          <tr><td>W<sub>k</sub></td><td>Characteristic wind load &mdash; from <span class="cl">BS 6399-2</span> (or CP3 Ch V historically)</td></tr>
+        </table></div>
+        <h3>Standard Load Combinations <span class="cl">Table 2.1</span></h3>
+        <div class="formula">Dead + Imposed:           1.4G<sub>k</sub> + 1.6Q<sub>k</sub>
+Dead + Wind:              1.0G<sub>k</sub> + 1.4W<sub>k</sub>  (or 1.4G<sub>k</sub> + 1.4W<sub>k</sub>, check both)
+Dead + Imposed + Wind:    1.2G<sub>k</sub> + 1.2Q<sub>k</sub> + 1.2W<sub>k</sub>
+Minimum dead (uplift / stability / pattern): 1.0G<sub>k</sub></div>
+        <p>This guide's slab, beam, and column sections deal mainly with the gravity case (1.4G<sub>k</sub>+1.6Q<sub>k</sub>) since that governs the great majority of members; wind/lateral combinations are flagged specifically wherever they matter.</p>
+        <div class="warn">Always check the minimum-load case (1.0G<sub>k</sub> only, no live load) on adjacent spans too &mdash; for continuous members this "unloaded span" case, paired with a fully loaded neighbouring span, often produces the true maximum hogging moment at a support.</div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="f3">
+        <div class="section-header">
+          <span class="step-num">0.3</span>
+          <h2>The Universal Flexure Method (K and Lever Arm)</h2>
+        </div>
+        <p>Slabs, beams, and columns (in bending) are all ultimately designed for flexure the same way. Learn this once; it is reused in every part of this guide.</p>
+        <div class="flow">
+          <div class="flow-item"><strong>1 &mdash; Compute K</strong>K = M / (bd&sup2;f<sub>cu</sub>) &mdash; a non-dimensional measure of how hard the section is being worked.</div>
+          <div class="flow-item"><strong>2 &mdash; Compare to K'</strong>K' = 0.156 (singly reinforced limit, no redistribution). If K &le; K', section works with tension steel alone. If K &gt; K', compression steel is needed too.</div>
+          <div class="flow-item"><strong>3 &mdash; Find lever arm z</strong>z = d[0.5 + &radic;(0.25 &minus; K/0.9)], capped at 0.95d.</div>
+          <div class="flow-item"><strong>4 &mdash; Solve for steel</strong>A<sub>s</sub> = M / (0.95f<sub>y</sub>z) &mdash; or M / (0.87f<sub>y</sub>z) for pre-amendment.</div>
+          <div class="flow-item"><strong>5 &mdash; Check limits</strong>Compare A<sub>s</sub> against the minimum and maximum steel percentages for that member type.</div>
+        </div>
+        <div class="card blue"><p>For slabs, b = 1000mm (design a 1-metre-wide strip). For beams, b = actual beam width (or effective flange width for T/L sections). For columns, the same stress-block logic underlies the design charts in Part 3, just combined with axial load N.</p></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="f4">
+        <div class="section-header">
+          <span class="step-num">0.4</span>
+          <h2>The Overall Load Path</h2>
+        </div>
+        <div class="formula">Roof / Floor Finishes  &rarr;  SLAB  &rarr;  BEAM (if present)  &rarr;  COLUMN / WALL  &rarr;  FOUNDATION  &rarr;  Ground</div>
+        <p>Every load starts as a pressure (kN/m&sup2;) on a slab. The slab converts that into a line load (kN/m) on the beams or a point reaction on columns (flat slabs). Beams convert their loads into point reactions on columns. Columns accumulate every floor above them into a single growing axial force that ends up at the foundation.</p>
+        <div class="card"><p><strong>Design sequence for a real building:</strong> (1) sketch the load path floor by floor, (2) design the roof slab, (3) design the beams the roof slab lands on, (4) repeat downward floor by floor, (5) accumulate column loads all the way to foundation level, (6) design the foundations last.</p></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+    </div>
+
+    <!-- ===================== PART 1 — SLABS ===================== -->
+    <div class="part-bar p1">
+      <div class="part-bar-inner"><span class="part-label">Part 1</span><h2>Slabs &mdash; All Types</h2></div>
+    </div>
+    <nav class="section-nav" aria-label="Slabs sections">
+      <div class="section-nav-inner">
+        <a href="#s1">S1 &middot; Types</a>
+        <a href="#s2">S2 &middot; Loading</a>
+        <a href="#s3">S3 &middot; Depth</a>
+        <a href="#s4">S4 &middot; One-Way</a>
+        <a href="#s5">S5 &middot; 2-Way Simple</a>
+        <a href="#s6">S6 &middot; 2-Way Restrained</a>
+        <a href="#s7">S7 &middot; Flat</a>
+        <a href="#s8">S8 &middot; Ribbed</a>
+        <a href="#s9">S9 &middot; Cantilever</a>
+        <a href="#s10">S10 &middot; Design</a>
+        <a href="#s11">S11 &middot; Detailing</a>
+      </div>
+    </nav>
+
+    <div class="content-wrap">
+
+      <section id="s1">
+        <div class="section-header"><span class="step-num">STEP S1</span><h2>Identify the Slab Type</h2></div>
+        <p>Slab analysis branches early. Identify the type first; everything downstream (coefficients, formulas, detailing) follows from this choice.</p>
+        <div class="type-card">
+          <div class="meta">TYPE 1 &mdash; Cl. 3.5.2</div>
+          <h3>One-Way Spanning Solid Slab</h3>
+          <p>Supported on two opposite sides only, or l<sub>y</sub>/l<sub>x</sub> &gt; 2.0 on four sides.</p>
+        </div>
+        <div class="type-card">
+          <div class="meta">TYPE 2 &mdash; Cl. 3.5.3.3</div>
+          <h3>Two-Way Spanning Slab, Simply Supported (Corners Free to Lift)</h3>
+          <p>Rectangular panel, l<sub>y</sub>/l<sub>x</sub> &le; 2.0, supported on four sides with no corner restraint.</p>
+        </div>
+        <div class="type-card">
+          <div class="meta">TYPE 3 &mdash; Cl. 3.5.3.4 / 3.5.3.5</div>
+          <h3>Two-Way Spanning Slab, Restrained (Corners Held Down)</h3>
+          <p>Cast monolithically with edge beams/adjacent panels so corners are restrained &mdash; torsion reinforcement provided at corners. The most common floor slab type in framed buildings.</p>
+        </div>
+        <div class="type-card">
+          <div class="meta">TYPE 4 &mdash; Cl. 3.7</div>
+          <h3>Flat Slab (Supported Directly on Columns)</h3>
+          <p>No beams &mdash; slab bears directly on columns, with or without drop panels or column heads. Punching shear is a governing case.</p>
+        </div>
+        <div class="type-card">
+          <div class="meta">TYPE 5 &mdash; Cl. 3.6</div>
+          <h3>Ribbed / Waffle Slab</h3>
+          <p>Closely spaced ribs (one-way) or ribs in both directions (waffle) with a thin top flange &mdash; reduces self-weight on longer spans.</p>
+        </div>
+        <div class="type-card">
+          <div class="meta">TYPE 6 &mdash; Cl. 3.4.6</div>
+          <h3>Cantilever Slab</h3>
+          <p>Projects beyond its support with a free edge &mdash; balconies, canopies. Deflection and top-steel anchorage govern.</p>
+        </div>
+        <div class="card"><p><strong>Slab Load Distribution Schematics:</strong></p>
+        
+        <h4>One-Way Slab Load Path (UDL to Beams)</h4>
+        <div class="mermaid">
+        graph TD
+            Slab[One-Way Slab panel: L_y/L_x > 2] -->|50% load| Beam1[Beam A: UDL load = n * L_x / 2]
+            Slab -->|50% load| Beam2[Beam B: UDL load = n * L_x / 2]
+        </div>
+
+        <h4>Two-Way Slab Load Path (Trapezoidal &amp; Triangular)</h4>
+        <div class="mermaid">
+        graph TD
+            Slab2[Two-Way Slab panel: L_y/L_x <= 2] -->|Short Edges| Tri[Triangular load on Short Beams]
+            Slab2 -->|Long Edges| Trap[Trapezoidal load on Long Beams]
+            Tri -->|V_x| ShortBeam[V_x = beta_vx * n * L_x]
+            Trap -->|V_y| LongBeam[V_y = beta_vy * n * L_x]
+        </div>
+        </div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="s2">
+        <div class="section-header"><span class="step-num">STEP S2</span><h2>Determine the Loading</h2></div>
+        <h3>2.1 &mdash; List Every Load Source (per m&sup2; of slab)</h3>
+        <div class="table-wrap"><table>
+          <tr><th>Source</th><th>How to Calculate</th><th>Load Type</th></tr>
+          <tr><td>Self-weight of slab</td><td>&gamma;<sub>c</sub> &times; h (&gamma;<sub>c</sub> &asymp; 24 kN/m&sup3;, h in m)</td><td>Dead (Gk)</td></tr>
+          <tr><td>Screed / finishes</td><td>&gamma;<sub>screed</sub> &times; thickness (50mm screed &asymp; 1.1 kN/m&sup2;)</td><td>Dead (Gk)</td></tr>
+          <tr><td>Ceiling / services</td><td>Nominal 0.25&ndash;0.5 kN/m&sup2;</td><td>Dead (Gk)</td></tr>
+          <tr><td>Lightweight movable partitions</td><td>UDL allowance per <span class="cl">BS 6399-1 Cl. 5.2</span>, typically 1.0 kN/m&sup2;</td><td>Dead (Gk)</td></tr>
+          <tr><td>Imposed / live load</td><td><span class="cl">BS 6399-1 Table 1</span> (office 2.5, residential 1.5 kN/m&sup2;)</td><td>Live (Qk)</td></tr>
+        </table></div>
+        <div class="formula">n = 1.4G<sub>k</sub> + 1.6Q<sub>k</sub>   (ultimate design load per m&sup2;)
+n<sub>min</sub> = 1.0G<sub>k</sub>   (minimum load case &mdash; pattern loading)</div>
+        <h3>2.2 &mdash; Worked Example</h3>
+        <div class="table-wrap"><table>
+          <tr><th>Item</th><th>Value</th></tr>
+          <tr><td>Slab self-weight, 175mm: 24 &times; 0.175</td><td>4.2 kN/m&sup2;</td></tr>
+          <tr><td>Screed + finishes</td><td>1.2 kN/m&sup2;</td></tr>
+          <tr><td>Ceiling/services allowance</td><td>0.3 kN/m&sup2;</td></tr>
+          <tr><td>Partition allowance</td><td>1.0 kN/m&sup2;</td></tr>
+          <tr><td><strong>Total G<sub>k</sub></strong></td><td><strong>6.7 kN/m&sup2;</strong></td></tr>
+          <tr><td><strong>Q<sub>k</sub> (office)</strong></td><td><strong>2.5 kN/m&sup2;</strong></td></tr>
+          <tr><td><strong>Ultimate n = 1.4(6.7) + 1.6(2.5)</strong></td><td><strong>13.4 kN/m&sup2;</strong></td></tr>
+        </table></div>
+        <div class="warn">Common mistake: applying the wrong imposed load category everywhere without checking individual panels for plant rooms, storage, or corridor loading (which are higher per BS 6399-1 Table 1).</div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="s3">
+        <div class="section-header"><span class="step-num">STEP S3</span><h2>Trial Thickness and Effective Depth</h2></div>
+        <h3>Preliminary Sizing — Basic Span/Overall Depth Ratios <span class="cl">Cl. 3.4.6 / Table 3.9</span></h3>
+        <div class="table-wrap"><table>
+          <tr><th>Slab Type</th><th>Typical span/depth (overall h)</th><th>Basic span/eff. depth</th></tr>
+          <tr><td>One-way, simply supported</td><td>span / 25 to span / 28</td><td>20</td></tr>
+          <tr><td>One-way, continuous</td><td>span / 30 to span / 32</td><td>26</td></tr>
+          <tr><td>Two-way, restrained (short span)</td><td>span / 34 to span / 38</td><td>26</td></tr>
+          <tr><td>Flat slab, no drops</td><td>span / 28 to span / 32</td><td>24</td></tr>
+          <tr><td>Flat slab, with drop panels</td><td>span / 32 to span / 36</td><td>26</td></tr>
+          <tr><td>Ribbed / waffle slab</td><td>span / 22 to span / 26</td><td>20–26 (as one-way)</td></tr>
+          <tr><td>Cantilever slab</td><td>span / 8 to span / 10</td><td>7</td></tr>
+        </table></div>
+   
+<truncated 67546 bytes>
+
+NOTE: The output was truncated because it was too long. Use a more targeted query or a smaller range to get the information you need.

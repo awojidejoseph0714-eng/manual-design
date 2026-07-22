@@ -104,6 +104,18 @@
   --code-text:  #e8e8e8;
   --code-yellow:#e8d088;
 
+  /* Signature accent — blueprint chalk-line blue, used sparingly */
+  --accent:      #2f5d8a;
+  --accent-dim:  #7996ab;
+  --accent-bg:   #eef3f7;
+
+  /* Per-Part identity colors (sidebar rail + part-bar underline only) */
+  --part-0: #6b6b6b;
+  --part-1: #2f5d8a;
+  --part-2: #8a5a2f;
+  --part-3: #4f7a52;
+  --part-4: #0f0f0f;
+
   --mono:  'IBM Plex Mono', monospace;
   --serif: 'Lora', serif;
   --sans:  'Inter', sans-serif;
@@ -180,20 +192,26 @@ body {
 }
 .sidebar-section-label::before {
   content: ''; display: inline-block;
-  width: 5px; height: 5px;
-  background: var(--black); border-radius: 50%; flex-shrink: 0;
+  width: 6px; height: 6px;
+  background: var(--dot, var(--black)); border-radius: 50%; flex-shrink: 0;
 }
+.sidebar-nav > .sidebar-section-label:nth-of-type(1) { --dot: var(--part-0); }
+.sidebar-nav > .sidebar-section-label:nth-of-type(2) { --dot: var(--part-1); }
+.sidebar-nav > .sidebar-section-label:nth-of-type(3) { --dot: var(--part-2); }
+.sidebar-nav > .sidebar-section-label:nth-of-type(4) { --dot: var(--part-3); }
+.sidebar-nav > .sidebar-section-label:nth-of-type(5) { --dot: var(--part-4); }
 
 .sidebar-link {
   display: flex; align-items: center;
   padding: 5px 14px 5px 24px;
   font-size: 13px; color: var(--dark-gray);
   text-decoration: none;
-  transition: background 0.15s, color 0.15s;
+  border-left: 2px solid transparent;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
   line-height: 1.45; gap: 6px;
 }
 .sidebar-link:hover { background: var(--rule); color: var(--black); }
-.sidebar-link.active { background: var(--black); color: var(--white); }
+.sidebar-link.active { background: var(--accent-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
 .link-num {
   font-family: var(--mono); font-size: 10px;
   color: var(--mid-gray); flex-shrink: 0; width: 20px;
@@ -215,7 +233,7 @@ body {
 .mobile-menu-toggle {
   display: none;
   position: fixed; bottom: 20px; right: 20px; z-index: 200;
-  background: var(--black); color: var(--white);
+  background: var(--accent); color: var(--white);
   border: none; width: 48px; height: 48px; border-radius: 50%;
   cursor: pointer; font-size: 18px;
   align-items: center; justify-content: center;
@@ -266,8 +284,13 @@ header h1 em { font-style: italic; color: rgba(255,255,255,0.65); }
 .part-bar {
   background: var(--black); color: var(--white);
   padding: 18px 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 3px solid var(--stripe, rgba(255,255,255,0.06));
 }
+.part-bar.p0 { --stripe: var(--part-0); }
+.part-bar.p1 { --stripe: var(--part-1); }
+.part-bar.p2 { --stripe: var(--part-2); }
+.part-bar.p3 { --stripe: var(--part-3); }
+.part-bar.p4 { --stripe: var(--part-4); }
 .part-bar-inner {
   max-width: var(--max-w); margin: 0 auto;
   display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
@@ -306,7 +329,7 @@ header h1 em { font-style: italic; color: rgba(255,255,255,0.65); }
   border-bottom: 2px solid transparent;
   transition: color 0.15s, border-color 0.15s; flex-shrink: 0;
 }
-.section-nav a:hover { color: var(--black); border-bottom-color: var(--black); }
+.section-nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
 /* =====================================
    CONTENT WRAP
@@ -329,8 +352,8 @@ header h1 em { font-style: italic; color: rgba(255,255,255,0.65); }
 }
 .toc-intro { font-size: 14px; color: var(--dark-gray); margin-bottom: 18px; line-height: 1.8; }
 .toc-note {
-  background: var(--light-bg); border: 1px solid var(--rule);
-  border-left: 3px solid var(--black);
+  background: var(--accent-bg); border: 1px solid #d5e2ec;
+  border-left: 3px solid var(--accent);
   border-radius: 0 var(--radius) var(--radius) 0;
   padding: 14px 18px; font-size: 13.5px; margin-bottom: 24px; line-height: 1.7;
 }
@@ -340,8 +363,12 @@ header h1 em { font-style: italic; color: rgba(255,255,255,0.65); }
   border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden;
   margin-bottom: 10px;
 }
-.toc-card { background: var(--white); padding: 16px 18px; border-top: 2px solid var(--black); }
-.toc-card.lighter { border-top-color: var(--mid-gray); }
+.toc-card { background: var(--white); padding: 16px 18px; border-top: 3px solid var(--black); }
+.toc-card:nth-child(1) { border-top-color: var(--part-0); }
+.toc-card:nth-child(2) { border-top-color: var(--part-1); }
+.toc-card:nth-child(3) { border-top-color: var(--part-2); }
+.toc-card:nth-child(4) { border-top-color: var(--part-3); }
+.toc-card:nth-child(5) { border-top-color: var(--part-4); }
 .toc-card h3 {
   font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--mid-gray); margin-bottom: 10px; font-weight: 600;
@@ -349,7 +376,7 @@ header h1 em { font-style: italic; color: rgba(255,255,255,0.65); }
 .toc-card ol { padding-left: 14px; font-size: 12.5px; color: var(--dark-gray); }
 .toc-card ol li { margin-bottom: 4px; }
 .toc-card a { color: var(--dark-gray); text-decoration: none; }
-.toc-card a:hover { color: var(--black); text-decoration: underline; }
+.toc-card a:hover { color: var(--accent); text-decoration: underline; }
 
 /* =====================================
    SECTIONS
@@ -387,7 +414,7 @@ p strong { color: var(--black); }
    CLAUSE BADGE
    ===================================== */
 .cl {
-  display: inline-block; background: var(--black); color: var(--white);
+  display: inline-block; background: var(--accent); color: var(--white);
   font-family: var(--mono); font-size: 9.5px; padding: 1px 6px;
   border-radius: 2px; letter-spacing: 0.04em;
   vertical-align: middle; margin: 0 2px; white-space: nowrap;
@@ -490,12 +517,12 @@ ul.check li::before {
    WARNING
    ===================================== */
 .warn {
-  background: var(--light-bg); border: 1px solid var(--rule);
-  border-left: 3px solid var(--dark-gray);
+  background: #fbf3e7; border: 1px solid #ecdcc0;
+  border-left: 3px solid #a8641f;
   padding: 12px 16px; margin: 14px 0; font-size: 13px;
-  color: var(--dark-gray); border-radius: 0 var(--radius) var(--radius) 0; line-height: 1.7;
+  color: #5c4322; border-radius: 0 var(--radius) var(--radius) 0; line-height: 1.7;
 }
-.warn::before { content: '\26A0 '; font-size: 14px; color: var(--black); }
+.warn::before { content: '\26A0 '; font-size: 14px; color: #a8641f; }
 
 /* =====================================
    TYPE CARD (slab types etc.)
@@ -556,7 +583,7 @@ ul.check li::before {
   border: 1px solid var(--rule); padding: 3px 10px; border-radius: 20px;
   transition: all 0.15s; display: inline-block;
 }
-.backtotop a:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+.backtotop a:hover { background: var(--accent); color: var(--white); border-color: var(--accent); }
 
 /* =====================================
    FOOTER
@@ -776,7 +803,7 @@ footer {
     </div>
 
     <!-- ===================== PART 0 ===================== -->
-    <div class="part-bar">
+    <div class="part-bar p0">
       <div class="part-bar-inner">
         <span class="part-label">Part 0</span>
         <h2>Fundamentals &mdash; Read This First</h2>
@@ -880,7 +907,7 @@ Minimum dead (uplift / stability / pattern): 1.0G<sub>k</sub></div>
     </div>
 
     <!-- ===================== PART 1 — SLABS ===================== -->
-    <div class="part-bar">
+    <div class="part-bar p1">
       <div class="part-bar-inner"><span class="part-label">Part 1</span><h2>Slabs &mdash; All Types</h2></div>
     </div>
     <nav class="section-nav" aria-label="Slabs sections">
@@ -1127,7 +1154,7 @@ Check: actual span/d &le; allowable span/d</div>
     </div>
 
     <!-- ===================== PART 2 — BEAMS ===================== -->
-    <div class="part-bar">
+    <div class="part-bar p2">
       <div class="part-bar-inner"><span class="part-label">Part 2</span><h2>Beams &mdash; All Types</h2></div>
     </div>
     <nav class="section-nav" aria-label="Beams sections">
@@ -1363,7 +1390,7 @@ Check: actual span/d &le; allowable span/d</div>
     </div>
 
     <!-- ===================== PART 3 — COLUMNS ===================== -->
-    <div class="part-bar">
+    <div class="part-bar p3">
       <div class="part-bar-inner"><span class="part-label">Part 3</span><h2>Columns &mdash; All Types</h2></div>
     </div>
     <nav class="section-nav" aria-label="Columns sections">
@@ -1524,7 +1551,7 @@ Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</di
     </div>
 
     <!-- ===================== PART 4 ===================== -->
-    <div class="part-bar">
+    <div class="part-bar p4">
       <div class="part-bar-inner"><span class="part-label">Part 4</span><h2>Whole-Building Guidance &amp; Quick Reference</h2></div>
     </div>
 
