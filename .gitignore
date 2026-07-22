@@ -1,1 +1,14 @@
+node_modules
+.next
 .vercel
+*.log
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+index.html.bak
+journal.html.bak
+check.js
+install.js
+rename_html.js
+convert_to_next.js

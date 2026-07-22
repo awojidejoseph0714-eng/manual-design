@@ -11,16 +11,16 @@ function run(cmd) {
   }
 }
 
-// Staging changes
+// 1. Stage changes
 run('git add .');
 
-// Committing changes
-run('git commit -m "Incorporated user styling adjustments for Notion-like B&W and per-part identity color coding"');
+// 2. Commit changes
+run('git commit -m "Migrated to Next.js App Router, integrated Sanity CMS, added Community Notes directory, secure Admin Portal, and spam protections"');
 
-// Pushing to GitHub
+// 3. Push to master on GitHub
 run('git push origin master');
 
-// Deploying to production on Vercel
+// 4. Promote to production on Vercel
 run('vercel --prod --yes --scope awojidejoseph0714-8286s-projects');
 
-console.log('Successfully completed all git and deployment tasks!');
+console.log('Successfully completed all git and Next.js deployment tasks!');
