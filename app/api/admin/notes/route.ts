@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
 
     if (action === 'create' || action === 'edit') {
       const title = formData.get('title') as string;
+      const subtitle = formData.get('subtitle') as string;
       const slugValue = formData.get('slug') as string;
       const date = formData.get('date') as string;
       const tagsString = formData.get('tags') as string;
@@ -85,6 +86,7 @@ export async function POST(req: NextRequest) {
       const docData: any = {
         _type: 'communityNote',
         title,
+        subtitle,
         slug: { _type: 'slug', current: cleanSlug },
         date: date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
         tags,

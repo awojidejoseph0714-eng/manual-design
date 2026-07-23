@@ -14,6 +14,7 @@ interface Submission {
 interface Note {
   _id: string;
   title: string;
+  subtitle?: string;
   slug: { current: string };
   date: string;
   tags?: string[];
@@ -46,15 +47,22 @@ export default function AdminPortal() {
   const [promoteTitle, setPromoteTitle] = useState('');
   const [promoteQuestion, setPromoteQuestion] = useState('');
 
-  // Notes Form states
+  // ── SUBSTACK-INSPIRED NOTE EDITOR STATES ──
   const [noteFormOpen, setNoteFormOpen] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [noteTitle, setNoteTitle] = useState('');
+  const [noteSubtitle, setNoteSubtitle] = useState('');
   const [noteSlug, setNoteSlug] = useState('');
   const [noteDate, setNoteDate] = useState('');
-  const [noteTags, setNoteTags] = useState('');
+  const [noteTagsList, setNoteTagsList] = useState<string[]>([]);
+  const [newTagInput, setNewTagInput] = useState('');
+  const [showTagInput, setShowTagInput] = useState(false);
   const [noteAnswer, setNoteAnswer] = useState('');
   const [noteImageFile, setNoteImageFile] = useState<File | null>(null);
+  const [saveStatusIndicator, setSaveStatusIndicator] = useState('Saved');
+  
+  // Settings Pane State inside editor
+  const [showSettingsDrawer, setShowSettingsDrawer] = useState(false);
 
   // Template Save state
   const [saveStatus, setSaveStatus] = useState('');
@@ -130,31 +138,37 @@ export default function AdminPortal() {
     setPromoteTitle(words.endsWith('?') ? words : words + '...');
   };
 
+  // Editor Actions
   const openNewNoteForm = () => {
     setEditingNoteId(null);
     setNoteTitle('');
+    setNoteSubtitle('');
     setNoteSlug('');
     setNoteDate(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }));
-    setNoteTags('General');
+    setNoteTagsList(['General']);
     setNoteAnswer('');
     setNoteImageFile(null);
+    setSaveStatusIndicator('Saved');
+    setShowSettingsDrawer(false);
     setNoteFormOpen(true);
   };
 
   const openEditNoteForm = (note: Note) => {
     setEditingNoteId(note._id);
     setNoteTitle(note.title);
+    setNoteSubtitle(note.subtitle || '');
     setNoteSlug(note.slug?.current || '');
     setNoteDate(note.date || '');
-    setNoteTags(note.tags?.join(', ') || '');
+    setNoteTagsList(note.tags || []);
     setNoteAnswer(note.answer || '');
     setNoteImageFile(null);
+    setSaveStatusIndicator('Saved');
+    setShowSettingsDrawer(false);
     setNoteFormOpen(true);
   };
 
-  const handleNoteSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const handleNoteSubmit = async () => {
+    setSaveStatusIndicator('Saving...');
     try {
       const formData = new FormData();
       formData.append('action', editingNoteId ? 'edit' : 'create');
@@ -162,9 +176,10 @@ export default function AdminPortal() {
         formData.append('noteId', editingNoteId);
       }
       formData.append('title', noteTitle);
-      formData.append('slug', noteSlug);
+      formData.append('subtitle', noteSubtitle);
+      formData.append('slug', noteSlug || noteTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
       formData.append('date', noteDate);
-      formData.append('tags', noteTags);
+      formData.append('tags', noteTagsList.join(','));
       formData.append('answer', noteAnswer);
       if (noteImageFile) {
         formData.append('image', noteImageFile);
@@ -178,12 +193,12 @@ export default function AdminPortal() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to save note');
 
+      setSaveStatusIndicator('Saved');
       setNoteFormOpen(false);
       await fetchInitialData();
     } catch (err: any) {
       alert(err.message);
-    } finally {
-      setLoading(false);
+      setSaveStatusIndicator('Error');
     }
   };
 
@@ -223,6 +238,22 @@ export default function AdminPortal() {
     } catch (err: any) {
       setSaveStatus(`Error: ${err.message}`);
     }
+  };
+
+  // Helper formatting injectors
+  const injectFormat = (tagOpen: string, tagClose: string) => {
+    const textarea = document.getElementById('editor-textarea') as HTMLTextAreaElement;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const selected = text.substring(start, end);
+    const replacement = tagOpen + selected + tagClose;
+    setNoteAnswer(text.substring(0, start) + replacement + text.substring(end));
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + tagOpen.length, start + tagOpen.length + selected.length);
+    }, 50);
   };
 
   return (
@@ -270,8 +301,7 @@ export default function AdminPortal() {
           fontSize: '11px',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
-          cursor: 'pointer',
-          transition: 'all 0.15s ease'
+          cursor: 'pointer'
         }}>Sign Out</button>
       </div>
 
@@ -477,7 +507,7 @@ export default function AdminPortal() {
         </>
       )}
 
-      {/* ── TAB 2: COMMUNITY NOTES CMS ── */}
+      {/* ── TAB 2: COMMUNITY NOTES ── */}
       {activeTab === 'notes' && (
         <>
           <div style={{
@@ -584,7 +614,7 @@ export default function AdminPortal() {
         </>
       )}
 
-      {/* ── TAB 3: TEMPLATE EDITOR ── */}
+      {/* ── TAB 3: MAIN PAGE EDITOR ── */}
       {activeTab === 'template' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={{
@@ -652,7 +682,7 @@ export default function AdminPortal() {
         </div>
       )}
 
-      {/* ── MODAL: CONVERT SUBMISSION TO NOTE DRAFT ── */}
+      {/* ── CONVERT SUBMISSION TO NOTE DRAFT MODAL ── */}
       {promoteId && (
         <div style={{
           position: 'fixed',
@@ -739,234 +769,435 @@ export default function AdminPortal() {
         </div>
       )}
 
-      {/* ── MODAL: CREATE / EDIT NOTE FORM ── */}
+      {/* ── SUBSTACK / MEDIUM INSPIRED FULL SCREEN WRITING EDITOR WORKSPACE ── */}
       {noteFormOpen && (
         <div style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(0,0,0,0.5)',
+          background: '#0a0a0a',
+          zIndex: 2000,
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '20px'
+          flexDirection: 'column',
+          color: '#e5e5e5',
+          fontFamily: 'Inter, -apple-system, sans-serif'
         }}>
+          
+          {/* Top dark minimal header / formatting bar */}
           <div style={{
-            background: '#ffffff',
-            border: '1px solid #111111',
-            padding: '36px',
-            width: '100%',
-            maxWidth: '680px',
-            maxHeight: '90vh',
-            overflowY: 'auto'
+            height: '56px',
+            borderBottom: '1px solid #222222',
+            padding: '0 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: '#0a0a0a',
+            userSelect: 'none'
           }}>
-            <h3 style={{
-              fontFamily: 'Lora, serif',
-              fontSize: '24px',
-              fontWeight: '400',
-              marginBottom: '24px'
+            
+            {/* Left controls: Close and Status */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <button
+                onClick={() => setNoteFormOpen(false)}
+                aria-label="Back to dashboard"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#999999',
+                  cursor: 'pointer',
+                  fontSize: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '4px'
+                }}
+              >
+                &larr;
+              </button>
+              <span style={{
+                fontFamily: 'IBM Plex Mono, monospace',
+                fontSize: '11px',
+                color: '#666666',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}>
+                <span style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  backgroundColor: saveStatusIndicator === 'Saving...' ? '#ff9f0a' : saveStatusIndicator === 'Error' ? '#ff453a' : '#30d158'
+                }}></span>
+                {saveStatusIndicator}
+              </span>
+            </div>
+
+            {/* Middle formatting action bar */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              backgroundColor: '#161616',
+              padding: '4px 8px',
+              borderRadius: '6px',
+              border: '1px solid #222222'
             }}>
-              {editingNoteId ? 'Edit Community Note' : 'Create Community Note'}
-            </h3>
-
-            <form onSubmit={handleNoteSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <button type="button" onClick={() => injectFormat('<strong>', '</strong>')} title="Bold" style={{ background: 'transparent', border: 'none', color: '#e5e5e5', padding: '6px 10px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', fontFamily: 'monospace' }}>B</button>
+              <button type="button" onClick={() => injectFormat('<em>', '</em>')} title="Italic" style={{ background: 'transparent', border: 'none', color: '#e5e5e5', padding: '6px 10px', fontSize: '12px', fontStyle: 'italic', cursor: 'pointer', fontFamily: 'monospace' }}>I</button>
+              <button type="button" onClick={() => injectFormat('<del>', '</del>')} title="Strike" style={{ background: 'transparent', border: 'none', color: '#e5e5e5', padding: '6px 10px', fontSize: '12px', textDecoration: 'line-through', cursor: 'pointer', fontFamily: 'monospace' }}>S</button>
+              <button type="button" onClick={() => injectFormat('<code>', '</code>')} title="Code inline" style={{ background: 'transparent', border: 'none', color: '#e5e5e5', padding: '6px 8px', fontSize: '11px', cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace' }}>&lt;&gt;</button>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '10px',
-                    fontFamily: 'IBM Plex Mono, monospace',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    marginBottom: '8px',
-                    fontWeight: 600
-                  }}>Title</label>
-                  <input
-                    type="text"
-                    required
-                    value={noteTitle}
-                    onChange={(e) => {
-                      setNoteTitle(e.target.value);
-                      if (!editingNoteId) {
-                        setNoteSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
-                      }
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #e5e5e5',
-                      fontSize: '13.5px',
-                      outline: 'none',
-                      borderRadius: 0
-                    }}
-                  />
-                </div>
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '10px',
-                    fontFamily: 'IBM Plex Mono, monospace',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    marginBottom: '8px',
-                    fontWeight: 600
-                  }}>Slug</label>
-                  <input
-                    type="text"
-                    required
-                    value={noteSlug}
-                    onChange={(e) => setNoteSlug(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #e5e5e5',
-                      fontSize: '13.5px',
-                      outline: 'none',
-                      borderRadius: 0
-                    }}
-                  />
-                </div>
-              </div>
+              <div style={{ width: '1px', height: '16px', backgroundColor: '#333333', margin: '0 6px' }}></div>
+              
+              <button type="button" onClick={() => injectFormat('<p>', '</p>')} style={{ background: 'transparent', border: 'none', color: '#999999', fontSize: '11px', padding: '4px 6px', cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace' }}>Paragraph</button>
+              <button type="button" onClick={() => injectFormat('<h3>', '</h3>')} style={{ background: 'transparent', border: 'none', color: '#999999', fontSize: '11px', padding: '4px 6px', cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace' }}>H3</button>
+              <button type="button" onClick={() => injectFormat('<div class="formula">', '</div>')} style={{ background: 'transparent', border: 'none', color: '#2f5d8a', fontSize: '11px', padding: '4px 6px', cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace', fontWeight: 600 }}>Formula</button>
+              <button type="button" onClick={() => injectFormat('<ul>\n  <li>', '</li>\n</ul>')} style={{ background: 'transparent', border: 'none', color: '#999999', fontSize: '11px', padding: '4px 6px', cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace' }}>List</button>
+            </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '10px',
-                    fontFamily: 'IBM Plex Mono, monospace',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    marginBottom: '8px',
-                    fontWeight: 600
-                  }}>Publish Date</label>
-                  <input
-                    type="text"
-                    required
-                    value={noteDate}
-                    onChange={(e) => setNoteDate(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #e5e5e5',
-                      fontSize: '13.5px',
-                      outline: 'none',
-                      borderRadius: 0
-                    }}
-                  />
-                </div>
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '10px',
-                    fontFamily: 'IBM Plex Mono, monospace',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    marginBottom: '8px',
-                    fontWeight: 600
-                  }}>Tags (comma separated)</label>
-                  <input
-                    type="text"
-                    value={noteTags}
-                    onChange={(e) => setNoteTags(e.target.value)}
-                    placeholder="e.g. Slabs, BS8110"
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #e5e5e5',
-                      fontSize: '13.5px',
-                      outline: 'none',
-                      borderRadius: 0
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '10px',
+            {/* Right primary action controls */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  // Direct HTML preview in new tab
+                  const win = window.open();
+                  if (win) win.document.write(noteAnswer);
+                }}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#999999',
+                  fontSize: '12px',
                   fontFamily: 'IBM Plex Mono, monospace',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
-                  marginBottom: '8px',
-                  fontWeight: 600
-                }}>Cover Image</label>
+                  cursor: 'pointer',
+                  padding: '6px 12px'
+                }}
+              >
+                Preview
+              </button>
+              <button
+                type="button"
+                onClick={handleNoteSubmit}
+                style={{
+                  background: '#ff6000', // Premium Substack orange accent
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '20px',
+                  padding: '6px 20px',
+                  fontSize: '11px',
+                  fontFamily: 'IBM Plex Mono, monospace',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Continue
+              </button>
+            </div>
+
+          </div>
+
+          {/* Main workspace editing canvas */}
+          <div style={{
+            flex: 1,
+            display: 'flex',
+            overflow: 'hidden',
+            backgroundColor: '#0a0a0a',
+            position: 'relative'
+          }}>
+            
+            {/* Scrollable document paper area */}
+            <div style={{
+              flex: 1,
+              overflowY: 'auto',
+              padding: '60px 40px 120px 40px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}>
+              <div style={{
+                width: '100%',
+                maxWidth: '680px',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                
+                {/* Custom Section indicator block */}
+                <div style={{
+                  display: 'flex',
+                  gap: '12px',
+                  alignItems: 'center',
+                  marginBottom: '32px',
+                  fontSize: '11px',
+                  color: '#666666',
+                  fontFamily: 'IBM Plex Mono, monospace'
+                }}>
+                  <div style={{ border: '1px solid #333333', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer' }}>
+                    Choose a section &nbsp;&nbsp;&darr;
+                  </div>
+                  <div style={{ border: '1px solid #333333', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer' }}>
+                    Email header / footer
+                  </div>
+                </div>
+
+                {/* Main Title Input (No border, transparent, large) */}
                 <input
-                  type="file"
-                  accept="image/*"
+                  type="text"
+                  placeholder="Title"
+                  value={noteTitle}
                   onChange={(e) => {
-                    if (e.target.files && e.target.files.length > 0) {
-                      setNoteImageFile(e.target.files[0]);
+                    setNoteTitle(e.target.value);
+                    if (!editingNoteId) {
+                      setNoteSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
                     }
                   }}
                   style={{
-                    fontFamily: 'IBM Plex Mono, monospace',
-                    fontSize: '12px'
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    color: '#ffffff',
+                    fontSize: '42px',
+                    fontFamily: 'Lora, Georgia, serif',
+                    fontWeight: '400',
+                    marginBottom: '12px',
+                    padding: 0
                   }}
                 />
-                {editingNoteId && <p style={{ fontSize: '11px', color: '#737373', margin: '6px 0 0 0' }}>Leave empty to retain existing cover image.</p>}
-              </div>
 
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '10px',
-                  fontFamily: 'IBM Plex Mono, monospace',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '8px',
-                  fontWeight: 600
-                }}>Explanation / Body (HTML/Text)</label>
-                <textarea
-                  required
-                  rows={8}
-                  value={noteAnswer}
-                  onChange={(e) => setNoteAnswer(e.target.value)}
-                  placeholder="Insert HTML or raw text body content here..."
+                {/* Subtitle Input (No border, transparent) */}
+                <input
+                  type="text"
+                  placeholder="Add a subtitle..."
+                  value={noteSubtitle}
+                  onChange={(e) => setNoteSubtitle(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '12px',
-                    border: '1px solid #e5e5e5',
-                    fontSize: '13.5px',
+                    background: 'transparent',
+                    border: 'none',
                     outline: 'none',
-                    resize: 'vertical',
-                    fontFamily: 'IBM Plex Mono, monospace',
-                    borderRadius: 0
+                    color: '#888888',
+                    fontSize: '20px',
+                    fontFamily: 'Inter, sans-serif',
+                    marginBottom: '24px',
+                    padding: 0
                   }}
                 />
-              </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '12px' }}>
-                <button type="button" onClick={() => setNoteFormOpen(false)} style={{
-                  background: 'transparent',
-                  border: '1px solid #e5e5e5',
-                  cursor: 'pointer',
-                  padding: '8px 20px',
-                  fontFamily: 'IBM Plex Mono, monospace',
-                  fontSize: '11px',
-                  textTransform: 'uppercase'
-                }}>Cancel</button>
-                <button
-                  type="submit"
+                {/* Interactive Tag Pills section */}
+                <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  gap: '8px',
+                  marginBottom: '40px',
+                  borderBottom: '1px solid #222222',
+                  paddingBottom: '16px'
+                }}>
+                  {noteTagsList.map((tag, idx) => (
+                    <span key={idx} style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      background: '#161616',
+                      border: '1px solid #333333',
+                      color: '#cccccc',
+                      padding: '4px 10px',
+                      borderRadius: '16px',
+                      fontSize: '11px',
+                      fontFamily: 'IBM Plex Mono, monospace'
+                    }}>
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => setNoteTagsList(noteTagsList.filter(t => t !== tag))}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#ff453a',
+                          cursor: 'pointer',
+                          padding: 0,
+                          fontSize: '10px',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        &times;
+                      </button>
+                    </span>
+                  ))}
+                  
+                  {showTagInput ? (
+                    <input
+                      type="text"
+                      value={newTagInput}
+                      onChange={(e) => setNewTagInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (newTagInput.trim() && !noteTagsList.includes(newTagInput.trim())) {
+                            setNoteTagsList([...noteTagsList, newTagInput.trim()]);
+                          }
+                          setNewTagInput('');
+                          setShowTagInput(false);
+                        }
+                      }}
+                      onBlur={() => {
+                        if (newTagInput.trim() && !noteTagsList.includes(newTagInput.trim())) {
+                          setNoteTagsList([...noteTagsList, newTagInput.trim()]);
+                        }
+                        setNewTagInput('');
+                        setShowTagInput(false);
+                      }}
+                      autoFocus
+                      style={{
+                        background: 'transparent',
+                        border: '1px solid #333333',
+                        outline: 'none',
+                        color: '#ffffff',
+                        fontSize: '11px',
+                        fontFamily: 'IBM Plex Mono, monospace',
+                        padding: '2px 8px',
+                        borderRadius: '12px',
+                        width: '80px'
+                      }}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowTagInput(true)}
+                      style={{
+                        background: '#161616',
+                        border: '1px dashed #444444',
+                        color: '#888888',
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        padding: 0
+                      }}
+                    >
+                      +
+                    </button>
+                  )}
+                </div>
+
+                {/* Primary Content Writing area */}
+                <textarea
+                  id="editor-textarea"
+                  placeholder="$tart writing..."
+                  value={noteAnswer}
+                  onChange={(e) => setNoteAnswer(e.target.value)}
                   style={{
-                    background: '#2f5d8a',
-                    color: '#ffffff',
+                    width: '100%',
+                    minHeight: '380px',
+                    background: 'transparent',
                     border: 'none',
-                    cursor: 'pointer',
-                    padding: '8px 24px',
+                    outline: 'none',
+                    color: '#e5e5e5',
+                    fontSize: '16.5px',
                     fontFamily: 'IBM Plex Mono, monospace',
-                    fontSize: '11px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em'
+                    lineHeight: '1.8',
+                    resize: 'none',
+                    padding: 0
                   }}
-                >
-                  Save Note
-                </button>
-              </div>
+                />
 
-            </form>
+              </div>
+            </div>
+
+            {/* Bottom floating settings gear */}
+            <button
+              type="button"
+              onClick={() => setShowSettingsDrawer(!showSettingsDrawer)}
+              style={{
+                position: 'absolute',
+                bottom: '24px',
+                right: '24px',
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                background: '#1c1c1e',
+                border: '1px solid #3a3a3c',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+                fontSize: '18px',
+                zIndex: 2100
+              }}
+            >
+              &#9881;
+            </button>
+
+            {/* Settings Right Side Drawer panel */}
+            {showSettingsDrawer && (
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                bottom: 0,
+                width: '320px',
+                background: '#1c1c1e',
+                borderLeft: '1px solid #2c2c2e',
+                padding: '24px',
+                zIndex: 2050,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '24px',
+                overflowY: 'auto'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #2c2c2e', paddingBottom: '12px' }}>
+                  <h4 style={{ margin: 0, fontFamily: 'Lora, serif', fontSize: '16px' }}>Note Settings</h4>
+                  <button onClick={() => setShowSettingsDrawer(false)} style={{ background: 'transparent', border: 'none', color: '#ff453a', cursor: 'pointer', fontSize: '18px' }}>&times;</button>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', color: '#8e8e93', marginBottom: '8px' }}>URL Slug</label>
+                  <input
+                    type="text"
+                    value={noteSlug}
+                    onChange={(e) => setNoteSlug(e.target.value)}
+                    style={{ width: '100%', padding: '8px', background: '#0a0a0a', border: '1px solid #3a3a3c', color: '#ffffff', fontSize: '13px', outline: 'none' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', color: '#8e8e93', marginBottom: '8px' }}>Publish Date</label>
+                  <input
+                    type="text"
+                    value={noteDate}
+                    onChange={(e) => setNoteDate(e.target.value)}
+                    style={{ width: '100%', padding: '8px', background: '#0a0a0a', border: '1px solid #3a3a3c', color: '#ffffff', fontSize: '13px', outline: 'none' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', color: '#8e8e93', marginBottom: '8px' }}>Cover Image File</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        setNoteImageFile(e.target.files[0]);
+                      }
+                    }}
+                    style={{ color: '#ffffff', fontSize: '12px' }}
+                  />
+                  {editingNoteId && <p style={{ fontSize: '10px', color: '#8e8e93', marginTop: '6px' }}>Leave empty to retain existing cover image.</p>}
+                </div>
+              </div>
+            )}
+
           </div>
+
         </div>
       )}
 

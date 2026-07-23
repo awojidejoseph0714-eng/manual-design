@@ -10,6 +10,11 @@ export default {
       validation: Rule => Rule.required(),
     },
     {
+      name: 'subtitle',
+      title: 'Subtitle',
+      type: 'string',
+    },
+    {
       name: 'slug',
       title: 'Slug',
       type: 'slug',
