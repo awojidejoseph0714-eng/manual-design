@@ -47,7 +47,7 @@ export default function AdminPortal() {
   const [promoteTitle, setPromoteTitle] = useState('');
   const [promoteQuestion, setPromoteQuestion] = useState('');
 
-  // ── SUBSTACK-INSPIRED NOTE EDITOR STATES ──
+  // ── RICH NOTE EDITOR STATES ──
   const [noteFormOpen, setNoteFormOpen] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [noteTitle, setNoteTitle] = useState('');
@@ -61,7 +61,9 @@ export default function AdminPortal() {
   const [noteImageFile, setNoteImageFile] = useState<File | null>(null);
   const [saveStatusIndicator, setSaveStatusIndicator] = useState('Saved');
   
-  // Settings Pane State inside editor
+  // Custom UX features: Dark mode toggle & Section dropdowns
+  const [isDarkMode, setIsDarkMode] = useState(false); // Light by default
+  const [showSectionDropdown, setShowSectionDropdown] = useState(false);
   const [showSettingsDrawer, setShowSettingsDrawer] = useState(false);
 
   // Template Save state
@@ -150,6 +152,7 @@ export default function AdminPortal() {
     setNoteImageFile(null);
     setSaveStatusIndicator('Saved');
     setShowSettingsDrawer(false);
+    setIsDarkMode(false); // default light background
     setNoteFormOpen(true);
   };
 
@@ -164,6 +167,7 @@ export default function AdminPortal() {
     setNoteImageFile(null);
     setSaveStatusIndicator('Saved');
     setShowSettingsDrawer(false);
+    setIsDarkMode(false);
     setNoteFormOpen(true);
   };
 
@@ -254,6 +258,51 @@ export default function AdminPortal() {
       textarea.focus();
       textarea.setSelectionRange(start + tagOpen.length, start + tagOpen.length + selected.length);
     }, 50);
+  };
+
+  // Handle uploading asset and inserting HTML image tag in the middle of text selection
+  const handleInlineImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    
+    setSaveStatusIndicator('Uploading image...');
+    try {
+      const formData = new FormData();
+      formData.append('action', 'upload_asset');
+      formData.append('file', file);
+      
+      const res = await fetch('/api/admin/notes', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to upload image');
+      
+      const imgHtml = `\n<img src="${data.url}" alt="${file.name}" style="width: 100%; max-width: 100%; border-radius: 4px; border: 1px solid var(--rule); margin: 24px 0;" />\n`;
+      injectFormat(imgHtml, '');
+      setSaveStatusIndicator('Saved');
+    } catch (err: any) {
+      alert(err.message);
+      setSaveStatusIndicator('Error');
+    }
+  };
+
+  // Predefined structural design components from main page to insert
+  const insertComponentSection = (type: string) => {
+    let htmlSnippet = '';
+    
+    if (type === 'clause_card') {
+      htmlSnippet = `\n<div style="border: 1px solid #e0e0e0; padding: 20px; margin: 24px 0; border-left: 4px solid #2f5d8a; background-color: #fcfcfb;">\n  <span style="font-family: monospace; font-size: 11px; text-transform: uppercase; color: #2f5d8a; font-weight: 600; letter-spacing: 0.05em;">Clause 3.4.5.1 (BS 8110)</span>\n  <h4 style="margin: 8px 0; font-family: Lora, serif; font-size: 16px; font-weight: 500;">Flexural Shear Reinforcement Capacity</h4>\n  <p style="margin: 0; font-size: 13.5px; line-height: 1.6; color: #444444;">Detailed engineering description of the requirements goes here...</p>\n</div>\n`;
+    } else if (type === 'formula_block') {
+      htmlSnippet = `\n<div style="text-align: center; margin: 24px 0; padding: 16px; background-color: #f8fafc; border: 1px solid #e5e5e5; font-family: Lora, serif; font-size: 17px;">\n  \\[ v_c = \\frac{0.79 \\left( \\frac{100 A_s}{b_d} \\right)^{1/3} \\left( \\frac{400}{d} \\right)^{1/4}}{\\gamma_m} \\]\n</div>\n`;
+    } else if (type === 'ref_table') {
+      htmlSnippet = `\n<table style="width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 13px; font-family: monospace;">\n  <thead>\n    <tr style="border-bottom: 2px solid #0f0f0f; text-align: left; background-color: #fcfcfb;">\n      <th style="padding: 8px;">Bar Size (mm)</th>\n      <th style="padding: 8px;">Area (mm²)</th>\n      <th style="padding: 8px;">Spacing Limit (mm)</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr style="border-bottom: 1px solid #e0e0e0;">\n      <td style="padding: 8px;">Y12</td>\n      <td style="padding: 8px;">113</td>\n      <td style="padding: 8px;">300</td>\n    </tr>\n    <tr style="border-bottom: 1px solid #e0e0e0;">\n      <td style="padding: 8px;">Y16</td>\n      <td style="padding: 8px;">201</td>\n      <td style="padding: 8px;">300</td>\n    </tr>\n  </tbody>\n</table>\n`;
+    } else if (type === 'callout_box') {
+      htmlSnippet = `\n<div style="border-left: 3px solid #2f5d8a; background: #eef3f7; color: #2f5d8a; padding: 16px; margin: 24px 0; font-size: 13.5px; line-height: 1.6;">\n  <strong>Important Limit:</strong> Deflection limits must check actual span-to-effective depth ratios against allowable limits.\n</div>\n`;
+    }
+
+    injectFormat(htmlSnippet, '');
+    setShowSectionDropdown(false);
   };
 
   return (
@@ -614,7 +663,7 @@ export default function AdminPortal() {
         </>
       )}
 
-      {/* ── TAB 3: MAIN PAGE EDITOR ── */}
+      {/* ── TAB 3: TEMPLATE EDITOR ── */}
       {activeTab === 'template' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={{
@@ -682,7 +731,7 @@ export default function AdminPortal() {
         </div>
       )}
 
-      {/* ── CONVERT SUBMISSION TO NOTE DRAFT MODAL ── */}
+      {/* ── CONVERT SUBMISSION TO DRAFT MODAL ── */}
       {promoteId && (
         <div style={{
           position: 'fixed',
@@ -769,29 +818,30 @@ export default function AdminPortal() {
         </div>
       )}
 
-      {/* ── SUBSTACK / MEDIUM INSPIRED FULL SCREEN WRITING EDITOR WORKSPACE ── */}
+      {/* ── PREMIUM WORKSPACE EDITOR WITH TOGGLEABLE LIGHT/DARK BACKGROUNDS & SECTION INJECTOR ── */}
       {noteFormOpen && (
         <div style={{
           position: 'fixed',
           inset: 0,
-          background: '#0a0a0a',
+          background: isDarkMode ? '#0a0a0a' : '#fafafa',
           zIndex: 2000,
           display: 'flex',
           flexDirection: 'column',
-          color: '#e5e5e5',
-          fontFamily: 'Inter, -apple-system, sans-serif'
+          color: isDarkMode ? '#e5e5e5' : '#111111',
+          fontFamily: 'Inter, -apple-system, sans-serif',
+          transition: 'background-color 0.2s ease, color 0.2s ease'
         }}>
           
-          {/* Top dark minimal header / formatting bar */}
+          {/* Top minimal header toolbar */}
           <div style={{
             height: '56px',
-            borderBottom: '1px solid #222222',
+            borderBottom: isDarkMode ? '1px solid #222222' : '1px solid #e5e5e5',
             padding: '0 20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            backgroundColor: '#0a0a0a',
-            userSelect: 'none'
+            backgroundColor: isDarkMode ? '#0a0a0a' : '#ffffff',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
           }}>
             
             {/* Left controls: Close and Status */}
@@ -802,7 +852,7 @@ export default function AdminPortal() {
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: '#999999',
+                  color: '#737373',
                   cursor: 'pointer',
                   fontSize: '20px',
                   display: 'flex',
@@ -815,7 +865,7 @@ export default function AdminPortal() {
               <span style={{
                 fontFamily: 'IBM Plex Mono, monospace',
                 fontSize: '11px',
-                color: '#666666',
+                color: '#737373',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px'
@@ -835,22 +885,41 @@ export default function AdminPortal() {
               display: 'flex',
               alignItems: 'center',
               gap: '4px',
-              backgroundColor: '#161616',
+              backgroundColor: isDarkMode ? '#161616' : '#f5f5f5',
               padding: '4px 8px',
               borderRadius: '6px',
-              border: '1px solid #222222'
+              border: isDarkMode ? '1px solid #222222' : '1px solid #e0e0e0'
             }}>
-              <button type="button" onClick={() => injectFormat('<strong>', '</strong>')} title="Bold" style={{ background: 'transparent', border: 'none', color: '#e5e5e5', padding: '6px 10px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', fontFamily: 'monospace' }}>B</button>
-              <button type="button" onClick={() => injectFormat('<em>', '</em>')} title="Italic" style={{ background: 'transparent', border: 'none', color: '#e5e5e5', padding: '6px 10px', fontSize: '12px', fontStyle: 'italic', cursor: 'pointer', fontFamily: 'monospace' }}>I</button>
-              <button type="button" onClick={() => injectFormat('<del>', '</del>')} title="Strike" style={{ background: 'transparent', border: 'none', color: '#e5e5e5', padding: '6px 10px', fontSize: '12px', textDecoration: 'line-through', cursor: 'pointer', fontFamily: 'monospace' }}>S</button>
-              <button type="button" onClick={() => injectFormat('<code>', '</code>')} title="Code inline" style={{ background: 'transparent', border: 'none', color: '#e5e5e5', padding: '6px 8px', fontSize: '11px', cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace' }}>&lt;&gt;</button>
+              <button type="button" onClick={() => injectFormat('<strong>', '</strong>')} title="Bold" style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111111', padding: '6px 10px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}>B</button>
+              <button type="button" onClick={() => injectFormat('<em>', '</em>')} title="Italic" style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111111', padding: '6px 10px', fontSize: '12px', fontStyle: 'italic', cursor: 'pointer' }}>I</button>
               
-              <div style={{ width: '1px', height: '16px', backgroundColor: '#333333', margin: '0 6px' }}></div>
+              <div style={{ width: '1px', height: '16px', backgroundColor: isDarkMode ? '#333333' : '#d5d5d5', margin: '0 6px' }}></div>
               
-              <button type="button" onClick={() => injectFormat('<p>', '</p>')} style={{ background: 'transparent', border: 'none', color: '#999999', fontSize: '11px', padding: '4px 6px', cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace' }}>Paragraph</button>
-              <button type="button" onClick={() => injectFormat('<h3>', '</h3>')} style={{ background: 'transparent', border: 'none', color: '#999999', fontSize: '11px', padding: '4px 6px', cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace' }}>H3</button>
-              <button type="button" onClick={() => injectFormat('<div class="formula">', '</div>')} style={{ background: 'transparent', border: 'none', color: '#2f5d8a', fontSize: '11px', padding: '4px 6px', cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace', fontWeight: 600 }}>Formula</button>
-              <button type="button" onClick={() => injectFormat('<ul>\n  <li>', '</li>\n</ul>')} style={{ background: 'transparent', border: 'none', color: '#999999', fontSize: '11px', padding: '4px 6px', cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace' }}>List</button>
+              <button type="button" onClick={() => injectFormat('<code>', '</code>')} title="Code inline" style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111111', padding: '4px 6px', fontSize: '11px', cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace' }}>&lt;&gt;</button>
+              
+              {/* Insert Inline Image Button */}
+              <label style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 8px', cursor: 'pointer' }} title="Insert Image Inline">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: isDarkMode ? '#e5e5e5' : '#111111' }}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <input type="file" accept="image/*" onChange={handleInlineImageUpload} style={{ display: 'none' }} />
+              </label>
+
+              {/* Theme Toggle Button */}
+              <button
+                type="button"
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                title="Toggle Dark Mode"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: isDarkMode ? '#e5e5e5' : '#111111',
+                  padding: '4px 8px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                {isDarkMode ? '☀️' : '🌙'}
+              </button>
             </div>
 
             {/* Right primary action controls */}
@@ -858,14 +927,13 @@ export default function AdminPortal() {
               <button
                 type="button"
                 onClick={() => {
-                  // Direct HTML preview in new tab
                   const win = window.open();
                   if (win) win.document.write(noteAnswer);
                 }}
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: '#999999',
+                  color: '#737373',
                   fontSize: '12px',
                   fontFamily: 'IBM Plex Mono, monospace',
                   textTransform: 'uppercase',
@@ -880,7 +948,7 @@ export default function AdminPortal() {
                 type="button"
                 onClick={handleNoteSubmit}
                 style={{
-                  background: '#ff6000', // Premium Substack orange accent
+                  background: '#2f5d8a', // signature blue accent
                   color: '#ffffff',
                   border: 'none',
                   borderRadius: '20px',
@@ -904,7 +972,6 @@ export default function AdminPortal() {
             flex: 1,
             display: 'flex',
             overflow: 'hidden',
-            backgroundColor: '#0a0a0a',
             position: 'relative'
           }}>
             
@@ -924,25 +991,68 @@ export default function AdminPortal() {
                 flexDirection: 'column'
               }}>
                 
-                {/* Custom Section indicator block */}
+                {/* Choose a Section Dropdown Bar */}
                 <div style={{
                   display: 'flex',
                   gap: '12px',
                   alignItems: 'center',
                   marginBottom: '32px',
                   fontSize: '11px',
-                  color: '#666666',
-                  fontFamily: 'IBM Plex Mono, monospace'
+                  color: '#737373',
+                  fontFamily: 'IBM Plex Mono, monospace',
+                  position: 'relative'
                 }}>
-                  <div style={{ border: '1px solid #333333', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer' }}>
-                    Choose a section &nbsp;&nbsp;&darr;
+                  <div
+                    onClick={() => setShowSectionDropdown(!showSectionDropdown)}
+                    style={{
+                      border: isDarkMode ? '1px solid #333333' : '1px solid #e0e0e0',
+                      padding: '6px 12px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      backgroundColor: isDarkMode ? '#161616' : '#ffffff',
+                      userSelect: 'none'
+                    }}
+                  >
+                    <span>Choose a section</span>
+                    <span>&darr;</span>
                   </div>
-                  <div style={{ border: '1px solid #333333', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer' }}>
+
+                  {showSectionDropdown && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '36px',
+                      left: 0,
+                      width: '240px',
+                      background: isDarkMode ? '#1c1c1e' : '#ffffff',
+                      border: isDarkMode ? '1px solid #2c2c2e' : '1px solid #e0e0e0',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+                      zIndex: 2200,
+                      padding: '8px 0',
+                      display: 'flex',
+                      flexDirection: 'column'
+                    }}>
+                      <button type="button" onClick={() => insertComponentSection('clause_card')} style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111111', padding: '10px 16px', textAlign: 'left', cursor: 'pointer', fontSize: '12.5px', fontFamily: 'Inter, sans-serif' }}>BS 8110 Clause Card</button>
+                      <button type="button" onClick={() => insertComponentSection('formula_block')} style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111111', padding: '10px 16px', textAlign: 'left', cursor: 'pointer', fontSize: '12.5px', fontFamily: 'Inter, sans-serif' }}>Mathematical Formula</button>
+                      <button type="button" onClick={() => insertComponentSection('ref_table')} style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111111', padding: '10px 16px', textAlign: 'left', cursor: 'pointer', fontSize: '12.5px', fontFamily: 'Inter, sans-serif' }}>Reference Table</button>
+                      <button type="button" onClick={() => insertComponentSection('callout_box')} style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111111', padding: '10px 16px', textAlign: 'left', cursor: 'pointer', fontSize: '12.5px', fontFamily: 'Inter, sans-serif' }}>Warning / Callout Box</button>
+                    </div>
+                  )}
+
+                  <div style={{
+                    border: isDarkMode ? '1px solid #333333' : '1px solid #e0e0e0',
+                    padding: '6px 12px',
+                    borderRadius: '4px',
+                    color: '#a0a0a0',
+                    backgroundColor: isDarkMode ? '#161616' : '#ffffff'
+                  }}>
                     Email header / footer
                   </div>
                 </div>
 
-                {/* Main Title Input (No border, transparent, large) */}
+                {/* Main Title Input */}
                 <input
                   type="text"
                   placeholder="Title"
@@ -958,7 +1068,7 @@ export default function AdminPortal() {
                     background: 'transparent',
                     border: 'none',
                     outline: 'none',
-                    color: '#ffffff',
+                    color: isDarkMode ? '#ffffff' : '#111111',
                     fontSize: '42px',
                     fontFamily: 'Lora, Georgia, serif',
                     fontWeight: '400',
@@ -967,7 +1077,7 @@ export default function AdminPortal() {
                   }}
                 />
 
-                {/* Subtitle Input (No border, transparent) */}
+                {/* Subtitle Input */}
                 <input
                   type="text"
                   placeholder="Add a subtitle..."
@@ -978,7 +1088,7 @@ export default function AdminPortal() {
                     background: 'transparent',
                     border: 'none',
                     outline: 'none',
-                    color: '#888888',
+                    color: isDarkMode ? '#888888' : '#666666',
                     fontSize: '20px',
                     fontFamily: 'Inter, sans-serif',
                     marginBottom: '24px',
@@ -993,7 +1103,7 @@ export default function AdminPortal() {
                   alignItems: 'center',
                   gap: '8px',
                   marginBottom: '40px',
-                  borderBottom: '1px solid #222222',
+                  borderBottom: isDarkMode ? '1px solid #222222' : '1px solid #e5e5e5',
                   paddingBottom: '16px'
                 }}>
                   {noteTagsList.map((tag, idx) => (
@@ -1001,9 +1111,9 @@ export default function AdminPortal() {
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '6px',
-                      background: '#161616',
-                      border: '1px solid #333333',
-                      color: '#cccccc',
+                      background: isDarkMode ? '#161616' : '#f0f0f0',
+                      border: isDarkMode ? '1px solid #333333' : '1px solid #d5d5d5',
+                      color: isDarkMode ? '#cccccc' : '#444444',
                       padding: '4px 10px',
                       borderRadius: '16px',
                       fontSize: '11px',
@@ -1016,7 +1126,7 @@ export default function AdminPortal() {
                         style={{
                           background: 'transparent',
                           border: 'none',
-                          color: '#ff453a',
+                          color: '#dc2626',
                           cursor: 'pointer',
                           padding: 0,
                           fontSize: '10px',
@@ -1053,9 +1163,9 @@ export default function AdminPortal() {
                       autoFocus
                       style={{
                         background: 'transparent',
-                        border: '1px solid #333333',
+                        border: isDarkMode ? '1px solid #333333' : '1px solid #d5d5d5',
                         outline: 'none',
-                        color: '#ffffff',
+                        color: isDarkMode ? '#ffffff' : '#111111',
                         fontSize: '11px',
                         fontFamily: 'IBM Plex Mono, monospace',
                         padding: '2px 8px',
@@ -1068,8 +1178,8 @@ export default function AdminPortal() {
                       type="button"
                       onClick={() => setShowTagInput(true)}
                       style={{
-                        background: '#161616',
-                        border: '1px dashed #444444',
+                        background: isDarkMode ? '#161616' : '#ffffff',
+                        border: isDarkMode ? '1px dashed #444444' : '1px dashed #cccccc',
                         color: '#888888',
                         width: '24px',
                         height: '24px',
@@ -1099,8 +1209,8 @@ export default function AdminPortal() {
                     background: 'transparent',
                     border: 'none',
                     outline: 'none',
-                    color: '#e5e5e5',
-                    fontSize: '16.5px',
+                    color: isDarkMode ? '#e5e5e5' : '#222222',
+                    fontSize: '16px',
                     fontFamily: 'IBM Plex Mono, monospace',
                     lineHeight: '1.8',
                     resize: 'none',
@@ -1122,14 +1232,14 @@ export default function AdminPortal() {
                 width: '40px',
                 height: '40px',
                 borderRadius: '50%',
-                background: '#1c1c1e',
-                border: '1px solid #3a3a3c',
-                color: '#ffffff',
+                background: isDarkMode ? '#1c1c1e' : '#ffffff',
+                border: isDarkMode ? '1px solid #3a3a3c' : '1px solid #e0e0e0',
+                color: isDarkMode ? '#ffffff' : '#111111',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                 fontSize: '18px',
                 zIndex: 2100
               }}
@@ -1145,42 +1255,43 @@ export default function AdminPortal() {
                 right: 0,
                 bottom: 0,
                 width: '320px',
-                background: '#1c1c1e',
-                borderLeft: '1px solid #2c2c2e',
+                background: isDarkMode ? '#1c1c1e' : '#ffffff',
+                borderLeft: isDarkMode ? '1px solid #2c2c2e' : '1px solid #e0e0e0',
                 padding: '24px',
                 zIndex: 2050,
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '24px',
-                overflowY: 'auto'
+                overflowY: 'auto',
+                color: isDarkMode ? '#ffffff' : '#111111'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #2c2c2e', paddingBottom: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: isDarkMode ? '1px solid #2c2c2e' : '1px solid #e0e0e0', paddingBottom: '12px' }}>
                   <h4 style={{ margin: 0, fontFamily: 'Lora, serif', fontSize: '16px' }}>Note Settings</h4>
-                  <button onClick={() => setShowSettingsDrawer(false)} style={{ background: 'transparent', border: 'none', color: '#ff453a', cursor: 'pointer', fontSize: '18px' }}>&times;</button>
+                  <button onClick={() => setShowSettingsDrawer(false)} style={{ background: 'transparent', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '18px' }}>&times;</button>
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', color: '#8e8e93', marginBottom: '8px' }}>URL Slug</label>
+                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', color: '#737373', marginBottom: '8px' }}>URL Slug</label>
                   <input
                     type="text"
                     value={noteSlug}
                     onChange={(e) => setNoteSlug(e.target.value)}
-                    style={{ width: '100%', padding: '8px', background: '#0a0a0a', border: '1px solid #3a3a3c', color: '#ffffff', fontSize: '13px', outline: 'none' }}
+                    style={{ width: '100%', padding: '8px', background: isDarkMode ? '#0a0a0a' : '#fafafa', border: isDarkMode ? '1px solid #3a3a3c' : '1px solid #e0e0e0', color: isDarkMode ? '#ffffff' : '#111111', fontSize: '13px', outline: 'none' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', color: '#8e8e93', marginBottom: '8px' }}>Publish Date</label>
+                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', color: '#737373', marginBottom: '8px' }}>Publish Date</label>
                   <input
                     type="text"
                     value={noteDate}
                     onChange={(e) => setNoteDate(e.target.value)}
-                    style={{ width: '100%', padding: '8px', background: '#0a0a0a', border: '1px solid #3a3a3c', color: '#ffffff', fontSize: '13px', outline: 'none' }}
+                    style={{ width: '100%', padding: '8px', background: isDarkMode ? '#0a0a0a' : '#fafafa', border: isDarkMode ? '1px solid #3a3a3c' : '1px solid #e0e0e0', color: isDarkMode ? '#ffffff' : '#111111', fontSize: '13px', outline: 'none' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', color: '#8e8e93', marginBottom: '8px' }}>Cover Image File</label>
+                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', color: '#737373', marginBottom: '8px' }}>Cover Image File</label>
                   <input
                     type="file"
                     accept="image/*"
@@ -1189,9 +1300,9 @@ export default function AdminPortal() {
                         setNoteImageFile(e.target.files[0]);
                       }
                     }}
-                    style={{ color: '#ffffff', fontSize: '12px' }}
+                    style={{ color: isDarkMode ? '#ffffff' : '#111111', fontSize: '12px' }}
                   />
-                  {editingNoteId && <p style={{ fontSize: '10px', color: '#8e8e93', marginTop: '6px' }}>Leave empty to retain existing cover image.</p>}
+                  {editingNoteId && <p style={{ fontSize: '10px', color: '#737373', marginTop: '6px' }}>Leave empty to retain existing cover image.</p>}
                 </div>
               </div>
             )}

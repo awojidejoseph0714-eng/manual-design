@@ -32,6 +32,20 @@ export async function POST(req: NextRequest) {
     const action = formData.get('action') as string;
     const writeClient = getSanityWriteClient();
 
+    if (action === 'upload_asset') {
+      const file = formData.get('file');
+      if (!file || !(file instanceof File)) {
+        return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+      }
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const imageAsset = await writeClient.assets.upload('image', buffer, {
+        filename: file.name,
+        contentType: file.type,
+      });
+      return NextResponse.json({ success: true, url: imageAsset.url });
+    }
+
     if (action === 'delete') {
       const noteId = formData.get('noteId') as string;
       if (!noteId) {
