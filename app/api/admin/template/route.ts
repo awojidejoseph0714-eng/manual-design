@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getSanityWriteClient } from '@/lib/sanity';
 import fs from 'fs';
 import path from 'path';
-import { exec } from 'child_process';
 
-const templatePath = path.join(process.cwd(), 'index.html.bak');
+const PAGE_CONTENT_KEY = 'mainPage';
 
-// GET raw template content
+// GET – fetch the current main page HTML from Sanity (falls back to index.html.bak)
 export async function GET(req: NextRequest) {
   try {
     const adminUser = req.headers.get('x-admin-user');
@@ -13,19 +13,31 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!fs.existsSync(templatePath)) {
-      return NextResponse.json({ error: 'index.html.bak template file not found' }, { status: 404 });
+    const client = getSanityWriteClient();
+    const doc = await client.fetch(
+      `*[_type == "pageContent" && key == $key][0]`,
+      { key: PAGE_CONTENT_KEY }
+    );
+
+    if (doc && doc.htmlBody) {
+      return NextResponse.json({ content: doc.htmlBody, source: 'sanity' });
     }
 
-    const content = fs.readFileSync(templatePath, 'utf8');
-    return NextResponse.json({ content });
+    // Fallback: read from local index.html.bak (for initial seeding)
+    const templatePath = path.join(process.cwd(), 'index.html.bak');
+    if (fs.existsSync(templatePath)) {
+      const content = fs.readFileSync(templatePath, 'utf8');
+      return NextResponse.json({ content, source: 'local' });
+    }
+
+    return NextResponse.json({ error: 'No page content found' }, { status: 404 });
   } catch (error: any) {
     console.error('Fetch template error:', error);
-    return NextResponse.json({ error: 'Failed to read template content' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Failed to read template content' }, { status: 500 });
   }
 }
 
-// POST update template and rebuild/deploy
+// POST – save updated main page HTML to Sanity
 export async function POST(req: NextRequest) {
   try {
     const adminUser = req.headers.get('x-admin-user');
@@ -38,32 +50,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No content provided' }, { status: 400 });
     }
 
-    // 1. Write the new template content to index.html.bak
-    fs.writeFileSync(templatePath, content, 'utf8');
+    const client = getSanityWriteClient();
 
-    // 2. Trigger converter and builder scripts
-    // Running convert_to_next.js first to compile new index.html.bak into app/page.tsx
-    exec('node convert_to_next.js', (err, stdout, stderr) => {
-      if (err) {
-        console.error('Error executing convert_to_next.js:', err);
-        return;
-      }
-      console.log('Converter Output:', stdout);
+    // Check if document already exists
+    const existing = await client.fetch(
+      `*[_type == "pageContent" && key == $key][0]._id`,
+      { key: PAGE_CONTENT_KEY }
+    );
 
-      // Now trigger the git push & vercel deploy script in the background
-      console.log('Triggering git push and Vercel rebuild...');
-      exec('node git_push_deploy.js', (deployErr, deployOut) => {
-        if (deployErr) {
-          console.error('Error executing git_push_deploy.js:', deployErr);
-          return;
-        }
-        console.log('Deploy script output:', deployOut);
+    if (existing) {
+      // Update existing document
+      await client.patch(existing).set({ htmlBody: content }).commit();
+    } else {
+      // Create new document
+      await client.create({
+        _type: 'pageContent',
+        key: PAGE_CONTENT_KEY,
+        htmlBody: content,
       });
-    });
+    }
 
     return NextResponse.json({
       success: true,
-      message: 'Template saved successfully! Recompiling and triggering Vercel rebuild in the background...'
+      message: 'Main page content saved to Sanity. Changes are live immediately.',
     });
   } catch (error: any) {
     console.error('Save template error:', error);

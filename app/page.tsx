@@ -30,8 +30,12 @@ export default function Home() {
   const [feedbackType, setFeedbackType] = useState<'none' | 'strong' | 'moderate' | null>(null);
   const [suggestedArticle, setSuggestedArticle] = useState<any | null>(null);
 
+  // Main page HTML from Sanity (editable via admin)
+  const [pageHtml, setPageHtml] = useState<string | null>(null);
+
   useEffect(() => {
-    async function loadNotes() {
+    async function loadData() {
+      // Load community notes for FAQ list
       try {
         const query = '*[_type == "communityNote"] | order(date desc)';
         const fetched = await sanityClient.fetch(query);
@@ -43,8 +47,20 @@ export default function Home() {
       } catch (err) {
         setArticles(defaultFAQs);
       }
+
+      // Load editable main page HTML from Sanity
+      try {
+        const pageDoc = await sanityClient.fetch(
+          `*[_type == "pageContent" && key == "mainPage"][0]{ htmlBody }`
+        );
+        if (pageDoc && pageDoc.htmlBody) {
+          setPageHtml(pageDoc.htmlBody);
+        }
+      } catch (err) {
+        // Fall through to hardcoded HTML below
+      }
     }
-    loadNotes();
+    loadData();
   }, []);
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -177,7 +193,7 @@ export default function Home() {
 
   return (
     <>
-      <div dangerouslySetInnerHTML={{ __html: `
+      <div dangerouslySetInnerHTML={{ __html: pageHtml !== null ? pageHtml : `
 
 
 <a href="#main-content" class="skip-link">Skip to content</a>

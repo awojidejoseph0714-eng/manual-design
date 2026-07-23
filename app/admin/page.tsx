@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface Submission {
@@ -19,35 +19,29 @@ interface Note {
   date: string;
   tags?: string[];
   answer: string;
-  image?: {
-    asset?: {
-      _ref?: string;
-    };
-  };
 }
 
 export default function AdminPortal() {
   const router = useRouter();
-  
+
   // Tab State
   const [activeTab, setActiveTab] = useState<'submissions' | 'notes' | 'template'>('submissions');
-  
-  // Data States
+
+  // Data
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
-  const [templateContent, setTemplateContent] = useState('');
-  
-  // UI States
+
+  // UI
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  // Submissions Modal states
+  // Promote modal
   const [promoteId, setPromoteId] = useState<string | null>(null);
   const [promoteTitle, setPromoteTitle] = useState('');
   const [promoteQuestion, setPromoteQuestion] = useState('');
 
-  // ── RICH NOTE EDITOR STATES ──
+  // ── NOTE EDITOR STATE ──
   const [noteFormOpen, setNoteFormOpen] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [noteTitle, setNoteTitle] = useState('');
@@ -57,17 +51,20 @@ export default function AdminPortal() {
   const [noteTagsList, setNoteTagsList] = useState<string[]>([]);
   const [newTagInput, setNewTagInput] = useState('');
   const [showTagInput, setShowTagInput] = useState(false);
-  const [noteAnswer, setNoteAnswer] = useState('');
   const [noteImageFile, setNoteImageFile] = useState<File | null>(null);
   const [saveStatusIndicator, setSaveStatusIndicator] = useState('Saved');
-  
-  // Custom UX features: Dark mode toggle & Section dropdowns
-  const [isDarkMode, setIsDarkMode] = useState(false); // Light by default
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [showSectionDropdown, setShowSectionDropdown] = useState(false);
   const [showSettingsDrawer, setShowSettingsDrawer] = useState(false);
 
-  // Template Save state
-  const [saveStatus, setSaveStatus] = useState('');
+  // WYSIWYG contenteditable ref
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  // ── MAIN PAGE EDITOR STATE ──
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [iframeReady, setIframeReady] = useState(false);
+  const [pageSaveStatus, setPageSaveStatus] = useState('');
+  const [pageEditing, setPageEditing] = useState(false);
 
   useEffect(() => {
     fetchInitialData();
@@ -93,15 +90,8 @@ export default function AdminPortal() {
         }
         const data = await res.json();
         setNotes(data.notes || []);
-      } else if (activeTab === 'template') {
-        const res = await fetch('/api/admin/template');
-        if (!res.ok) {
-          if (res.status === 401) { router.push('/admin/login'); return; }
-          throw new Error('Failed to load main page');
-        }
-        const data = await res.json();
-        setTemplateContent(data.content || '');
       }
+      // Template tab: loaded via iframe
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -114,6 +104,9 @@ export default function AdminPortal() {
     router.push('/admin/login');
   };
 
+  // ─────────────────────────────────────────────────────────────────
+  //  SUBMISSIONS
+  // ─────────────────────────────────────────────────────────────────
   const handleSubmissionAction = async (id: string, action: string, extra = {}) => {
     setActionLoading(id);
     try {
@@ -140,7 +133,9 @@ export default function AdminPortal() {
     setPromoteTitle(words.endsWith('?') ? words : words + '...');
   };
 
-  // Editor Actions
+  // ─────────────────────────────────────────────────────────────────
+  //  NOTE EDITOR – WYSIWYG
+  // ─────────────────────────────────────────────────────────────────
   const openNewNoteForm = () => {
     setEditingNoteId(null);
     setNoteTitle('');
@@ -148,12 +143,14 @@ export default function AdminPortal() {
     setNoteSlug('');
     setNoteDate(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }));
     setNoteTagsList(['General']);
-    setNoteAnswer('');
     setNoteImageFile(null);
     setSaveStatusIndicator('Saved');
-    setShowSettingsDrawer(false);
-    setIsDarkMode(false); // default light background
+    setIsDarkMode(false);
     setNoteFormOpen(true);
+    // Clear editor after mount
+    setTimeout(() => {
+      if (editorRef.current) editorRef.current.innerHTML = '';
+    }, 50);
   };
 
   const openEditNoteForm = (note: Note) => {
@@ -163,37 +160,79 @@ export default function AdminPortal() {
     setNoteSlug(note.slug?.current || '');
     setNoteDate(note.date || '');
     setNoteTagsList(note.tags || []);
-    setNoteAnswer(note.answer || '');
     setNoteImageFile(null);
     setSaveStatusIndicator('Saved');
-    setShowSettingsDrawer(false);
     setIsDarkMode(false);
     setNoteFormOpen(true);
+    setTimeout(() => {
+      if (editorRef.current) editorRef.current.innerHTML = note.answer || '';
+    }, 50);
+  };
+
+  const execFormat = (command: string, value?: string) => {
+    document.execCommand(command, false, value);
+    editorRef.current?.focus();
+  };
+
+  // Markdown-to-HTML converter (for paste detection)
+  const parseMarkdownToHtml = (markdown: string): string => {
+    let html = markdown;
+    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+    html = html.replace(/^## (.*$)/gim, '<h3>$1</h3>');
+    html = html.replace(/^# (.*$)/gim, '<h3>$1</h3>');
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    html = html.replace(/_(.*?)_/g, '<em>$1</em>');
+    html = html.replace(/`(.*?)`/g, '<code>$1</code>');
+    html = html.replace(/~~(.*?)~~/g, '<del>$1</del>');
+    html = html.replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>');
+    html = html.replace(/^\- (.*$)/gim, '<li>$1</li>');
+    html = html.replace(/^\* (.*$)/gim, '<li>$1</li>');
+    html = html.replace(/\$\$([\s\S]*?)\$\$/g, '<div class="formula-block">\\[$1\\]</div>');
+    html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>');
+
+    // Wrap double-newline blocks in <p> if not already block elements
+    const blocks = html.split(/\n\s*\n/);
+    return blocks.map(block => {
+      const t = block.trim();
+      if (!t) return '';
+      if (/^<(h[1-6]|div|blockquote|li|ul|ol|table|p)/.test(t)) return t;
+      // Group consecutive <li> items
+      if (t.startsWith('<li>')) return `<ul>${t}</ul>`;
+      return `<p>${t.replace(/\n/g, '<br>')}</p>`;
+    }).filter(Boolean).join('\n');
+  };
+
+  const handleEditorPaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
+    const text = e.clipboardData.getData('text/plain');
+    const hasMarkdown = /^#{1,3} |^\*\*|^\* |^- |`|\[.*\]\(/.test(text);
+    if (hasMarkdown) {
+      e.preventDefault();
+      const html = parseMarkdownToHtml(text);
+      document.execCommand('insertHTML', false, html);
+      setSaveStatusIndicator('Pasted & Formatted');
+      setTimeout(() => setSaveStatusIndicator('Saved'), 2000);
+    }
+    // Otherwise let browser paste as-is (it strips unsafe tags natively)
   };
 
   const handleNoteSubmit = async () => {
     setSaveStatusIndicator('Saving...');
     try {
+      const htmlContent = editorRef.current?.innerHTML || '';
       const formData = new FormData();
       formData.append('action', editingNoteId ? 'edit' : 'create');
-      if (editingNoteId) {
-        formData.append('noteId', editingNoteId);
-      }
+      if (editingNoteId) formData.append('noteId', editingNoteId);
       formData.append('title', noteTitle);
       formData.append('subtitle', noteSubtitle);
       formData.append('slug', noteSlug || noteTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
       formData.append('date', noteDate);
       formData.append('tags', noteTagsList.join(','));
-      formData.append('answer', noteAnswer);
-      if (noteImageFile) {
-        formData.append('image', noteImageFile);
-      }
+      formData.append('answer', htmlContent);
+      if (noteImageFile) formData.append('image', noteImageFile);
 
-      const res = await fetch('/api/admin/notes', {
-        method: 'POST',
-        body: formData,
-      });
-
+      const res = await fetch('/api/admin/notes', { method: 'POST', body: formData });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to save note');
 
@@ -207,17 +246,13 @@ export default function AdminPortal() {
   };
 
   const handleDeleteNote = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this community note?')) return;
+    if (!confirm('Delete this community note?')) return;
     setLoading(true);
     try {
       const formData = new FormData();
       formData.append('action', 'delete');
       formData.append('noteId', id);
-
-      const res = await fetch('/api/admin/notes', {
-        method: 'POST',
-        body: formData,
-      });
+      const res = await fetch('/api/admin/notes', { method: 'POST', body: formData });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to delete note');
       await fetchInitialData();
@@ -228,416 +263,174 @@ export default function AdminPortal() {
     }
   };
 
-  const handleSaveTemplate = async () => {
-    setSaveStatus('Saving and compiling...');
-    try {
-      const res = await fetch('/api/admin/template', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: templateContent }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to save main page');
-      setSaveStatus('Saved! A background rebuild & Vercel deployment has been triggered.');
-    } catch (err: any) {
-      setSaveStatus(`Error: ${err.message}`);
-    }
-  };
-
-  // Helper formatting injectors
-  const injectFormat = (tagOpen: string, tagClose: string) => {
-    const textarea = document.getElementById('editor-textarea') as HTMLTextAreaElement;
-    if (!textarea) return;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = textarea.value;
-    const selected = text.substring(start, end);
-    const replacement = tagOpen + selected + tagClose;
-    setNoteAnswer(text.substring(0, start) + replacement + text.substring(end));
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + tagOpen.length, start + tagOpen.length + selected.length);
-    }, 50);
-  };
-
-  // Markdown parser to convert pasted MD documents to HTML
-  const parseMarkdownToHtml = (markdown: string): string => {
-    let html = markdown;
-
-    // Headings (H1-H3 map to H3 for guidelines consistency)
-    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-    html = html.replace(/^## (.*$)/gim, '<h3>$1</h3>');
-    html = html.replace(/^# (.*$)/gim, '<h3>$1</h3>');
-
-    // Bold & Strong
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
-
-    // Italics
-    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    html = html.replace(/_(.*?)_/g, '<em>$1</em>');
-
-    // Inline Code
-    html = html.replace(/`(.*?)`/g, '<code>$1</code>');
-
-    // Strikethrough
-    html = html.replace(/~~(.*?)~~/g, '<del>$1</del>');
-
-    // Blockquotes
-    html = html.replace(/^\> (.*$)/gim, '<div style="border-left: 3px solid #2f5d8a; background: #eef3f7; color: #2f5d8a; padding: 16px; margin: 24px 0; font-size: 13.5px; line-height: 1.6;">$1</div>');
-
-    // Unordered Lists
-    html = html.replace(/^\- (.*$)/gim, '<li>$1</li>');
-    html = html.replace(/^\* (.*$)/gim, '<li>$1</li>');
-
-    // Math block equation formatting
-    html = html.replace(/\$\$([\s\S]*?)\$\$/g, '<div style="text-align: center; margin: 24px 0; padding: 16px; background-color: #f8fafc; border: 1px solid #e5e5e5; font-family: Lora, serif; font-size: 17px;">\\[$1\\]</div>');
-
-    // Links
-    html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" style="color: #2f5d8a; text-decoration: underline;">$1</a>');
-
-    // Paragraph split wrapping
-    const blocks = html.split(/\n\s*\n/);
-    const compiledBlocks = blocks.map(block => {
-      const trimmed = block.trim();
-      if (!trimmed) return '';
-      if (trimmed.startsWith('<h3') || trimmed.startsWith('<div') || trimmed.startsWith('<table') || trimmed.startsWith('<li>') || trimmed.startsWith('<p>')) {
-        return trimmed;
-      }
-      if (trimmed.startsWith('<li>')) {
-        return `<ul style="margin: 16px 0; padding-left: 20px;">\n  ${trimmed}\n</ul>`;
-      }
-      return `<p>${trimmed.replace(/\n/g, '<br />')}</p>`;
-    });
-
-    return compiledBlocks.filter(Boolean).join('\n\n');
-  };
-
-  // Intercept Markdown text pastes
-  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-    const pastedText = e.clipboardData.getData('text');
-    if (
-      pastedText.includes('#') ||
-      pastedText.includes('**') ||
-      pastedText.includes('- ') ||
-      pastedText.includes('* ') ||
-      pastedText.includes('`') ||
-      pastedText.includes('[')
-    ) {
-      e.preventDefault();
-      const parsedHtml = parseMarkdownToHtml(pastedText);
-      
-      const textarea = e.currentTarget;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const text = textarea.value;
-      
-      const newContent = text.substring(0, start) + parsedHtml + text.substring(end);
-      setNoteAnswer(newContent);
-      
-      setSaveStatusIndicator('Pasted & Formatted Markdown');
-      setTimeout(() => setSaveStatusIndicator('Saved'), 2000);
-    }
-  };
-
-  // Convert currently written text to paragraphs if they wrote normally without tags
-  const runAutoParagraphFormatting = () => {
-    if (!noteAnswer.trim()) return;
-    // If it does not contain HTML tags, wrap blocks in standard HTML paragraph paragraphs
-    if (!noteAnswer.includes('<p>') && !noteAnswer.includes('<h3>')) {
-      const formatted = parseMarkdownToHtml(noteAnswer);
-      setNoteAnswer(formatted);
-      setSaveStatusIndicator('Auto-formatted Draft');
-      setTimeout(() => setSaveStatusIndicator('Saved'), 2000);
-    }
-  };
-
   const handleInlineImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
-    
-    setSaveStatusIndicator('Uploading image...');
+    setSaveStatusIndicator('Uploading...');
     try {
       const formData = new FormData();
       formData.append('action', 'upload_asset');
       formData.append('file', file);
-      
-      const res = await fetch('/api/admin/notes', {
-        method: 'POST',
-        body: formData
-      });
+      const res = await fetch('/api/admin/notes', { method: 'POST', body: formData });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to upload image');
-      
-      const imgHtml = `\n<img src="${data.url}" alt="${file.name}" style="width: 100%; max-width: 100%; border-radius: 4px; border: 1px solid var(--rule); margin: 24px 0;" />\n`;
-      injectFormat(imgHtml, '');
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      document.execCommand('insertHTML', false, `<img src="${data.url}" alt="${file.name}" style="max-width:100%;border-radius:4px;margin:16px 0;" />`);
       setSaveStatusIndicator('Saved');
     } catch (err: any) {
       alert(err.message);
       setSaveStatusIndicator('Error');
     }
+    e.target.value = '';
   };
 
-  const insertComponentSection = (type: string) => {
-    let htmlSnippet = '';
-    
+  const insertSection = (type: string) => {
+    let html = '';
     if (type === 'clause_card') {
-      htmlSnippet = `\n<div style="border: 1px solid #e0e0e0; padding: 20px; margin: 24px 0; border-left: 4px solid #2f5d8a; background-color: #fcfcfb;">\n  <span style="font-family: monospace; font-size: 11px; text-transform: uppercase; color: #2f5d8a; font-weight: 600; letter-spacing: 0.05em;">Clause 3.4.5.1 (BS 8110)</span>\n  <h4 style="margin: 8px 0; font-family: Lora, serif; font-size: 16px; font-weight: 500;">Flexural Shear Reinforcement Capacity</h4>\n  <p style="margin: 0; font-size: 13.5px; line-height: 1.6; color: #444444;">Detailed engineering description of the requirements goes here...</p>\n</div>\n`;
-    } else if (type === 'formula_block') {
-      htmlSnippet = `\n<div style="text-align: center; margin: 24px 0; padding: 16px; background-color: #f8fafc; border: 1px solid #e5e5e5; font-family: Lora, serif; font-size: 17px;">\n  \\[ v_c = \\frac{0.79 \\left( \\frac{100 A_s}{b_d} \\right)^{1/3} \\left( \\frac{400}{d} \\right)^{1/4}}{\\gamma_m} \\]\n</div>\n`;
-    } else if (type === 'ref_table') {
-      htmlSnippet = `\n<table style="width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 13px; font-family: monospace;">\n  <thead>\n    <tr style="border-bottom: 2px solid #0f0f0f; text-align: left; background-color: #fcfcfb;">\n      <th style="padding: 8px;">Bar Size (mm)</th>\n      <th style="padding: 8px;">Area (mm²)</th>\n      <th style="padding: 8px;">Spacing Limit (mm)</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr style="border-bottom: 1px solid #e0e0e0;">\n      <td style="padding: 8px;">Y12</td>\n      <td style="padding: 8px;">113</td>\n      <td style="padding: 8px;">300</td>\n    </tr>\n    <tr style="border-bottom: 1px solid #e0e0e0;">\n      <td style="padding: 8px;">Y16</td>\n      <td style="padding: 8px;">201</td>\n      <td style="padding: 8px;">300</td>\n    </tr>\n  </tbody>\n</table>\n`;
-    } else if (type === 'callout_box') {
-      htmlSnippet = `\n<div style="border-left: 3px solid #2f5d8a; background: #eef3f7; color: #2f5d8a; padding: 16px; margin: 24px 0; font-size: 13.5px; line-height: 1.6;">\n  <strong>Important Limit:</strong> Deflection limits must check actual span-to-effective depth ratios against allowable limits.\n</div>\n`;
+      html = `<div style="border:1px solid #e0e0e0;padding:20px;margin:24px 0;border-left:4px solid #2f5d8a;background:#fcfcfb"><span style="font-family:monospace;font-size:11px;text-transform:uppercase;color:#2f5d8a;font-weight:600">Clause 3.4.5.1 (BS 8110)</span><h4 style="margin:8px 0;font-family:Lora,serif;font-size:16px">Clause Title</h4><p style="margin:0;font-size:13.5px;line-height:1.6;color:#444">Description...</p></div>`;
+    } else if (type === 'formula') {
+      html = `<div style="text-align:center;margin:24px 0;padding:16px;background:#f8fafc;border:1px solid #e5e5e5;font-family:Lora,serif;font-size:17px">\\[ A_s = \\frac{M}{0.95 f_y z} \\]</div>`;
+    } else if (type === 'table') {
+      html = `<table style="width:100%;border-collapse:collapse;margin:24px 0;font-size:13px;font-family:monospace"><thead><tr style="border-bottom:2px solid #0f0f0f;background:#fcfcfb"><th style="padding:8px;text-align:left">Parameter</th><th style="padding:8px;text-align:left">Value</th></tr></thead><tbody><tr style="border-bottom:1px solid #e0e0e0"><td style="padding:8px">—</td><td style="padding:8px">—</td></tr></tbody></table>`;
+    } else if (type === 'callout') {
+      html = `<div style="border-left:3px solid #2f5d8a;background:#eef3f7;color:#2f5d8a;padding:16px;margin:24px 0;font-size:13.5px;line-height:1.6"><strong>Note:</strong> Important limitation or reminder goes here.</div>`;
+    } else if (type === 'heading') {
+      html = `<h3 style="font-family:Lora,serif;font-size:20px;font-weight:500;margin:32px 0 12px">Section Heading</h3>`;
     }
-
-    injectFormat(htmlSnippet, '');
+    document.execCommand('insertHTML', false, html);
     setShowSectionDropdown(false);
+    editorRef.current?.focus();
+  };
+
+  // ─────────────────────────────────────────────────────────────────
+  //  MAIN PAGE IFRAME EDITOR
+  // ─────────────────────────────────────────────────────────────────
+  const handleIframeLoad = () => {
+    const iframe = iframeRef.current;
+    if (!iframe || !iframe.contentDocument) return;
+    setIframeReady(true);
+  };
+
+  const enablePageEditing = () => {
+    const iframe = iframeRef.current;
+    if (!iframe || !iframe.contentDocument) return;
+    iframe.contentDocument.designMode = 'on';
+    setPageEditing(true);
+    setPageSaveStatus('Editing enabled — click any text to edit it');
+  };
+
+  const handleSavePage = async () => {
+    const iframe = iframeRef.current;
+    if (!iframe || !iframe.contentDocument) return;
+    setPageSaveStatus('Saving...');
+
+    // Capture the edited body HTML
+    const bodyHtml = iframe.contentDocument.body.innerHTML;
+
+    try {
+      const res = await fetch('/api/admin/template', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: bodyHtml }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Save failed');
+      setPageSaveStatus('✓ Saved to Sanity — changes are live');
+      setPageEditing(false);
+      iframe.contentDocument.designMode = 'off';
+    } catch (err: any) {
+      setPageSaveStatus(`Error: ${err.message}`);
+    }
+  };
+
+  const handleCancelPageEdit = () => {
+    const iframe = iframeRef.current;
+    if (!iframe || !iframe.contentDocument) return;
+    iframe.contentDocument.designMode = 'off';
+    setPageEditing(false);
+    setPageSaveStatus('');
+    // Reload iframe to restore original content
+    iframe.src = iframe.src;
+  };
+
+  // ─────────────────────────────────────────────────────────────────
+  //  SHARED STYLES
+  // ─────────────────────────────────────────────────────────────────
+  const tabBtn = (id: string) => ({
+    background: 'none' as const,
+    border: 'none' as const,
+    borderBottom: activeTab === id ? '2px solid #2f5d8a' : '2px solid transparent',
+    color: activeTab === id ? '#2f5d8a' : '#737373',
+    padding: '12px 18px',
+    fontSize: '11px',
+    fontWeight: activeTab === id ? '600' : '400',
+    cursor: 'pointer' as const,
+    fontFamily: 'IBM Plex Mono, monospace',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.05em',
+  });
+
+  const monoLabel = {
+    display: 'block' as const,
+    fontSize: '10px',
+    fontFamily: 'IBM Plex Mono, monospace',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.05em',
+    color: '#737373',
+    marginBottom: '8px',
+    fontWeight: 600,
   };
 
   return (
-    <div style={{
-      padding: '60px 24px 100px 24px',
-      maxWidth: '960px',
-      margin: '0 auto',
-      fontFamily: 'Inter, -apple-system, sans-serif',
-      color: '#111111',
-      backgroundColor: '#ffffff'
-    }}>
-      
-      {/* Header section */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'baseline',
-        borderBottom: '1px solid #e5e5e5',
-        paddingBottom: '24px',
-        marginBottom: '40px'
-      }}>
+    <div style={{ padding: '60px 24px 100px', maxWidth: '960px', margin: '0 auto', fontFamily: 'Inter, -apple-system, sans-serif', color: '#111111', backgroundColor: '#ffffff' }}>
+
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid #e5e5e5', paddingBottom: '24px', marginBottom: '40px' }}>
         <div>
-          <h1 style={{
-            fontFamily: 'Lora, Georgia, serif',
-            fontSize: '32px',
-            fontWeight: '400',
-            letterSpacing: '-0.02em',
-            margin: 0
-          }}>Admin Portal</h1>
-          <p style={{
-            fontSize: '11px',
-            color: '#737373',
-            marginTop: '6px',
-            fontFamily: 'IBM Plex Mono, monospace',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em'
-          }}>System Control &amp; Content Management</p>
+          <h1 style={{ fontFamily: 'Lora, Georgia, serif', fontSize: '32px', fontWeight: '400', letterSpacing: '-0.02em', margin: 0 }}>Admin Portal</h1>
+          <p style={{ fontSize: '11px', color: '#737373', marginTop: '6px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.05em' }}>System Control &amp; Content Management</p>
         </div>
-        <button onClick={handleLogout} style={{
-          background: 'transparent',
-          border: '1px solid #111111',
-          color: '#111111',
-          padding: '6px 14px',
-          fontFamily: 'IBM Plex Mono, monospace',
-          fontSize: '11px',
-          letterSpacing: '0.05em',
-          textTransform: 'uppercase',
-          cursor: 'pointer'
-        }}>Sign Out</button>
+        <button onClick={handleLogout} style={{ background: 'transparent', border: '1px solid #111', color: '#111', padding: '6px 14px', fontFamily: 'IBM Plex Mono, monospace', fontSize: '11px', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Sign Out</button>
       </div>
 
-      {/* Tabs Switcher */}
-      <div style={{
-        display: 'flex',
-        gap: '8px',
-        borderBottom: '1px solid #e5e5e5',
-        marginBottom: '40px'
-      }}>
-        <button
-          onClick={() => setActiveTab('submissions')}
-          style={{
-            background: 'none',
-            border: 'none',
-            borderBottom: activeTab === 'submissions' ? '2px solid #2f5d8a' : '2px solid transparent',
-            color: activeTab === 'submissions' ? '#2f5d8a' : '#737373',
-            padding: '12px 18px',
-            fontSize: '11px',
-            fontWeight: activeTab === 'submissions' ? '600' : '400',
-            cursor: 'pointer',
-            fontFamily: 'IBM Plex Mono, monospace',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em'
-          }}
-        >
-          Submissions
-        </button>
-        <button
-          onClick={() => setActiveTab('notes')}
-          style={{
-            background: 'none',
-            border: 'none',
-            borderBottom: activeTab === 'notes' ? '2px solid #2f5d8a' : '2px solid transparent',
-            color: activeTab === 'notes' ? '#2f5d8a' : '#737373',
-            padding: '12px 18px',
-            fontSize: '11px',
-            fontWeight: activeTab === 'notes' ? '600' : '400',
-            cursor: 'pointer',
-            fontFamily: 'IBM Plex Mono, monospace',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em'
-          }}
-        >
-          Community Notes
-        </button>
-        <button
-          onClick={() => setActiveTab('template')}
-          style={{
-            background: 'none',
-            border: 'none',
-            borderBottom: activeTab === 'template' ? '2px solid #2f5d8a' : '2px solid transparent',
-            color: activeTab === 'template' ? '#2f5d8a' : '#737373',
-            padding: '12px 18px',
-            fontSize: '11px',
-            fontWeight: activeTab === 'template' ? '600' : '400',
-            cursor: 'pointer',
-            fontFamily: 'IBM Plex Mono, monospace',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em'
-          }}
-        >
-          Main Page
-        </button>
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #e5e5e5', marginBottom: '40px' }}>
+        <button onClick={() => setActiveTab('submissions')} style={tabBtn('submissions')}>Submissions</button>
+        <button onClick={() => setActiveTab('notes')} style={tabBtn('notes')}>Community Notes</button>
+        <button onClick={() => setActiveTab('template')} style={tabBtn('template')}>Main Page</button>
       </div>
 
-      {error && (
-        <div style={{
-          borderLeft: '3px solid #2f5d8a',
-          background: '#f8fafc',
-          color: '#2f5d8a',
-          padding: '16px',
-          marginBottom: '32px',
-          fontSize: '13px',
-          fontFamily: 'IBM Plex Mono, monospace'
-        }}>
-          {error}
-        </div>
-      )}
+      {error && <div style={{ borderLeft: '3px solid #2f5d8a', background: '#f8fafc', color: '#2f5d8a', padding: '16px', marginBottom: '32px', fontSize: '13px', fontFamily: 'IBM Plex Mono, monospace' }}>{error}</div>}
 
-      {/* ── TAB 1: SUBMISSIONS ── */}
+      {/* ── SUBMISSIONS TAB ── */}
       {activeTab === 'submissions' && (
         <>
           {loading ? (
             <p style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', color: '#737373' }}>Loading submissions...</p>
           ) : submissions.length === 0 ? (
-            <div style={{
-              border: '1px dashed #e5e5e5',
-              padding: '80px 24px',
-              textAlign: 'center',
-              color: '#737373'
-            }}>
-              <h3 style={{ fontFamily: 'Lora, serif', fontSize: '20px', color: '#111111', fontWeight: '400', marginBottom: '8px' }}>No submissions</h3>
-              <p style={{ fontSize: '13px' }}>User submissions and questions will appear here.</p>
+            <div style={{ border: '1px dashed #e5e5e5', padding: '80px 24px', textAlign: 'center', color: '#737373' }}>
+              <h3 style={{ fontFamily: 'Lora, serif', fontSize: '20px', color: '#111', fontWeight: '400', marginBottom: '8px' }}>No submissions yet</h3>
+              <p style={{ fontSize: '13px' }}>User questions will appear here.</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              {submissions.map((sub) => (
-                <div key={sub._id} style={{
-                  border: '1px solid #e5e5e5',
-                  padding: '28px',
-                  backgroundColor: '#ffffff'
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'baseline',
-                    marginBottom: '16px'
-                  }}>
-                    <span style={{
-                      fontFamily: 'IBM Plex Mono, monospace',
-                      fontSize: '12px',
-                      color: '#2f5d8a',
-                      fontWeight: 500
-                    }}>{sub.email}</span>
+              {submissions.map(sub => (
+                <div key={sub._id} style={{ border: '1px solid #e5e5e5', padding: '28px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '16px' }}>
+                    <span style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', color: '#2f5d8a', fontWeight: 500 }}>{sub.email}</span>
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                      <span style={{
-                        fontFamily: 'IBM Plex Mono, monospace',
-                        fontSize: '9px',
-                        textTransform: 'uppercase',
-                        padding: '2px 8px',
-                        background: sub.status === 'pending' ? '#eef3f7' : '#f5f5f5',
-                        color: sub.status === 'pending' ? '#2f5d8a' : '#737373',
-                        fontWeight: 600
-                      }}>{sub.status}</span>
-                      <span style={{
-                        fontSize: '11px',
-                        color: '#737373',
-                        fontFamily: 'IBM Plex Mono, monospace'
-                      }}>
-                        {new Date(sub.timestamp).toLocaleDateString()}
-                      </span>
+                      <span style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '9px', textTransform: 'uppercase', padding: '2px 8px', background: sub.status === 'pending' ? '#eef3f7' : '#f5f5f5', color: sub.status === 'pending' ? '#2f5d8a' : '#737373', fontWeight: 600 }}>{sub.status}</span>
+                      <span style={{ fontSize: '11px', color: '#737373', fontFamily: 'IBM Plex Mono, monospace' }}>{new Date(sub.timestamp).toLocaleDateString()}</span>
                     </div>
                   </div>
-                  <p style={{
-                    fontSize: '14.5px',
-                    color: '#262626',
-                    lineHeight: '1.7',
-                    margin: '0 0 24px 0'
-                  }}>{sub.question}</p>
+                  <p style={{ fontSize: '14.5px', color: '#262626', lineHeight: '1.7', margin: '0 0 24px 0' }}>{sub.question}</p>
                   <div style={{ display: 'flex', gap: '12px' }}>
                     {sub.status === 'pending' && (
                       <>
-                        <button
-                          onClick={() => startPromote(sub)}
-                          disabled={actionLoading !== null}
-                          style={{
-                            background: '#111111',
-                            color: '#ffffff',
-                            border: '1px solid #111111',
-                            padding: '6px 14px',
-                            fontSize: '11px',
-                            fontFamily: 'IBM Plex Mono, monospace',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Convert to Note Draft
-                        </button>
-                        <button
-                          onClick={() => handleSubmissionAction(sub._id, 'resolve')}
-                          disabled={actionLoading !== null}
-                          style={{
-                            background: 'transparent',
-                            border: '1px solid #e5e5e5',
-                            color: '#111111',
-                            padding: '6px 14px',
-                            fontSize: '11px',
-                            fontFamily: 'IBM Plex Mono, monospace',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Mark Resolved
-                        </button>
+                        <button onClick={() => startPromote(sub)} disabled={actionLoading !== null} style={{ background: '#111', color: '#fff', border: '1px solid #111', padding: '6px 14px', fontSize: '11px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer' }}>Convert to Note</button>
+                        <button onClick={() => handleSubmissionAction(sub._id, 'resolve')} disabled={actionLoading !== null} style={{ background: 'transparent', border: '1px solid #e5e5e5', color: '#111', padding: '6px 14px', fontSize: '11px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer' }}>Mark Resolved</button>
                       </>
                     )}
-                    <button
-                      onClick={() => handleSubmissionAction(sub._id, 'delete')}
-                      disabled={actionLoading !== null}
-                      style={{
-                        background: 'transparent',
-                        border: '1px solid #e5e5e5',
-                        color: '#dc2626',
-                        padding: '6px 14px',
-                        fontSize: '11px',
-                        fontFamily: 'IBM Plex Mono, monospace',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
-                        cursor: 'pointer',
-                        marginLeft: 'auto'
-                      }}
-                    >
-                      Delete
-                    </button>
+                    <button onClick={() => handleSubmissionAction(sub._id, 'delete')} disabled={actionLoading !== null} style={{ background: 'transparent', border: '1px solid #e5e5e5', color: '#dc2626', padding: '6px 14px', fontSize: '11px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer', marginLeft: 'auto' }}>Delete</button>
                   </div>
                 </div>
               ))}
@@ -646,105 +439,33 @@ export default function AdminPortal() {
         </>
       )}
 
-      {/* ── TAB 2: COMMUNITY NOTES ── */}
+      {/* ── NOTES TAB ── */}
       {activeTab === 'notes' && (
         <>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'baseline',
-            marginBottom: '32px'
-          }}>
-            <h2 style={{
-              fontFamily: 'Lora, serif',
-              fontSize: '22px',
-              fontWeight: '400',
-              margin: 0
-            }}>Community Notes Directory</h2>
-            <button
-              onClick={openNewNoteForm}
-              style={{
-                background: '#2f5d8a',
-                color: '#ffffff',
-                border: 'none',
-                padding: '8px 16px',
-                fontFamily: 'IBM Plex Mono, monospace',
-                fontSize: '11px',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                cursor: 'pointer'
-              }}
-            >
-              + Create New Note
-            </button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '32px' }}>
+            <h2 style={{ fontFamily: 'Lora, serif', fontSize: '22px', fontWeight: '400', margin: 0 }}>Community Notes</h2>
+            <button onClick={openNewNoteForm} style={{ background: '#2f5d8a', color: '#fff', border: 'none', padding: '8px 16px', fontFamily: 'IBM Plex Mono, monospace', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer' }}>+ New Note</button>
           </div>
-
           {loading ? (
-            <p style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', color: '#737373' }}>Loading community notes...</p>
+            <p style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', color: '#737373' }}>Loading...</p>
           ) : notes.length === 0 ? (
-            <div style={{
-              border: '1px dashed #e5e5e5',
-              padding: '80px 24px',
-              textAlign: 'center',
-              color: '#737373'
-            }}>
+            <div style={{ border: '1px dashed #e5e5e5', padding: '80px 24px', textAlign: 'center', color: '#737373' }}>
               <p style={{ fontSize: '13px' }}>No notes found in Sanity. Create one to begin.</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {notes.map((note) => (
-                <div key={note._id} style={{
-                  border: '1px solid #e5e5e5',
-                  padding: '18px 24px',
-                  backgroundColor: '#ffffff',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
+              {notes.map(note => (
+                <div key={note._id} style={{ border: '1px solid #e5e5e5', padding: '18px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <h4 style={{
-                      margin: 0,
-                      fontSize: '15px',
-                      fontWeight: '500',
-                      fontFamily: 'Lora, serif',
-                      letterSpacing: '-0.01em'
-                    }}>{note.title}</h4>
+                    <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '500', fontFamily: 'Lora, serif' }}>{note.title}</h4>
                     <div style={{ display: 'flex', gap: '16px', marginTop: '6px' }}>
                       <span style={{ fontSize: '11px', color: '#737373', fontFamily: 'IBM Plex Mono, monospace' }}>/{note.slug?.current}</span>
                       <span style={{ fontSize: '11px', color: '#737373', fontFamily: 'IBM Plex Mono, monospace' }}>{note.date}</span>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      onClick={() => openEditNoteForm(note)}
-                      style={{
-                        background: 'transparent',
-                        border: '1px solid #e5e5e5',
-                        color: '#111111',
-                        padding: '6px 12px',
-                        fontSize: '11px',
-                        fontFamily: 'IBM Plex Mono, monospace',
-                        textTransform: 'uppercase',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteNote(note._id)}
-                      style={{
-                        background: 'transparent',
-                        border: '1px solid #e5e5e5',
-                        color: '#dc2626',
-                        padding: '6px 12px',
-                        fontSize: '11px',
-                        fontFamily: 'IBM Plex Mono, monospace',
-                        textTransform: 'uppercase',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Delete
-                    </button>
+                    <button onClick={() => openEditNoteForm(note)} style={{ background: 'transparent', border: '1px solid #e5e5e5', color: '#111', padding: '6px 12px', fontSize: '11px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', cursor: 'pointer' }}>Edit</button>
+                    <button onClick={() => handleDeleteNote(note._id)} style={{ background: 'transparent', border: '1px solid #e5e5e5', color: '#dc2626', padding: '6px 12px', fontSize: '11px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', cursor: 'pointer' }}>Delete</button>
                   </div>
                 </div>
               ))}
@@ -753,674 +474,295 @@ export default function AdminPortal() {
         </>
       )}
 
-      {/* ── TAB 3: TEMPLATE EDITOR ── */}
+      {/* ── MAIN PAGE EDITOR TAB ── */}
       {activeTab === 'template' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'baseline'
-          }}>
-            <h2 style={{
-              fontFamily: 'Lora, serif',
-              fontSize: '22px',
-              fontWeight: '400',
-              margin: 0
-            }}>Edit Main Page Markup</h2>
-            <button
-              onClick={handleSaveTemplate}
-              style={{
-                background: '#2f5d8a',
-                color: '#ffffff',
-                border: 'none',
-                padding: '8px 20px',
-                fontFamily: 'IBM Plex Mono, monospace',
-                fontSize: '11px',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                cursor: 'pointer'
-              }}
-            >
-              Save &amp; Recompile
-            </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <h2 style={{ fontFamily: 'Lora, serif', fontSize: '22px', fontWeight: '400', margin: '0 0 6px 0' }}>Live Page Editor</h2>
+              <p style={{ fontSize: '12px', color: '#737373', margin: 0, lineHeight: '1.5', fontFamily: 'IBM Plex Mono, monospace' }}>
+                The main page is rendered below. Click <strong style={{ color: '#111' }}>Enable Editing</strong> then click any text to edit it directly.
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexShrink: 0 }}>
+              {!pageEditing ? (
+                <button
+                  onClick={enablePageEditing}
+                  disabled={!iframeReady}
+                  style={{ background: '#2f5d8a', color: '#fff', border: 'none', padding: '8px 16px', fontFamily: 'IBM Plex Mono, monospace', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', cursor: iframeReady ? 'pointer' : 'not-allowed', opacity: iframeReady ? 1 : 0.5 }}
+                >
+                  {iframeReady ? 'Enable Editing' : 'Loading...'}
+                </button>
+              ) : (
+                <>
+                  <button onClick={handleCancelPageEdit} style={{ background: 'transparent', border: '1px solid #e5e5e5', color: '#111', padding: '8px 14px', fontFamily: 'IBM Plex Mono, monospace', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer' }}>Cancel</button>
+                  <button onClick={handleSavePage} style={{ background: '#111', color: '#fff', border: 'none', padding: '8px 16px', fontFamily: 'IBM Plex Mono, monospace', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer' }}>Save Changes</button>
+                </>
+              )}
+            </div>
           </div>
-          <p style={{ fontSize: '13px', color: '#737373', margin: 0, lineHeight: '1.6' }}>
-            Directly modifies the base file **index.html.bak**. Saving triggers automatic conversion to Next.js components in the background.
-          </p>
 
-          {saveStatus && (
-            <div style={{
-              borderLeft: '3px solid #2f5d8a',
-              background: '#f8fafc',
-              color: '#2f5d8a',
-              padding: '12px 16px',
-              fontSize: '12px',
-              fontFamily: 'IBM Plex Mono, monospace'
-            }}>
-              {saveStatus}
+          {/* Status bar */}
+          {pageSaveStatus && (
+            <div style={{ borderLeft: '3px solid #2f5d8a', background: '#f8fafc', color: '#2f5d8a', padding: '10px 16px', fontSize: '12px', fontFamily: 'IBM Plex Mono, monospace' }}>
+              {pageSaveStatus}
             </div>
           )}
 
-          <textarea
-            value={templateContent}
-            onChange={(e) => setTemplateContent(e.target.value)}
-            rows={24}
-            style={{
-              width: '100%',
-              fontFamily: 'IBM Plex Mono, monospace',
-              fontSize: '13px',
-              padding: '20px',
-              border: '1px solid #e5e5e5',
-              backgroundColor: '#fafafa',
-              color: '#111111',
-              outline: 'none',
-              lineHeight: '1.6',
-              borderRadius: 0
-            }}
-          />
+          {pageEditing && (
+            <div style={{ borderLeft: '3px solid #30d158', background: '#f0fdf4', color: '#15803d', padding: '10px 16px', fontSize: '12px', fontFamily: 'IBM Plex Mono, monospace', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#30d158', display: 'inline-block', flexShrink: 0 }}></span>
+              Editing mode active — click any text on the page below to edit it
+            </div>
+          )}
+
+          {/* Iframe preview / editor */}
+          <div style={{ border: '1px solid #e5e5e5', borderRadius: '4px', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.05)' }}>
+            {/* Browser chrome bar */}
+            <div style={{ background: '#f5f5f5', borderBottom: '1px solid #e5e5e5', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ff5f57', display: 'inline-block' }}></span>
+                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#febc2e', display: 'inline-block' }}></span>
+                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#28c840', display: 'inline-block' }}></span>
+              </div>
+              <div style={{ flex: 1, background: '#fff', border: '1px solid #e0e0e0', borderRadius: '4px', padding: '3px 10px', fontSize: '11px', color: '#737373', fontFamily: 'IBM Plex Mono, monospace' }}>
+                manual-design.vercel.app
+              </div>
+            </div>
+            <iframe
+              ref={iframeRef}
+              src="/"
+              onLoad={handleIframeLoad}
+              style={{ width: '100%', height: '80vh', border: 'none', display: 'block', outline: pageEditing ? '2px solid #2f5d8a' : 'none' }}
+              title="Live Main Page Editor"
+            />
+          </div>
         </div>
       )}
 
-      {/* ── CONVERT SUBMISSION TO DRAFT MODAL ── */}
+      {/* ── PROMOTE MODAL ── */}
       {promoteId && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '20px'
-        }}>
-          <div style={{
-            background: '#ffffff',
-            border: '1px solid #111111',
-            padding: '32px',
-            width: '100%',
-            maxWidth: '480px'
-          }}>
-            <h3 style={{
-              fontFamily: 'Lora, serif',
-              fontSize: '22px',
-              fontWeight: '400',
-              marginBottom: '10px'
-            }}>Draft Community Note</h3>
-            <p style={{
-              fontSize: '13px',
-              color: '#737373',
-              marginBottom: '24px',
-              lineHeight: '1.5'
-            }}>Provide a brief title for the note article draft.</p>
-
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div style={{ background: '#fff', border: '1px solid #111', padding: '32px', width: '100%', maxWidth: '480px' }}>
+            <h3 style={{ fontFamily: 'Lora, serif', fontSize: '22px', fontWeight: '400', marginBottom: '10px' }}>Draft Community Note</h3>
+            <p style={{ fontSize: '13px', color: '#737373', marginBottom: '24px', lineHeight: '1.5' }}>Give this submission a note title.</p>
             <div style={{ marginBottom: '24px' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '10px',
-                fontFamily: 'IBM Plex Mono, monospace',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                marginBottom: '8px',
-                fontWeight: 600
-              }}>Article Title</label>
-              <input
-                type="text"
-                value={promoteTitle}
-                onChange={(e) => setPromoteTitle(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #e5e5e5',
-                  fontSize: '13.5px',
-                  outline: 'none',
-                  borderRadius: 0
-                }}
-              />
+              <label style={monoLabel}>Article Title</label>
+              <input type="text" value={promoteTitle} onChange={e => setPromoteTitle(e.target.value)} style={{ width: '100%', padding: '10px', border: '1px solid #e5e5e5', fontSize: '13.5px', outline: 'none', borderRadius: 0 }} />
             </div>
-
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              <button onClick={() => setPromoteId(null)} style={{
-                background: 'transparent',
-                border: '1px solid #e5e5e5',
-                cursor: 'pointer',
-                padding: '8px 16px',
-                fontFamily: 'IBM Plex Mono, monospace',
-                fontSize: '11px',
-                textTransform: 'uppercase'
-              }}>Cancel</button>
-              <button
-                onClick={() => handleSubmissionAction(promoteId, 'promote', { title: promoteTitle, question: promoteQuestion })}
-                style={{
-                  background: '#2f5d8a',
-                  color: '#ffffff',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '8px 16px',
-                  fontFamily: 'IBM Plex Mono, monospace',
-                  fontSize: '11px',
-                  textTransform: 'uppercase'
-                }}
-              >
-                Create Note Draft
-              </button>
+              <button onClick={() => setPromoteId(null)} style={{ background: 'transparent', border: '1px solid #e5e5e5', cursor: 'pointer', padding: '8px 16px', fontFamily: 'IBM Plex Mono, monospace', fontSize: '11px', textTransform: 'uppercase' }}>Cancel</button>
+              <button onClick={() => handleSubmissionAction(promoteId, 'promote', { title: promoteTitle, question: promoteQuestion })} style={{ background: '#2f5d8a', color: '#fff', border: 'none', cursor: 'pointer', padding: '8px 16px', fontFamily: 'IBM Plex Mono, monospace', fontSize: '11px', textTransform: 'uppercase' }}>Create Draft</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── PREMIUM WORKSPACE EDITOR WITH TOGGLEABLE LIGHT/DARK BACKGROUNDS & SECTION INJECTOR ── */}
+      {/* ── WYSIWYG NOTE EDITOR FULLSCREEN ── */}
       {noteFormOpen && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: isDarkMode ? '#0a0a0a' : '#ffffff',
-          zIndex: 2000,
-          display: 'flex',
-          flexDirection: 'column',
-          color: isDarkMode ? '#e5e5e5' : '#111111',
-          fontFamily: 'Inter, -apple-system, sans-serif',
-          transition: 'background-color 0.2s ease, color 0.2s ease'
-        }}>
-          
-          {/* Top minimal header toolbar */}
-          <div style={{
-            height: '56px',
-            borderBottom: isDarkMode ? '1px solid #222222' : '1px solid #e5e5e5',
-            padding: '0 20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            backgroundColor: isDarkMode ? '#0a0a0a' : '#ffffff',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
-          }}>
-            
-            {/* Left controls: Close and Status */}
+        <div style={{ position: 'fixed', inset: 0, background: isDarkMode ? '#0a0a0a' : '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', color: isDarkMode ? '#e5e5e5' : '#111', fontFamily: 'Inter, sans-serif', transition: 'background 0.2s,color 0.2s' }}>
+
+          {/* Top toolbar */}
+          <div style={{ height: '52px', borderBottom: isDarkMode ? '1px solid #222' : '1px solid #e5e5e5', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: isDarkMode ? '#0a0a0a' : '#fff' }}>
+
+            {/* Left */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <button
-                onClick={() => setNoteFormOpen(false)}
-                aria-label="Back to dashboard"
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#737373',
-                  cursor: 'pointer',
-                  fontSize: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '4px'
-                }}
-              >
-                &larr;
-              </button>
-              <span style={{
-                fontFamily: 'IBM Plex Mono, monospace',
-                fontSize: '11px',
-                color: '#737373',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}>
-                <span style={{
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
-                  backgroundColor: saveStatusIndicator === 'Saving...' ? '#ff9f0a' : saveStatusIndicator === 'Error' ? '#ff453a' : '#30d158'
-                }}></span>
+              <button onClick={() => setNoteFormOpen(false)} style={{ background: 'transparent', border: 'none', color: '#737373', cursor: 'pointer', fontSize: '20px', padding: '4px' }}>←</button>
+              <span style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '11px', color: '#737373', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: saveStatusIndicator === 'Saving...' ? '#ff9f0a' : saveStatusIndicator.includes('Error') ? '#ff453a' : '#30d158' }}></span>
                 {saveStatusIndicator}
               </span>
             </div>
 
-            {/* Middle formatting action bar */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              backgroundColor: isDarkMode ? '#161616' : '#f5f5f5',
-              padding: '4px 8px',
-              borderRadius: '6px',
-              border: isDarkMode ? '1px solid #222222' : '1px solid #e0e0e0'
-            }}>
-              <button type="button" onClick={() => injectFormat('<strong>', '</strong>')} title="Bold" style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111111', padding: '6px 10px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}>B</button>
-              <button type="button" onClick={() => injectFormat('<em>', '</em>')} title="Italic" style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111111', padding: '6px 10px', fontSize: '12px', fontStyle: 'italic', cursor: 'pointer' }}>I</button>
-              
-              <div style={{ width: '1px', height: '16px', backgroundColor: isDarkMode ? '#333333' : '#d5d5d5', margin: '0 6px' }}></div>
-              
-              <button type="button" onClick={() => injectFormat('<code>', '</code>')} title="Code inline" style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111111', padding: '4px 6px', fontSize: '11px', cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace' }}>&lt;&gt;</button>
-              
-              {/* Insert Inline Image Button */}
-              <label style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 8px', cursor: 'pointer' }} title="Insert Image Inline">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: isDarkMode ? '#e5e5e5' : '#111111' }}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            {/* Center formatting bar */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '2px', background: isDarkMode ? '#161616' : '#f5f5f5', padding: '4px 8px', borderRadius: '6px', border: isDarkMode ? '1px solid #222' : '1px solid #e0e0e0' }}>
+
+              <button onMouseDown={e => { e.preventDefault(); execFormat('bold'); }} title="Bold (Ctrl+B)" style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111', padding: '5px 9px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', borderRadius: '3px' }}>B</button>
+              <button onMouseDown={e => { e.preventDefault(); execFormat('italic'); }} title="Italic (Ctrl+I)" style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111', padding: '5px 9px', fontStyle: 'italic', fontSize: '13px', cursor: 'pointer', borderRadius: '3px' }}>I</button>
+              <button onMouseDown={e => { e.preventDefault(); execFormat('underline'); }} title="Underline (Ctrl+U)" style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111', padding: '5px 9px', textDecoration: 'underline', fontSize: '13px', cursor: 'pointer', borderRadius: '3px' }}>U</button>
+              <button onMouseDown={e => { e.preventDefault(); execFormat('strikeThrough'); }} title="Strikethrough" style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111', padding: '5px 9px', textDecoration: 'line-through', fontSize: '12px', cursor: 'pointer', borderRadius: '3px' }}>S</button>
+
+              <div style={{ width: '1px', height: '16px', background: isDarkMode ? '#333' : '#d5d5d5', margin: '0 5px' }}></div>
+
+              <button onMouseDown={e => { e.preventDefault(); execFormat('formatBlock', 'H3'); }} title="Heading" style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111', padding: '5px 8px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', borderRadius: '3px', fontFamily: 'IBM Plex Mono, monospace' }}>H3</button>
+              <button onMouseDown={e => { e.preventDefault(); execFormat('insertUnorderedList'); }} title="Bullet list" style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111', padding: '5px 8px', fontSize: '14px', cursor: 'pointer', borderRadius: '3px' }}>≡</button>
+              <button onMouseDown={e => { e.preventDefault(); execFormat('formatBlock', 'blockquote'); }} title="Blockquote" style={{ background: 'transparent', border: 'none', color: '#2f5d8a', padding: '5px 8px', fontSize: '14px', cursor: 'pointer', borderRadius: '3px' }}>"</button>
+
+              <div style={{ width: '1px', height: '16px', background: isDarkMode ? '#333' : '#d5d5d5', margin: '0 5px' }}></div>
+
+              {/* Section chooser */}
+              <div style={{ position: 'relative' }}>
+                <button onMouseDown={e => { e.preventDefault(); setShowSectionDropdown(!showSectionDropdown); }} style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111', padding: '5px 9px', fontSize: '11px', cursor: 'pointer', borderRadius: '3px', fontFamily: 'IBM Plex Mono, monospace', whiteSpace: 'nowrap' }}>
+                  + Section ▾
+                </button>
+                {showSectionDropdown && (
+                  <div style={{ position: 'absolute', top: '32px', left: 0, background: isDarkMode ? '#1c1c1e' : '#fff', border: isDarkMode ? '1px solid #2c2c2e' : '1px solid #e0e0e0', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 2200, padding: '6px 0', minWidth: '180px' }}>
+                    {[['clause_card', 'BS 8110 Clause Card'], ['formula', 'Formula Block'], ['table', 'Reference Table'], ['callout', 'Callout / Warning'], ['heading', 'Section Heading']].map(([type, label]) => (
+                      <button key={type} onMouseDown={e => { e.preventDefault(); insertSection(type); }} style={{ display: 'block', width: '100%', background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111', padding: '9px 16px', textAlign: 'left', cursor: 'pointer', fontSize: '12.5px' }}>{label}</button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Image upload */}
+              <label title="Insert image at cursor" style={{ display: 'inline-flex', alignItems: 'center', padding: '5px 8px', cursor: 'pointer', color: isDarkMode ? '#e5e5e5' : '#111', fontSize: '15px' }}>
+                🖼
                 <input type="file" accept="image/*" onChange={handleInlineImageUpload} style={{ display: 'none' }} />
               </label>
 
-              {/* Theme Toggle Button */}
-              <button
-                type="button"
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                title="Toggle Dark Mode"
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: isDarkMode ? '#e5e5e5' : '#111111',
-                  padding: '4px 8px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
+              <div style={{ width: '1px', height: '16px', background: isDarkMode ? '#333' : '#d5d5d5', margin: '0 5px' }}></div>
+
+              {/* Dark mode toggle */}
+              <button onMouseDown={e => { e.preventDefault(); setIsDarkMode(!isDarkMode); }} title="Toggle theme" style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111', padding: '5px 8px', fontSize: '14px', cursor: 'pointer' }}>
                 {isDarkMode ? '☀️' : '🌙'}
               </button>
-
-              <div style={{ width: '1px', height: '16px', backgroundColor: isDarkMode ? '#333333' : '#d5d5d5', margin: '0 6px' }}></div>
-
-              {/* Auto Format Markdown / Paragraphs button */}
-              <button
-                type="button"
-                onClick={runAutoParagraphFormatting}
-                title="Auto format markdown formatting/spacing to HTML tags"
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#2f5d8a',
-                  fontSize: '11px',
-                  padding: '4px 8px',
-                  fontFamily: 'IBM Plex Mono, monospace',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
-              >
-                Format Draft
-              </button>
             </div>
 
-            {/* Right primary action controls */}
+            {/* Right */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <button
-                type="button"
-                onClick={() => {
-                  const win = window.open();
-                  if (win) win.document.write(noteAnswer);
-                }}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#737373',
-                  fontSize: '12px',
-                  fontFamily: 'IBM Plex Mono, monospace',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  cursor: 'pointer',
-                  padding: '6px 12px'
-                }}
-              >
-                Preview
-              </button>
-              <button
-                type="button"
-                onClick={handleNoteSubmit}
-                style={{
-                  background: '#2f5d8a',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '20px',
-                  padding: '6px 20px',
-                  fontSize: '11px',
-                  fontFamily: 'IBM Plex Mono, monospace',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
-              >
-                Continue
-              </button>
+              <button onClick={() => setShowSettingsDrawer(!showSettingsDrawer)} style={{ background: 'transparent', border: 'none', color: '#737373', fontSize: '12px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer' }}>Settings</button>
+              <button onClick={handleNoteSubmit} style={{ background: '#2f5d8a', color: '#fff', border: 'none', borderRadius: '20px', padding: '6px 20px', fontSize: '11px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, cursor: 'pointer' }}>Publish</button>
             </div>
-
           </div>
 
-          {/* Main workspace editing canvas */}
-          <div style={{
-            flex: 1,
-            display: 'flex',
-            overflow: 'hidden',
-            position: 'relative'
-          }}>
-            
-            {/* Scrollable document paper area */}
-            <div style={{
-              flex: 1,
-              overflowY: 'auto',
-              padding: '60px 40px 120px 40px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center'
-            }}>
-              <div style={{
-                width: '100%',
-                maxWidth: '680px',
-                display: 'flex',
-                flexDirection: 'column'
-              }}>
-                
-                {/* Choose a Section Dropdown Bar */}
-                <div style={{
-                  display: 'flex',
-                  gap: '12px',
-                  alignItems: 'center',
-                  marginBottom: '32px',
-                  fontSize: '11px',
-                  color: '#737373',
-                  fontFamily: 'IBM Plex Mono, monospace',
-                  position: 'relative'
-                }}>
-                  <div
-                    onClick={() => setShowSectionDropdown(!showSectionDropdown)}
-                    style={{
-                      border: isDarkMode ? '1px solid #333333' : '1px solid #e0e0e0',
-                      padding: '6px 12px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      backgroundColor: isDarkMode ? '#161616' : '#ffffff',
-                      userSelect: 'none'
-                    }}
-                  >
-                    <span>Choose a section</span>
-                    <span>&darr;</span>
-                  </div>
+          {/* Editor canvas + settings drawer */}
+          <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
-                  {showSectionDropdown && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '36px',
-                      left: 0,
-                      width: '240px',
-                      background: isDarkMode ? '#1c1c1e' : '#ffffff',
-                      border: isDarkMode ? '1px solid #2c2c2e' : '1px solid #e0e0e0',
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-                      zIndex: 2200,
-                      padding: '8px 0',
-                      display: 'flex',
-                      flexDirection: 'column'
-                    }}>
-                      <button type="button" onClick={() => insertComponentSection('clause_card')} style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111111', padding: '10px 16px', textAlign: 'left', cursor: 'pointer', fontSize: '12.5px', fontFamily: 'Inter, sans-serif' }}>BS 8110 Clause Card</button>
-                      <button type="button" onClick={() => insertComponentSection('formula_block')} style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111111', padding: '10px 16px', textAlign: 'left', cursor: 'pointer', fontSize: '12.5px', fontFamily: 'Inter, sans-serif' }}>Mathematical Formula</button>
-                      <button type="button" onClick={() => insertComponentSection('ref_table')} style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111111', padding: '10px 16px', textAlign: 'left', cursor: 'pointer', fontSize: '12.5px', fontFamily: 'Inter, sans-serif' }}>Reference Table</button>
-                      <button type="button" onClick={() => insertComponentSection('callout_box')} style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#e5e5e5' : '#111111', padding: '10px 16px', textAlign: 'left', cursor: 'pointer', fontSize: '12.5px', fontFamily: 'Inter, sans-serif' }}>Warning / Callout Box</button>
-                    </div>
-                  )}
+            {/* Scrollable canvas */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '60px 40px 120px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ width: '100%', maxWidth: '680px' }}>
 
-                  <div style={{
-                    border: isDarkMode ? '1px solid #333333' : '1px solid #e0e0e0',
-                    padding: '6px 12px',
-                    borderRadius: '4px',
-                    color: '#a0a0a0',
-                    backgroundColor: isDarkMode ? '#161616' : '#ffffff'
-                  }}>
-                    Email header / footer
-                  </div>
-                </div>
-
-                {/* Main Title Input */}
-                <input
-                  type="text"
-                  placeholder="Title"
-                  value={noteTitle}
-                  onChange={(e) => {
-                    setNoteTitle(e.target.value);
-                    if (!editingNoteId) {
-                      setNoteSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
-                    }
-                  }}
-                  style={{
-                    width: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    color: isDarkMode ? '#ffffff' : '#111111',
-                    fontSize: '42px',
-                    fontFamily: 'Lora, Georgia, serif',
-                    fontWeight: '400',
-                    marginBottom: '12px',
-                    padding: 0
-                  }}
+                {/* Title */}
+                <input type="text" placeholder="Title" value={noteTitle}
+                  onChange={e => { setNoteTitle(e.target.value); if (!editingNoteId) setNoteSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')); }}
+                  style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', color: isDarkMode ? '#fff' : '#111', fontSize: '42px', fontFamily: 'Lora, serif', fontWeight: '400', marginBottom: '12px', padding: 0 }}
                 />
 
-                {/* Subtitle Input */}
-                <input
-                  type="text"
-                  placeholder="Add a subtitle..."
-                  value={noteSubtitle}
-                  onChange={(e) => setNoteSubtitle(e.target.value)}
-                  style={{
-                    width: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    color: isDarkMode ? '#888888' : '#666666',
-                    fontSize: '20px',
-                    fontFamily: 'Inter, sans-serif',
-                    marginBottom: '24px',
-                    padding: 0
-                  }}
+                {/* Subtitle */}
+                <input type="text" placeholder="Add a subtitle..." value={noteSubtitle} onChange={e => setNoteSubtitle(e.target.value)}
+                  style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', color: isDarkMode ? '#888' : '#666', fontSize: '20px', fontFamily: 'Inter, sans-serif', marginBottom: '24px', padding: 0 }}
                 />
 
-                {/* Interactive Tag Pills section */}
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  alignItems: 'center',
-                  gap: '8px',
-                  marginBottom: '40px',
-                  borderBottom: isDarkMode ? '1px solid #222222' : '1px solid #e5e5e5',
-                  paddingBottom: '16px'
-                }}>
+                {/* Tags */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', marginBottom: '40px', borderBottom: isDarkMode ? '1px solid #222' : '1px solid #e5e5e5', paddingBottom: '16px' }}>
                   {noteTagsList.map((tag, idx) => (
-                    <span key={idx} style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      background: isDarkMode ? '#161616' : '#f0f0f0',
-                      border: isDarkMode ? '1px solid #333333' : '1px solid #d5d5d5',
-                      color: isDarkMode ? '#cccccc' : '#444444',
-                      padding: '4px 10px',
-                      borderRadius: '16px',
-                      fontSize: '11px',
-                      fontFamily: 'IBM Plex Mono, monospace'
-                    }}>
+                    <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: isDarkMode ? '#161616' : '#f0f0f0', border: isDarkMode ? '1px solid #333' : '1px solid #d5d5d5', color: isDarkMode ? '#ccc' : '#444', padding: '4px 10px', borderRadius: '16px', fontSize: '11px', fontFamily: 'IBM Plex Mono, monospace' }}>
                       {tag}
-                      <button
-                        type="button"
-                        onClick={() => setNoteTagsList(noteTagsList.filter(t => t !== tag))}
-                        style={{
-                          background: 'transparent',
-                          border: 'none',
-                          color: '#dc2626',
-                          cursor: 'pointer',
-                          padding: 0,
-                          fontSize: '10px',
-                          fontWeight: 'bold'
-                        }}
-                      >
-                        &times;
-                      </button>
+                      <button onMouseDown={e => { e.preventDefault(); setNoteTagsList(noteTagsList.filter(t => t !== tag)); }} style={{ background: 'transparent', border: 'none', color: '#dc2626', cursor: 'pointer', padding: 0, fontSize: '10px', fontWeight: 'bold' }}>×</button>
                     </span>
                   ))}
-                  
                   {showTagInput ? (
-                    <input
-                      type="text"
-                      value={newTagInput}
-                      onChange={(e) => setNewTagInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          if (newTagInput.trim() && !noteTagsList.includes(newTagInput.trim())) {
-                            setNoteTagsList([...noteTagsList, newTagInput.trim()]);
-                          }
-                          setNewTagInput('');
-                          setShowTagInput(false);
-                        }
-                      }}
-                      onBlur={() => {
-                        if (newTagInput.trim() && !noteTagsList.includes(newTagInput.trim())) {
-                          setNoteTagsList([...noteTagsList, newTagInput.trim()]);
-                        }
-                        setNewTagInput('');
-                        setShowTagInput(false);
-                      }}
-                      autoFocus
-                      style={{
-                        background: 'transparent',
-                        border: isDarkMode ? '1px solid #333333' : '1px solid #d5d5d5',
-                        outline: 'none',
-                        color: isDarkMode ? '#ffffff' : '#111111',
-                        fontSize: '11px',
-                        fontFamily: 'IBM Plex Mono, monospace',
-                        padding: '2px 8px',
-                        borderRadius: '12px',
-                        width: '80px'
-                      }}
+                    <input type="text" value={newTagInput} onChange={e => setNewTagInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (newTagInput.trim() && !noteTagsList.includes(newTagInput.trim())) setNoteTagsList([...noteTagsList, newTagInput.trim()]); setNewTagInput(''); setShowTagInput(false); } }}
+                      onBlur={() => { if (newTagInput.trim() && !noteTagsList.includes(newTagInput.trim())) setNoteTagsList([...noteTagsList, newTagInput.trim()]); setNewTagInput(''); setShowTagInput(false); }}
+                      autoFocus style={{ background: 'transparent', border: isDarkMode ? '1px solid #333' : '1px solid #d5d5d5', outline: 'none', color: isDarkMode ? '#fff' : '#111', fontSize: '11px', fontFamily: 'IBM Plex Mono, monospace', padding: '2px 8px', borderRadius: '12px', width: '80px' }}
                     />
                   ) : (
-                    <button
-                      type="button"
-                      onClick={() => setShowTagInput(true)}
-                      style={{
-                        background: isDarkMode ? '#161616' : '#ffffff',
-                        border: isDarkMode ? '1px dashed #444444' : '1px dashed #cccccc',
-                        color: '#888888',
-                        width: '24px',
-                        height: '24px',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        padding: 0
-                      }}
-                    >
-                      +
-                    </button>
+                    <button onMouseDown={e => { e.preventDefault(); setShowTagInput(true); }} style={{ background: isDarkMode ? '#161616' : '#fff', border: isDarkMode ? '1px dashed #444' : '1px dashed #ccc', color: '#888', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '14px', padding: 0 }}>+</button>
                   )}
                 </div>
 
-                {/* Primary Content Writing area */}
-                <textarea
-                  id="editor-textarea"
-                  placeholder="$tart writing..."
-                  value={noteAnswer}
-                  onPaste={handlePaste}
-                  onChange={(e) => setNoteAnswer(e.target.value)}
+                {/* ── CONTENTEDITABLE WYSIWYG EDITOR ── */}
+                <div
+                  ref={editorRef}
+                  contentEditable
+                  suppressContentEditableWarning
+                  onPaste={handleEditorPaste}
+                  data-placeholder="Start writing..."
                   style={{
                     width: '100%',
-                    minHeight: '380px',
-                    background: 'transparent',
-                    border: 'none',
+                    minHeight: '400px',
                     outline: 'none',
-                    color: isDarkMode ? '#e5e5e5' : '#222222',
+                    color: isDarkMode ? '#e5e5e5' : '#222',
                     fontSize: '16px',
-                    fontFamily: 'IBM Plex Mono, monospace',
+                    fontFamily: 'Inter, sans-serif',
                     lineHeight: '1.8',
-                    resize: 'none',
-                    padding: 0
+                    caretColor: '#2f5d8a',
                   }}
                 />
+
+                <style>{`
+                  [contenteditable][data-placeholder]:empty:before {
+                    content: attr(data-placeholder);
+                    color: #aaa;
+                    pointer-events: none;
+                  }
+                  [contenteditable] h3 {
+                    font-family: Lora, serif;
+                    font-size: 20px;
+                    font-weight: 500;
+                    margin: 28px 0 10px;
+                  }
+                  [contenteditable] p {
+                    margin: 0 0 14px;
+                  }
+                  [contenteditable] blockquote {
+                    border-left: 3px solid #2f5d8a;
+                    background: #eef3f7;
+                    color: #2f5d8a;
+                    padding: 14px 16px;
+                    margin: 20px 0;
+                    font-size: 14px;
+                  }
+                  [contenteditable] code {
+                    font-family: 'IBM Plex Mono', monospace;
+                    background: #f3f3f3;
+                    padding: 2px 6px;
+                    font-size: 13px;
+                    border-radius: 3px;
+                  }
+                  [contenteditable] ul {
+                    padding-left: 20px;
+                    margin: 12px 0;
+                  }
+                  [contenteditable] ul li {
+                    margin-bottom: 6px;
+                    line-height: 1.7;
+                  }
+                  [contenteditable] table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                    font-size: 13px;
+                  }
+                  [contenteditable] th, [contenteditable] td {
+                    padding: 8px 10px;
+                    border: 1px solid #e0e0e0;
+                    text-align: left;
+                  }
+                  [contenteditable] th {
+                    background: #f5f5f5;
+                    font-weight: 600;
+                  }
+                `}</style>
 
               </div>
             </div>
 
-            {/* Bottom floating settings gear */}
-            <button
-              type="button"
-              onClick={() => setShowSettingsDrawer(!showSettingsDrawer)}
-              style={{
-                position: 'absolute',
-                bottom: '24px',
-                right: '24px',
-                width: '40px',
-                height: '40px',
-                borderRadius: '50%',
-                background: isDarkMode ? '#1c1c1e' : '#ffffff',
-                border: isDarkMode ? '1px solid #3a3a3c' : '1px solid #e0e0e0',
-                color: isDarkMode ? '#ffffff' : '#111111',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                fontSize: '18px',
-                zIndex: 2100
-              }}
-            >
-              &#9881;
-            </button>
-
-            {/* Settings Right Side Drawer panel */}
+            {/* Settings drawer */}
             {showSettingsDrawer && (
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                bottom: 0,
-                width: '320px',
-                background: isDarkMode ? '#1c1c1e' : '#ffffff',
-                borderLeft: isDarkMode ? '1px solid #2c2c2e' : '1px solid #e0e0e0',
-                padding: '24px',
-                zIndex: 2050,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '24px',
-                overflowY: 'auto',
-                color: isDarkMode ? '#ffffff' : '#111111'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: isDarkMode ? '1px solid #2c2c2e' : '1px solid #e0e0e0', paddingBottom: '12px' }}>
+              <div style={{ width: '300px', background: isDarkMode ? '#1c1c1e' : '#fff', borderLeft: isDarkMode ? '1px solid #2c2c2e' : '1px solid #e5e5e5', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto', color: isDarkMode ? '#fff' : '#111' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: isDarkMode ? '1px solid #2c2c2e' : '1px solid #e5e5e5', paddingBottom: '12px' }}>
                   <h4 style={{ margin: 0, fontFamily: 'Lora, serif', fontSize: '16px' }}>Note Settings</h4>
-                  <button onClick={() => setShowSettingsDrawer(false)} style={{ background: 'transparent', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '18px' }}>&times;</button>
+                  <button onClick={() => setShowSettingsDrawer(false)} style={{ background: 'transparent', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '18px' }}>×</button>
                 </div>
-
                 <div>
-                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', color: '#737373', marginBottom: '8px' }}>URL Slug</label>
-                  <input
-                    type="text"
-                    value={noteSlug}
-                    onChange={(e) => setNoteSlug(e.target.value)}
-                    style={{ width: '100%', padding: '8px', background: isDarkMode ? '#0a0a0a' : '#fafafa', border: isDarkMode ? '1px solid #3a3a3c' : '1px solid #e0e0e0', color: isDarkMode ? '#ffffff' : '#111111', fontSize: '13px', outline: 'none' }}
-                  />
+                  <label style={monoLabel}>URL Slug</label>
+                  <input type="text" value={noteSlug} onChange={e => setNoteSlug(e.target.value)} style={{ width: '100%', padding: '8px', background: isDarkMode ? '#0a0a0a' : '#fafafa', border: isDarkMode ? '1px solid #3a3a3c' : '1px solid #e0e0e0', color: isDarkMode ? '#fff' : '#111', fontSize: '13px', outline: 'none' }} />
                 </div>
-
                 <div>
-                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', color: '#737373', marginBottom: '8px' }}>Publish Date</label>
-                  <input
-                    type="text"
-                    value={noteDate}
-                    onChange={(e) => setNoteDate(e.target.value)}
-                    style={{ width: '100%', padding: '8px', background: isDarkMode ? '#0a0a0a' : '#fafafa', border: isDarkMode ? '1px solid #3a3a3c' : '1px solid #e0e0e0', color: isDarkMode ? '#ffffff' : '#111111', fontSize: '13px', outline: 'none' }}
-                  />
+                  <label style={monoLabel}>Publish Date</label>
+                  <input type="text" value={noteDate} onChange={e => setNoteDate(e.target.value)} style={{ width: '100%', padding: '8px', background: isDarkMode ? '#0a0a0a' : '#fafafa', border: isDarkMode ? '1px solid #3a3a3c' : '1px solid #e0e0e0', color: isDarkMode ? '#fff' : '#111', fontSize: '13px', outline: 'none' }} />
                 </div>
-
                 <div>
-                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'IBM Plex Mono, monospace', textTransform: 'uppercase', color: '#737373', marginBottom: '8px' }}>Cover Image File</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files.length > 0) {
-                        setNoteImageFile(e.target.files[0]);
-                      }
-                    }}
-                    style={{ color: isDarkMode ? '#ffffff' : '#111111', fontSize: '12px' }}
-                  />
-                  {editingNoteId && <p style={{ fontSize: '10px', color: '#737373', marginTop: '6px' }}>Leave empty to retain existing cover image.</p>}
+                  <label style={monoLabel}>Cover Image</label>
+                  <input type="file" accept="image/*" onChange={e => { if (e.target.files?.[0]) setNoteImageFile(e.target.files[0]); }} style={{ color: isDarkMode ? '#fff' : '#111', fontSize: '12px' }} />
+                  {editingNoteId && <p style={{ fontSize: '10px', color: '#737373', marginTop: '6px' }}>Leave empty to keep existing image.</p>}
                 </div>
               </div>
             )}
 
           </div>
-
         </div>
       )}
 
