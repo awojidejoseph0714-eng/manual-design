@@ -41,5 +41,13 @@ export default {
       description: 'The full explanation body. You can use standard HTML tags or write raw text.',
       validation: Rule => Rule.required(),
     },
+    {
+      name: 'image',
+      title: 'Cover Image',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
+    },
   ],
 }

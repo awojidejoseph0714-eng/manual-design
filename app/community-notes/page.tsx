@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import Fuse from 'fuse.js';
-import { sanityClient } from '@/lib/sanity';
+import { sanityClient, urlFor } from '@/lib/sanity';
 
 interface Article {
   _id?: string;
@@ -12,6 +12,11 @@ interface Article {
   date: string;
   tags: string[];
   answer: string;
+  image?: {
+    asset?: {
+      _ref?: string;
+    };
+  };
 }
 
 const defaultFAQs: Article[] = [
@@ -321,52 +326,70 @@ export default function CommunityNotes() {
           searchResults.map((art, idx) => {
             const slugVal = typeof art.slug === 'string' ? art.slug : art.slug?.current || `note-${idx}`;
             return (
-              <article key={idx} className="journal-card">
-                <div className="card-meta">
-                  <span>{art.date}</span>
-                  <div className="card-tags">
-                    {art.tags?.map(t => (
-                      <span key={t} className="card-tag">#{t.toLowerCase()}</span>
-                    ))}
+              <article key={idx} className="journal-card" style={{ display: 'flex', gap: '24px', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ flex: 1 }}>
+                  <div className="card-meta">
+                    <span>{art.date}</span>
+                    <div className="card-tags">
+                      {art.tags?.map(t => (
+                        <span key={t} className="card-tag">#{t.toLowerCase()}</span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                
-                <h2 style={{ fontSize: '20px', fontWeight: '500', marginBottom: '12px' }}>
+                  
+                  <h2 style={{ fontSize: '20px', fontWeight: '500', marginBottom: '12px' }}>
+                    <Link
+                      href={`/community-notes/${slugVal}`}
+                      style={{ textDecoration: 'none', color: 'var(--black)' }}
+                      dangerouslySetInnerHTML={{ __html: art.title }}
+                    />
+                  </h2>
+                  
+                  <div
+                    className="card-answer"
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      fontSize: '14.5px',
+                      color: 'var(--dark-gray)',
+                      marginBottom: '14px'
+                    }}
+                    dangerouslySetInnerHTML={{ __html: art.answer }}
+                  />
+
                   <Link
                     href={`/community-notes/${slugVal}`}
-                    style={{ textDecoration: 'none', color: 'var(--black)' }}
-                    dangerouslySetInnerHTML={{ __html: art.title }}
-                  />
-                </h2>
-                
-                <div
-                  className="card-answer"
-                  style={{
-                    display: '-webkit-box',
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    fontSize: '14.5px',
-                    color: 'var(--dark-gray)',
-                    marginBottom: '14px'
-                  }}
-                  dangerouslySetInnerHTML={{ __html: art.answer }}
-                />
+                    style={{
+                      fontFamily: 'var(--mono)',
+                      fontSize: '11px',
+                      color: 'var(--accent)',
+                      textTransform: 'uppercase',
+                      textDecoration: 'none',
+                      fontWeight: 600
+                    }}
+                  >
+                    Read Note Article &rarr;
+                  </Link>
+                </div>
 
-                <Link
-                  href={`/community-notes/${slugVal}`}
-                  style={{
-                    fontFamily: 'var(--mono)',
-                    fontSize: '11px',
-                    color: 'var(--accent)',
-                    textTransform: 'uppercase',
-                    textDecoration: 'none',
-                    fontWeight: 600
-                  }}
-                >
-                  Read Note Article &rarr;
-                </Link>
+                {art.image && (
+                  <img
+                    src={urlFor(art.image).width(120).height(80).url()}
+                    alt={art.title}
+                    style={{
+                      width: '120px',
+                      height: '80px',
+                      objectFit: 'cover',
+                      borderRadius: 'var(--radius)',
+                      border: '1px solid var(--rule)',
+                      flexShrink: 0,
+                      marginTop: '4px'
+                    }}
+                  />
+                )}
               </article>
             );
           })

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { sanityClient } from '@/lib/sanity';
+import { sanityClient, urlFor } from '@/lib/sanity';
 
 interface Article {
   title: string;
@@ -220,6 +220,21 @@ export default function ArticleDetail({ params }: { params: { slug: string } }) 
         </div>
 
         {/* Title */}
+        {article.image && (
+          <img
+            src={urlFor(article.image).url()}
+            alt={article.title}
+            style={{
+              width: '100%',
+              maxHeight: '340px',
+              objectFit: 'cover',
+              borderRadius: 'var(--radius)',
+              marginBottom: '28px',
+              border: '1px solid var(--rule)'
+            }}
+          />
+        )}
+
         <h1 style={{
           fontFamily: 'Lora, serif',
           fontWeight: '400',

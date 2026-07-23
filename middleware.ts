@@ -25,10 +25,14 @@ export async function middleware(req: NextRequest) {
       // Verify JWT session token (Edge runtime compatible)
       const { payload } = await jwtVerify(token, JWT_SECRET);
 
-      const response = NextResponse.next();
-      // Inject admin details to headers for API route checking
-      response.headers.set('x-admin-user', payload.username as string);
-      return response;
+      const requestHeaders = new Headers(req.headers);
+      requestHeaders.set('x-admin-user', payload.username as string);
+
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
     } catch (error) {
       console.error('Admin middleware session verification failed:', error);
       const response = NextResponse.redirect(new URL('/admin/login', req.url));
