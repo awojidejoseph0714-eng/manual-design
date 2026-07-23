@@ -1442,8 +1442,8 @@ For a square footing, width B = &radic;1.4 &asymp; 1.18m &rarr; Specify a 1.2m &
           </div>
 
           {/* Calculations & Visualization */}
-          <div style={{ display: 'flex', flexDirection: 'column', justifycontent: 'space-between', borderLeft: '1px solid var(--rule)', paddingLeft: '24px' }}>
-            <div style={{ fontSize: '13px', lineheight: '1.6' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', borderLeft: '1px solid var(--rule)', paddingLeft: '24px' }}>
+            <div style={{ fontSize: '13px', lineHeight: '1.6' }}>
               <div>Status: <span className="cl" style={{ background: calcResults.isDoubly ? '#8a5a2f' : 'var(--accent)' }}>{calcResults.statusText}</span></div>
               <div style={{ marginTop: '8px' }}>Factor <strong>K</strong> = {calcResults.K} {Number(calcResults.K) > 0.156 ? '> 0.156 (Doubly)' : '≤ 0.156 (Singly)'}</div>
               <div>Lever arm <strong>z</strong> = {calcResults.z} mm</div>
