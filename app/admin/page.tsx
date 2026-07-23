@@ -87,7 +87,7 @@ export default function AdminPortal() {
         const res = await fetch('/api/admin/template');
         if (!res.ok) {
           if (res.status === 401) { router.push('/admin/login'); return; }
-          throw new Error('Failed to load main page template');
+          throw new Error('Failed to load main page');
         }
         const data = await res.json();
         setTemplateContent(data.content || '');
@@ -104,7 +104,6 @@ export default function AdminPortal() {
     router.push('/admin/login');
   };
 
-  // Submission actions
   const handleSubmissionAction = async (id: string, action: string, extra = {}) => {
     setActionLoading(id);
     try {
@@ -131,7 +130,6 @@ export default function AdminPortal() {
     setPromoteTitle(words.endsWith('?') ? words : words + '...');
   };
 
-  // Notes actions
   const openNewNoteForm = () => {
     setEditingNoteId(null);
     setNoteTitle('');
@@ -211,7 +209,6 @@ export default function AdminPortal() {
     }
   };
 
-  // Template actions
   const handleSaveTemplate = async () => {
     setSaveStatus('Saving and compiling...');
     try {
@@ -221,7 +218,7 @@ export default function AdminPortal() {
         body: JSON.stringify({ content: templateContent }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to save template');
+      if (!res.ok) throw new Error(data.error || 'Failed to save main page');
       setSaveStatus('Saved! A background rebuild & Vercel deployment has been triggered.');
     } catch (err: any) {
       setSaveStatus(`Error: ${err.message}`);
@@ -229,49 +226,76 @@ export default function AdminPortal() {
   };
 
   return (
-    <div style={{ padding: '40px 24px', maxWidth: '1100px', margin: '0 auto', fontFamily: 'Inter, sans-serif', color: '#0f0f0f' }}>
+    <div style={{
+      padding: '60px 24px 100px 24px',
+      maxWidth: '960px',
+      margin: '0 auto',
+      fontFamily: 'Inter, -apple-system, sans-serif',
+      color: '#111111',
+      backgroundColor: '#ffffff'
+    }}>
       
       {/* Header section */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        borderBottom: '1px solid #e0e0e0',
-        paddingBottom: '20px',
-        marginBottom: '30px'
+        alignItems: 'baseline',
+        borderBottom: '1px solid #e5e5e5',
+        paddingBottom: '24px',
+        marginBottom: '40px'
       }}>
         <div>
-          <h1 style={{ fontFamily: 'Lora, serif', fontSize: '28px', fontWeight: '400', margin: 0 }}>Community Admin Portal</h1>
-          <p style={{ fontSize: '12px', color: '#6b6b6b', marginTop: '4px', fontFamily: 'monospace' }}>Review inquiries &amp; manage all guide content</p>
+          <h1 style={{
+            fontFamily: 'Lora, Georgia, serif',
+            fontSize: '32px',
+            fontWeight: '400',
+            letterSpacing: '-0.02em',
+            margin: 0
+          }}>Admin Portal</h1>
+          <p style={{
+            fontSize: '11px',
+            color: '#737373',
+            marginTop: '6px',
+            fontFamily: 'IBM Plex Mono, monospace',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
+          }}>System Control &amp; Content Management</p>
         </div>
         <button onClick={handleLogout} style={{
-          background: '#ffffff',
-          border: '1px solid #0f0f0f',
-          color: '#0f0f0f',
-          padding: '8px 16px',
-          fontFamily: 'monospace',
+          background: 'transparent',
+          border: '1px solid #111111',
+          color: '#111111',
+          padding: '6px 14px',
+          fontFamily: 'IBM Plex Mono, monospace',
           fontSize: '11px',
+          letterSpacing: '0.05em',
           textTransform: 'uppercase',
           cursor: 'pointer',
-          borderRadius: '4px'
+          transition: 'all 0.15s ease'
         }}>Sign Out</button>
       </div>
 
       {/* Tabs Switcher */}
-      <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #e0e0e0', marginBottom: '30px', paddingBottom: '1px' }}>
+      <div style={{
+        display: 'flex',
+        gap: '8px',
+        borderBottom: '1px solid #e5e5e5',
+        marginBottom: '40px'
+      }}>
         <button
           onClick={() => setActiveTab('submissions')}
           style={{
             background: 'none',
             border: 'none',
-            borderBottom: activeTab === 'submissions' ? '2px solid #0f0f0f' : '2px solid transparent',
-            color: activeTab === 'submissions' ? '#0f0f0f' : '#6b6b6b',
-            padding: '10px 16px',
-            fontSize: '13px',
+            borderBottom: activeTab === 'submissions' ? '2px solid #2f5d8a' : '2px solid transparent',
+            color: activeTab === 'submissions' ? '#2f5d8a' : '#737373',
+            padding: '12px 18px',
+            fontSize: '11px',
             fontWeight: activeTab === 'submissions' ? '600' : '400',
             cursor: 'pointer',
-            fontFamily: 'monospace',
-            textTransform: 'uppercase'
+            fontFamily: 'IBM Plex Mono, monospace',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
           }}
         >
           Submissions
@@ -281,14 +305,15 @@ export default function AdminPortal() {
           style={{
             background: 'none',
             border: 'none',
-            borderBottom: activeTab === 'notes' ? '2px solid #0f0f0f' : '2px solid transparent',
-            color: activeTab === 'notes' ? '#0f0f0f' : '#6b6b6b',
-            padding: '10px 16px',
-            fontSize: '13px',
+            borderBottom: activeTab === 'notes' ? '2px solid #2f5d8a' : '2px solid transparent',
+            color: activeTab === 'notes' ? '#2f5d8a' : '#737373',
+            padding: '12px 18px',
+            fontSize: '11px',
             fontWeight: activeTab === 'notes' ? '600' : '400',
             cursor: 'pointer',
-            fontFamily: 'monospace',
-            textTransform: 'uppercase'
+            fontFamily: 'IBM Plex Mono, monospace',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
           }}
         >
           Community Notes
@@ -298,14 +323,15 @@ export default function AdminPortal() {
           style={{
             background: 'none',
             border: 'none',
-            borderBottom: activeTab === 'template' ? '2px solid #0f0f0f' : '2px solid transparent',
-            color: activeTab === 'template' ? '#0f0f0f' : '#6b6b6b',
-            padding: '10px 16px',
-            fontSize: '13px',
+            borderBottom: activeTab === 'template' ? '2px solid #2f5d8a' : '2px solid transparent',
+            color: activeTab === 'template' ? '#2f5d8a' : '#737373',
+            padding: '12px 18px',
+            fontSize: '11px',
             fontWeight: activeTab === 'template' ? '600' : '400',
             cursor: 'pointer',
-            fontFamily: 'monospace',
-            textTransform: 'uppercase'
+            fontFamily: 'IBM Plex Mono, monospace',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
           }}
         >
           Main Page
@@ -313,7 +339,15 @@ export default function AdminPortal() {
       </div>
 
       {error && (
-        <div style={{ borderLeft: '3px solid #2f5d8a', background: '#eef3f7', color: '#2f5d8a', padding: '16px', marginBottom: '24px', fontSize: '13.5px' }}>
+        <div style={{
+          borderLeft: '3px solid #2f5d8a',
+          background: '#f8fafc',
+          color: '#2f5d8a',
+          padding: '16px',
+          marginBottom: '32px',
+          fontSize: '13px',
+          fontFamily: 'IBM Plex Mono, monospace'
+        }}>
           {error}
         </div>
       )}
@@ -322,40 +356,62 @@ export default function AdminPortal() {
       {activeTab === 'submissions' && (
         <>
           {loading ? (
-            <p style={{ fontFamily: 'monospace', fontSize: '13px', color: '#6b6b6b' }}>Loading submissions...</p>
+            <p style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', color: '#737373' }}>Loading submissions...</p>
           ) : submissions.length === 0 ? (
-            <div style={{ border: '1px dashed #e0e0e0', padding: '60px 20px', textAlign: 'center', color: '#6b6b6b', borderRadius: '4px' }}>
-              <h3 style={{ fontFamily: 'Lora, serif', fontSize: '18px', color: '#0f0f0f', marginBottom: '8px' }}>No submissions yet</h3>
+            <div style={{
+              border: '1px dashed #e5e5e5',
+              padding: '80px 24px',
+              textAlign: 'center',
+              color: '#737373'
+            }}>
+              <h3 style={{ fontFamily: 'Lora, serif', fontSize: '20px', color: '#111111', fontWeight: '400', marginBottom: '8px' }}>No submissions</h3>
               <p style={{ fontSize: '13px' }}>User submissions and questions will appear here.</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               {submissions.map((sub) => (
                 <div key={sub._id} style={{
-                  border: '1px solid #e0e0e0',
-                  borderRadius: '4px',
-                  padding: '24px',
-                  background: '#ffffff'
+                  border: '1px solid #e5e5e5',
+                  padding: '28px',
+                  backgroundColor: '#ffffff'
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
-                    <span style={{ fontFamily: 'monospace', fontSize: '11px', color: '#2f5d8a', fontWeight: 600 }}>{sub.email}</span>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'baseline',
+                    marginBottom: '16px'
+                  }}>
+                    <span style={{
+                      fontFamily: 'IBM Plex Mono, monospace',
+                      fontSize: '12px',
+                      color: '#2f5d8a',
+                      fontWeight: 500
+                    }}>{sub.email}</span>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                       <span style={{
-                        fontFamily: 'monospace',
+                        fontFamily: 'IBM Plex Mono, monospace',
                         fontSize: '9px',
                         textTransform: 'uppercase',
                         padding: '2px 8px',
-                        borderRadius: '20px',
-                        background: sub.status === 'pending' ? '#eef3f7' : sub.status === 'promoted' ? '#f0f0ee' : '#e0e0e0',
-                        color: sub.status === 'pending' ? '#2f5d8a' : '#0f0f0f',
+                        background: sub.status === 'pending' ? '#eef3f7' : '#f5f5f5',
+                        color: sub.status === 'pending' ? '#2f5d8a' : '#737373',
                         fontWeight: 600
                       }}>{sub.status}</span>
-                      <span style={{ fontSize: '11px', color: '#6b6b6b', fontFamily: 'monospace' }}>
-                        {new Date(sub.timestamp).toLocaleString()}
+                      <span style={{
+                        fontSize: '11px',
+                        color: '#737373',
+                        fontFamily: 'IBM Plex Mono, monospace'
+                      }}>
+                        {new Date(sub.timestamp).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
-                  <p style={{ fontSize: '14.5px', color: '#2d2d2d', lineHeight: '1.6', margin: '0 0 20px 0' }}>{sub.question}</p>
+                  <p style={{
+                    fontSize: '14.5px',
+                    color: '#262626',
+                    lineHeight: '1.7',
+                    margin: '0 0 24px 0'
+                  }}>{sub.question}</p>
                   <div style={{ display: 'flex', gap: '12px' }}>
                     {sub.status === 'pending' && (
                       <>
@@ -363,15 +419,15 @@ export default function AdminPortal() {
                           onClick={() => startPromote(sub)}
                           disabled={actionLoading !== null}
                           style={{
-                            background: '#0f0f0f',
+                            background: '#111111',
                             color: '#ffffff',
-                            border: '1px solid #0f0f0f',
-                            padding: '6px 12px',
+                            border: '1px solid #111111',
+                            padding: '6px 14px',
                             fontSize: '11px',
-                            fontFamily: 'monospace',
+                            fontFamily: 'IBM Plex Mono, monospace',
                             textTransform: 'uppercase',
-                            cursor: 'pointer',
-                            borderRadius: '4px'
+                            letterSpacing: '0.05em',
+                            cursor: 'pointer'
                           }}
                         >
                           Convert to Note Draft
@@ -380,15 +436,15 @@ export default function AdminPortal() {
                           onClick={() => handleSubmissionAction(sub._id, 'resolve')}
                           disabled={actionLoading !== null}
                           style={{
-                            background: '#ffffff',
-                            border: '1px solid #e0e0e0',
-                            color: '#2d2d2d',
-                            padding: '6px 12px',
+                            background: 'transparent',
+                            border: '1px solid #e5e5e5',
+                            color: '#111111',
+                            padding: '6px 14px',
                             fontSize: '11px',
-                            fontFamily: 'monospace',
+                            fontFamily: 'IBM Plex Mono, monospace',
                             textTransform: 'uppercase',
-                            cursor: 'pointer',
-                            borderRadius: '4px'
+                            letterSpacing: '0.05em',
+                            cursor: 'pointer'
                           }}
                         >
                           Mark Resolved
@@ -399,15 +455,15 @@ export default function AdminPortal() {
                       onClick={() => handleSubmissionAction(sub._id, 'delete')}
                       disabled={actionLoading !== null}
                       style={{
-                        background: '#ffffff',
-                        border: '1px solid #e0e0e0',
-                        color: '#e05a5a',
-                        padding: '6px 12px',
+                        background: 'transparent',
+                        border: '1px solid #e5e5e5',
+                        color: '#dc2626',
+                        padding: '6px 14px',
                         fontSize: '11px',
-                        fontFamily: 'monospace',
+                        fontFamily: 'IBM Plex Mono, monospace',
                         textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
                         cursor: 'pointer',
-                        borderRadius: '4px',
                         marginLeft: 'auto'
                       }}
                     >
@@ -424,19 +480,29 @@ export default function AdminPortal() {
       {/* ── TAB 2: COMMUNITY NOTES CMS ── */}
       {activeTab === 'notes' && (
         <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-            <h2 style={{ fontFamily: 'Lora, serif', fontSize: '20px', fontWeight: '400', margin: 0 }}>Community Notes Directory</h2>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            marginBottom: '32px'
+          }}>
+            <h2 style={{
+              fontFamily: 'Lora, serif',
+              fontSize: '22px',
+              fontWeight: '400',
+              margin: 0
+            }}>Community Notes Directory</h2>
             <button
               onClick={openNewNoteForm}
               style={{
-                background: '#0f0f0f',
+                background: '#2f5d8a',
                 color: '#ffffff',
                 border: 'none',
                 padding: '8px 16px',
-                fontFamily: 'monospace',
+                fontFamily: 'IBM Plex Mono, monospace',
                 fontSize: '11px',
                 textTransform: 'uppercase',
-                borderRadius: '4px',
+                letterSpacing: '0.05em',
                 cursor: 'pointer'
               }}
             >
@@ -445,40 +511,51 @@ export default function AdminPortal() {
           </div>
 
           {loading ? (
-            <p style={{ fontFamily: 'monospace', fontSize: '13px', color: '#6b6b6b' }}>Loading community notes...</p>
+            <p style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', color: '#737373' }}>Loading community notes...</p>
           ) : notes.length === 0 ? (
-            <div style={{ border: '1px dashed #e0e0e0', padding: '60px 20px', textAlign: 'center', color: '#6b6b6b', borderRadius: '4px' }}>
-              <p style={{ fontSize: '13px' }}>No notes found in Sanity content lake. Create one to begin.</p>
+            <div style={{
+              border: '1px dashed #e5e5e5',
+              padding: '80px 24px',
+              textAlign: 'center',
+              color: '#737373'
+            }}>
+              <p style={{ fontSize: '13px' }}>No notes found in Sanity. Create one to begin.</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {notes.map((note) => (
                 <div key={note._id} style={{
-                  border: '1px solid #e0e0e0',
-                  borderRadius: '4px',
-                  padding: '16px 20px',
-                  background: '#ffffff',
+                  border: '1px solid #e5e5e5',
+                  padding: '18px 24px',
+                  backgroundColor: '#ffffff',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center'
                 }}>
                   <div>
-                    <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '500' }}>{note.title}</h4>
-                    <span style={{ fontSize: '11px', color: '#6b6b6b', fontFamily: 'monospace', marginRight: '12px' }}>/{note.slug?.current}</span>
-                    <span style={{ fontSize: '11px', color: '#6b6b6b', fontFamily: 'monospace' }}>{note.date}</span>
+                    <h4 style={{
+                      margin: 0,
+                      fontSize: '15px',
+                      fontWeight: '500',
+                      fontFamily: 'Lora, serif',
+                      letterSpacing: '-0.01em'
+                    }}>{note.title}</h4>
+                    <div style={{ display: 'flex', gap: '16px', marginTop: '6px' }}>
+                      <span style={{ fontSize: '11px', color: '#737373', fontFamily: 'IBM Plex Mono, monospace' }}>/{note.slug?.current}</span>
+                      <span style={{ fontSize: '11px', color: '#737373', fontFamily: 'IBM Plex Mono, monospace' }}>{note.date}</span>
+                    </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button
                       onClick={() => openEditNoteForm(note)}
                       style={{
-                        background: '#ffffff',
-                        border: '1px solid #e0e0e0',
-                        color: '#2d2d2d',
+                        background: 'transparent',
+                        border: '1px solid #e5e5e5',
+                        color: '#111111',
                         padding: '6px 12px',
-                        fontSize: '10.5px',
-                        fontFamily: 'monospace',
+                        fontSize: '11px',
+                        fontFamily: 'IBM Plex Mono, monospace',
                         textTransform: 'uppercase',
-                        borderRadius: '4px',
                         cursor: 'pointer'
                       }}
                     >
@@ -487,14 +564,13 @@ export default function AdminPortal() {
                     <button
                       onClick={() => handleDeleteNote(note._id)}
                       style={{
-                        background: '#ffffff',
-                        border: '1px solid #e0e0e0',
-                        color: '#e05a5a',
+                        background: 'transparent',
+                        border: '1px solid #e5e5e5',
+                        color: '#dc2626',
                         padding: '6px 12px',
-                        fontSize: '10.5px',
-                        fontFamily: 'monospace',
+                        fontSize: '11px',
+                        fontFamily: 'IBM Plex Mono, monospace',
                         textTransform: 'uppercase',
-                        borderRadius: '4px',
                         cursor: 'pointer'
                       }}
                     >
@@ -510,32 +586,48 @@ export default function AdminPortal() {
 
       {/* ── TAB 3: TEMPLATE EDITOR ── */}
       {activeTab === 'template' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h2 style={{ fontFamily: 'Lora, serif', fontSize: '20px', fontWeight: '400', margin: 0 }}>Edit Main Page Template HTML</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline'
+          }}>
+            <h2 style={{
+              fontFamily: 'Lora, serif',
+              fontSize: '22px',
+              fontWeight: '400',
+              margin: 0
+            }}>Edit Main Page Markup</h2>
             <button
               onClick={handleSaveTemplate}
               style={{
-                background: '#0f0f0f',
+                background: '#2f5d8a',
                 color: '#ffffff',
                 border: 'none',
                 padding: '8px 20px',
-                fontFamily: 'monospace',
+                fontFamily: 'IBM Plex Mono, monospace',
                 fontSize: '11px',
                 textTransform: 'uppercase',
-                borderRadius: '4px',
+                letterSpacing: '0.05em',
                 cursor: 'pointer'
               }}
             >
               Save &amp; Recompile
             </button>
           </div>
-          <p style={{ fontSize: '12.5px', color: '#6b6b6b', margin: 0 }}>
-            This text editor modifies **index.html.bak**. Saving will automatically recompile the Next.js page routing structure in the background.
+          <p style={{ fontSize: '13px', color: '#737373', margin: 0, lineHeight: '1.6' }}>
+            Directly modifies the base file **index.html.bak**. Saving triggers automatic conversion to Next.js components in the background.
           </p>
 
           {saveStatus && (
-            <div style={{ borderLeft: '3px solid #2f5d8a', background: '#eef3f7', color: '#2f5d8a', padding: '12px 16px', fontSize: '13px' }}>
+            <div style={{
+              borderLeft: '3px solid #2f5d8a',
+              background: '#f8fafc',
+              color: '#2f5d8a',
+              padding: '12px 16px',
+              fontSize: '12px',
+              fontFamily: 'IBM Plex Mono, monospace'
+            }}>
               {saveStatus}
             </div>
           )}
@@ -546,14 +638,15 @@ export default function AdminPortal() {
             rows={24}
             style={{
               width: '100%',
-              fontFamily: 'monospace',
-              fontSize: '12.5px',
-              padding: '16px',
-              border: '1px solid #0f0f0f',
-              borderRadius: '4px',
-              background: '#fcfcfb',
+              fontFamily: 'IBM Plex Mono, monospace',
+              fontSize: '13px',
+              padding: '20px',
+              border: '1px solid #e5e5e5',
+              backgroundColor: '#fafafa',
+              color: '#111111',
               outline: 'none',
-              lineHeight: '1.5'
+              lineHeight: '1.6',
+              borderRadius: 0
             }}
           />
         </div>
@@ -564,33 +657,80 @@ export default function AdminPortal() {
         <div style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(0,0,0,0.4)',
-          backdropFilter: 'blur(2px)',
+          background: 'rgba(0,0,0,0.5)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000,
           padding: '20px'
         }}>
-          <div style={{ background: '#ffffff', border: '1px solid #0f0f0f', borderRadius: '4px', padding: '28px', width: '100%', maxWidth: '480px' }}>
-            <h3 style={{ fontFamily: 'Lora, serif', fontSize: '20px', fontWeight: '400', marginBottom: '14px' }}>Draft Community Note Title</h3>
-            <p style={{ fontSize: '13px', color: '#6b6b6b', marginBottom: '18px' }}>Provide a clear title for the FAQ article to publish in the notes directory.</p>
+          <div style={{
+            background: '#ffffff',
+            border: '1px solid #111111',
+            padding: '32px',
+            width: '100%',
+            maxWidth: '480px'
+          }}>
+            <h3 style={{
+              fontFamily: 'Lora, serif',
+              fontSize: '22px',
+              fontWeight: '400',
+              marginBottom: '10px'
+            }}>Draft Community Note</h3>
+            <p style={{
+              fontSize: '13px',
+              color: '#737373',
+              marginBottom: '24px',
+              lineHeight: '1.5'
+            }}>Provide a brief title for the note article draft.</p>
 
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', fontSize: '10px', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Article Title</label>
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '10px',
+                fontFamily: 'IBM Plex Mono, monospace',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                marginBottom: '8px',
+                fontWeight: 600
+              }}>Article Title</label>
               <input
                 type="text"
                 value={promoteTitle}
                 onChange={(e) => setPromoteTitle(e.target.value)}
-                style={{ width: '100%', padding: '10px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '13.5px', outline: 'none' }}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #e5e5e5',
+                  fontSize: '13.5px',
+                  outline: 'none',
+                  borderRadius: 0
+                }}
               />
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              <button onClick={() => setPromoteId(null)} style={{ background: 'none', border: '1px solid #e0e0e0', cursor: 'pointer', padding: '6px 12px', borderRadius: '4px', fontFamily: 'monospace', fontSize: '10.5px' }}>Cancel</button>
+              <button onClick={() => setPromoteId(null)} style={{
+                background: 'transparent',
+                border: '1px solid #e5e5e5',
+                cursor: 'pointer',
+                padding: '8px 16px',
+                fontFamily: 'IBM Plex Mono, monospace',
+                fontSize: '11px',
+                textTransform: 'uppercase'
+              }}>Cancel</button>
               <button
                 onClick={() => handleSubmissionAction(promoteId, 'promote', { title: promoteTitle, question: promoteQuestion })}
-                style={{ background: '#0f0f0f', color: '#ffffff', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: '4px', fontFamily: 'monospace', fontSize: '10.5px', textTransform: 'uppercase' }}
+                style={{
+                  background: '#2f5d8a',
+                  color: '#ffffff',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '8px 16px',
+                  fontFamily: 'IBM Plex Mono, monospace',
+                  fontSize: '11px',
+                  textTransform: 'uppercase'
+                }}
               >
                 Create Note Draft
               </button>
@@ -604,8 +744,7 @@ export default function AdminPortal() {
         <div style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(0,0,0,0.4)',
-          backdropFilter: 'blur(2px)',
+          background: 'rgba(0,0,0,0.5)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -614,23 +753,35 @@ export default function AdminPortal() {
         }}>
           <div style={{
             background: '#ffffff',
-            border: '1px solid #0f0f0f',
-            borderRadius: '4px',
-            padding: '28px',
+            border: '1px solid #111111',
+            padding: '36px',
             width: '100%',
-            maxWidth: '650px',
+            maxWidth: '680px',
             maxHeight: '90vh',
             overflowY: 'auto'
           }}>
-            <h3 style={{ fontFamily: 'Lora, serif', fontSize: '20px', fontWeight: '400', marginBottom: '20px' }}>
-              {editingNoteId ? 'Edit Community Note' : 'Create New Community Note'}
+            <h3 style={{
+              fontFamily: 'Lora, serif',
+              fontSize: '24px',
+              fontWeight: '400',
+              marginBottom: '24px'
+            }}>
+              {editingNoteId ? 'Edit Community Note' : 'Create Community Note'}
             </h3>
 
-            <form onSubmit={handleNoteSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <form onSubmit={handleNoteSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Title</label>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '10px',
+                    fontFamily: 'IBM Plex Mono, monospace',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    marginBottom: '8px',
+                    fontWeight: 600
+                  }}>Title</label>
                   <input
                     type="text"
                     required
@@ -641,46 +792,106 @@ export default function AdminPortal() {
                         setNoteSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
                       }
                     }}
-                    style={{ width: '100%', padding: '10px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '13.5px', outline: 'none' }}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '1px solid #e5e5e5',
+                      fontSize: '13.5px',
+                      outline: 'none',
+                      borderRadius: 0
+                    }}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Slug</label>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '10px',
+                    fontFamily: 'IBM Plex Mono, monospace',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    marginBottom: '8px',
+                    fontWeight: 600
+                  }}>Slug</label>
                   <input
                     type="text"
                     required
                     value={noteSlug}
                     onChange={(e) => setNoteSlug(e.target.value)}
-                    style={{ width: '100%', padding: '10px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '13.5px', outline: 'none' }}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '1px solid #e5e5e5',
+                      fontSize: '13.5px',
+                      outline: 'none',
+                      borderRadius: 0
+                    }}
                   />
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Publish Date</label>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '10px',
+                    fontFamily: 'IBM Plex Mono, monospace',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    marginBottom: '8px',
+                    fontWeight: 600
+                  }}>Publish Date</label>
                   <input
                     type="text"
                     required
                     value={noteDate}
                     onChange={(e) => setNoteDate(e.target.value)}
-                    style={{ width: '100%', padding: '10px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '13.5px', outline: 'none' }}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '1px solid #e5e5e5',
+                      fontSize: '13.5px',
+                      outline: 'none',
+                      borderRadius: 0
+                    }}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '10px', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Tags (comma separated)</label>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '10px',
+                    fontFamily: 'IBM Plex Mono, monospace',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    marginBottom: '8px',
+                    fontWeight: 600
+                  }}>Tags (comma separated)</label>
                   <input
                     type="text"
                     value={noteTags}
                     onChange={(e) => setNoteTags(e.target.value)}
-                    placeholder="e.g. Slabs, BS8110, Shear"
-                    style={{ width: '100%', padding: '10px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '13.5px', outline: 'none' }}
+                    placeholder="e.g. Slabs, BS8110"
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '1px solid #e5e5e5',
+                      fontSize: '13.5px',
+                      outline: 'none',
+                      borderRadius: 0
+                    }}
                   />
                 </div>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '10px', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Cover Image</label>
+                <label style={{
+                  display: 'block',
+                  fontSize: '10px',
+                  fontFamily: 'IBM Plex Mono, monospace',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: '8px',
+                  fontWeight: 600
+                }}>Cover Image</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -689,28 +900,66 @@ export default function AdminPortal() {
                       setNoteImageFile(e.target.files[0]);
                     }
                   }}
-                  style={{ fontSize: '12.5px' }}
+                  style={{
+                    fontFamily: 'IBM Plex Mono, monospace',
+                    fontSize: '12px'
+                  }}
                 />
-                {editingNoteId && <p style={{ fontSize: '11px', color: '#6b6b6b', margin: '4px 0 0 0' }}>Leave empty to keep current cover image.</p>}
+                {editingNoteId && <p style={{ fontSize: '11px', color: '#737373', margin: '6px 0 0 0' }}>Leave empty to retain existing cover image.</p>}
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '10px', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Explanation / Body (HTML/Text)</label>
+                <label style={{
+                  display: 'block',
+                  fontSize: '10px',
+                  fontFamily: 'IBM Plex Mono, monospace',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: '8px',
+                  fontWeight: 600
+                }}>Explanation / Body (HTML/Text)</label>
                 <textarea
                   required
                   rows={8}
                   value={noteAnswer}
                   onChange={(e) => setNoteAnswer(e.target.value)}
-                  placeholder="Provide the detailed deep-dive answer..."
-                  style={{ width: '100%', padding: '12px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '13.5px', outline: 'none', resize: 'vertical', fontFamily: 'monospace' }}
+                  placeholder="Insert HTML or raw text body content here..."
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid #e5e5e5',
+                    fontSize: '13.5px',
+                    outline: 'none',
+                    resize: 'vertical',
+                    fontFamily: 'IBM Plex Mono, monospace',
+                    borderRadius: 0
+                  }}
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
-                <button type="button" onClick={() => setNoteFormOpen(false)} style={{ background: 'none', border: '1px solid #e0e0e0', cursor: 'pointer', padding: '8px 16px', borderRadius: '4px', fontFamily: 'monospace', fontSize: '10.5px' }}>Cancel</button>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '12px' }}>
+                <button type="button" onClick={() => setNoteFormOpen(false)} style={{
+                  background: 'transparent',
+                  border: '1px solid #e5e5e5',
+                  cursor: 'pointer',
+                  padding: '8px 20px',
+                  fontFamily: 'IBM Plex Mono, monospace',
+                  fontSize: '11px',
+                  textTransform: 'uppercase'
+                }}>Cancel</button>
                 <button
                   type="submit"
-                  style={{ background: '#0f0f0f', color: '#ffffff', border: 'none', cursor: 'pointer', padding: '8px 20px', borderRadius: '4px', fontFamily: 'monospace', fontSize: '10.5px', textTransform: 'uppercase' }}
+                  style={{
+                    background: '#2f5d8a',
+                    color: '#ffffff',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: '8px 24px',
+                    fontFamily: 'IBM Plex Mono, monospace',
+                    fontSize: '11px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em'
+                  }}
                 >
                   Save Note
                 </button>
