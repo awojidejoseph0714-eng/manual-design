@@ -260,7 +260,98 @@ export default function AdminPortal() {
     }, 50);
   };
 
-  // Handle uploading asset and inserting HTML image tag in the middle of text selection
+  // Markdown parser to convert pasted MD documents to HTML
+  const parseMarkdownToHtml = (markdown: string): string => {
+    let html = markdown;
+
+    // Headings (H1-H3 map to H3 for guidelines consistency)
+    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+    html = html.replace(/^## (.*$)/gim, '<h3>$1</h3>');
+    html = html.replace(/^# (.*$)/gim, '<h3>$1</h3>');
+
+    // Bold & Strong
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+
+    // Italics
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    html = html.replace(/_(.*?)_/g, '<em>$1</em>');
+
+    // Inline Code
+    html = html.replace(/`(.*?)`/g, '<code>$1</code>');
+
+    // Strikethrough
+    html = html.replace(/~~(.*?)~~/g, '<del>$1</del>');
+
+    // Blockquotes
+    html = html.replace(/^\> (.*$)/gim, '<div style="border-left: 3px solid #2f5d8a; background: #eef3f7; color: #2f5d8a; padding: 16px; margin: 24px 0; font-size: 13.5px; line-height: 1.6;">$1</div>');
+
+    // Unordered Lists
+    html = html.replace(/^\- (.*$)/gim, '<li>$1</li>');
+    html = html.replace(/^\* (.*$)/gim, '<li>$1</li>');
+
+    // Math block equation formatting
+    html = html.replace(/\$\$([\s\S]*?)\$\$/g, '<div style="text-align: center; margin: 24px 0; padding: 16px; background-color: #f8fafc; border: 1px solid #e5e5e5; font-family: Lora, serif; font-size: 17px;">\\[$1\\]</div>');
+
+    // Links
+    html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" style="color: #2f5d8a; text-decoration: underline;">$1</a>');
+
+    // Paragraph split wrapping
+    const blocks = html.split(/\n\s*\n/);
+    const compiledBlocks = blocks.map(block => {
+      const trimmed = block.trim();
+      if (!trimmed) return '';
+      if (trimmed.startsWith('<h3') || trimmed.startsWith('<div') || trimmed.startsWith('<table') || trimmed.startsWith('<li>') || trimmed.startsWith('<p>')) {
+        return trimmed;
+      }
+      if (trimmed.startsWith('<li>')) {
+        return `<ul style="margin: 16px 0; padding-left: 20px;">\n  ${trimmed}\n</ul>`;
+      }
+      return `<p>${trimmed.replace(/\n/g, '<br />')}</p>`;
+    });
+
+    return compiledBlocks.filter(Boolean).join('\n\n');
+  };
+
+  // Intercept Markdown text pastes
+  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const pastedText = e.clipboardData.getData('text');
+    if (
+      pastedText.includes('#') ||
+      pastedText.includes('**') ||
+      pastedText.includes('- ') ||
+      pastedText.includes('* ') ||
+      pastedText.includes('`') ||
+      pastedText.includes('[')
+    ) {
+      e.preventDefault();
+      const parsedHtml = parseMarkdownToHtml(pastedText);
+      
+      const textarea = e.currentTarget;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      
+      const newContent = text.substring(0, start) + parsedHtml + text.substring(end);
+      setNoteAnswer(newContent);
+      
+      setSaveStatusIndicator('Pasted & Formatted Markdown');
+      setTimeout(() => setSaveStatusIndicator('Saved'), 2000);
+    }
+  };
+
+  // Convert currently written text to paragraphs if they wrote normally without tags
+  const runAutoParagraphFormatting = () => {
+    if (!noteAnswer.trim()) return;
+    // If it does not contain HTML tags, wrap blocks in standard HTML paragraph paragraphs
+    if (!noteAnswer.includes('<p>') && !noteAnswer.includes('<h3>')) {
+      const formatted = parseMarkdownToHtml(noteAnswer);
+      setNoteAnswer(formatted);
+      setSaveStatusIndicator('Auto-formatted Draft');
+      setTimeout(() => setSaveStatusIndicator('Saved'), 2000);
+    }
+  };
+
   const handleInlineImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
@@ -287,7 +378,6 @@ export default function AdminPortal() {
     }
   };
 
-  // Predefined structural design components from main page to insert
   const insertComponentSection = (type: string) => {
     let htmlSnippet = '';
     
@@ -823,7 +913,7 @@ export default function AdminPortal() {
         <div style={{
           position: 'fixed',
           inset: 0,
-          background: isDarkMode ? '#0a0a0a' : '#fafafa',
+          background: isDarkMode ? '#0a0a0a' : '#ffffff',
           zIndex: 2000,
           display: 'flex',
           flexDirection: 'column',
@@ -920,6 +1010,27 @@ export default function AdminPortal() {
               >
                 {isDarkMode ? '☀️' : '🌙'}
               </button>
+
+              <div style={{ width: '1px', height: '16px', backgroundColor: isDarkMode ? '#333333' : '#d5d5d5', margin: '0 6px' }}></div>
+
+              {/* Auto Format Markdown / Paragraphs button */}
+              <button
+                type="button"
+                onClick={runAutoParagraphFormatting}
+                title="Auto format markdown formatting/spacing to HTML tags"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#2f5d8a',
+                  fontSize: '11px',
+                  padding: '4px 8px',
+                  fontFamily: 'IBM Plex Mono, monospace',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Format Draft
+              </button>
             </div>
 
             {/* Right primary action controls */}
@@ -948,7 +1059,7 @@ export default function AdminPortal() {
                 type="button"
                 onClick={handleNoteSubmit}
                 style={{
-                  background: '#2f5d8a', // signature blue accent
+                  background: '#2f5d8a',
                   color: '#ffffff',
                   border: 'none',
                   borderRadius: '20px',
@@ -1202,6 +1313,7 @@ export default function AdminPortal() {
                   id="editor-textarea"
                   placeholder="$tart writing..."
                   value={noteAnswer}
+                  onPaste={handlePaste}
                   onChange={(e) => setNoteAnswer(e.target.value)}
                   style={{
                     width: '100%',
