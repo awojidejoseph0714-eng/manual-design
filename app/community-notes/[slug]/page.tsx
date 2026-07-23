@@ -9,6 +9,11 @@ interface Article {
   date: string;
   tags: string[];
   answer: string;
+  image?: {
+    asset?: {
+      _ref?: string;
+    };
+  };
 }
 
 const defaultFAQs: Record<string, Article> = {
