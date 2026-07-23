@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 220" style="background:#f7f7f5; border:1px solid #e0e0e0; border-radius:4px; max-width:100%; height:auto;">
+  <g transform="translate(30, 0)">
+    <rect x="40" y="20" width="30" height="5" fill="#0f0f0f" />
+    <rect x="40" y="180" width="30" height="5" fill="#0f0f0f" />
+    <line x1="55" y1="20" x2="55" y2="180" stroke="#e0e0e0" stroke-width="2" stroke-dasharray="2 2" />
+    <path d="M55,20 C55,40 40,80 40,100 C40,120 55,160 55,180" fill="none" stroke="#2f5d8a" stroke-dasharray="4 2" stroke-width="2" />
+    <text x="55" y="200" font-family="monospace" font-size="8.5" text-anchor="middle" fill="#2f5d8a">Fixed-Fixed (le = 0.75 L)</text>
+  </g>
+  <g transform="translate(180, 0)">
+    <polygon points="55,20 48,10 62,10" fill="#0f0f0f" />
+    <polygon points="55,180 48,190 62,190" fill="#0f0f0f" />
+    <line x1="55" y1="20" x2="55" y2="180" stroke="#e0e0e0" stroke-width="2" stroke-dasharray="2 2" />
+    <path d="M55,20 Q30,100 55,180" fill="none" stroke="#8a5a2f" stroke-width="2" />
+    <text x="55" y="200" font-family="monospace" font-size="8.5" text-anchor="middle" fill="#8a5a2f">Pinned-Pinned (le = 1.0 L)</text>
+  </g>
+  <g transform="translate(330, 0)">
+    <rect x="40" y="180" width="30" height="5" fill="#0f0f0f" />
+    <line x1="55" y1="20" x2="55" y2="180" stroke="#e0e0e0" stroke-width="2" stroke-dasharray="2 2" />
+    <path d="M15,20 Q15,80 55,180" fill="none" stroke="#0f0f0f" stroke-width="2" stroke-dasharray="4 2" />
+    <text x="55" y="200" font-family="monospace" font-size="8.5" text-anchor="middle" fill="#0f0f0f">Cantilever (le = 2.2 L)</text>
+  </g>
+</svg>

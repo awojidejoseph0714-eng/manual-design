@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220" style="background:#f7f7f5; border:1px solid #e0e0e0; border-radius:4px; max-width:100%; height:auto;">
+  <rect x="60" y="30" width="280" height="160" fill="none" stroke="#0f0f0f" stroke-width="2" />
+  <line x1="60" y1="30" x2="140" y2="110" stroke="#6b6b6b" stroke-width="1.5" stroke-dasharray="4 2" />
+  <line x1="60" y1="190" x2="140" y2="110" stroke="#6b6b6b" stroke-width="1.5" stroke-dasharray="4 2" />
+  <line x1="340" y1="30" x2="260" y2="110" stroke="#6b6b6b" stroke-width="1.5" stroke-dasharray="4 2" />
+  <line x1="340" y1="190" x2="260" y2="110" stroke="#6b6b6b" stroke-width="1.5" stroke-dasharray="4 2" />
+  <line x1="140" y1="110" x2="260" y2="110" stroke="#6b6b6b" stroke-width="1.5" stroke-dasharray="4 2" />
+  
+  <polygon points="60,30 140,110 60,190" fill="rgba(138,90,47,0.08)" />
+  <polygon points="340,30 260,110 340,190" fill="rgba(138,90,47,0.08)" />
+  <polygon points="60,30 340,30 260,110 140,110" fill="rgba(47,93,138,0.08)" />
+  <polygon points="60,190 340,190 260,110 140,110" fill="rgba(47,93,138,0.08)" />
+  
+  <text x="200" y="70" font-family="monospace" font-size="9" text-anchor="middle" fill="#2f5d8a">Trapezoidal load on Long Beams</text>
+  <text x="100" y="115" font-family="monospace" font-size="9" text-anchor="middle" fill="#8a5a2f" transform="rotate(-90 100 115)">Triangular load</text>
+  <text x="300" y="115" font-family="monospace" font-size="9" text-anchor="middle" fill="#8a5a2f" transform="rotate(90 300 115)">Triangular load</text>
+  <text x="200" y="160" font-family="monospace" font-size="9" text-anchor="middle" fill="#2f5d8a">Trapezoidal load on Long Beams</text>
+  <text x="200" y="210" font-family="monospace" font-size="9" text-anchor="middle" fill="#0f0f0f">TWO-WAY SLAB (Ly/Lx &le; 2)</text>
+</svg>

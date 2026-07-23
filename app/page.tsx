@@ -30,6 +30,51 @@ export default function Home() {
   const [feedbackType, setFeedbackType] = useState<'none' | 'strong' | 'moderate' | null>(null);
   const [suggestedArticle, setSuggestedArticle] = useState<any | null>(null);
 
+  // ── Interactive Flexural Section Calculator State ──
+  const [calcM, setCalcM] = useState(120); // kNm
+  const [calcb, setCalcb] = useState(250); // mm
+  const [calcd, setCalcd] = useState(400); // mm
+  const [calcfcu, setCalcfcu] = useState(25); // N/mm2
+  const [calcfy, setCalcfy] = useState(500); // N/mm2
+
+  const calcResults = useMemo(() => {
+    const K = (calcM * 1e6) / (calcb * Math.pow(calcd, 2) * calcfcu);
+    const Kprime = 0.156;
+    let z = calcd * 0.95;
+    let x = 0.5 * calcd;
+    let statusText = 'Singly Reinforced';
+    let isDoubly = false;
+    let AsPrime = 0;
+
+    if (K <= Kprime) {
+      const term = 0.25 - K / 0.9;
+      if (term >= 0) {
+        z = calcd * (0.5 + Math.sqrt(term));
+        if (z > 0.95 * calcd) z = 0.95 * calcd;
+        x = (calcd - z) / 0.45;
+      }
+    } else {
+      isDoubly = true;
+      statusText = 'Doubly Reinforced (Compression Steel Required)';
+      z = calcd * (0.5 + Math.sqrt(0.25 - Kprime / 0.9));
+      x = (calcd - z) / 0.45;
+      const dPrime = 35;
+      AsPrime = ((K - Kprime) * calcfcu * calcb * Math.pow(calcd, 2)) / (0.95 * calcfy * (calcd - dPrime));
+    }
+
+    const As = (calcM * 1e6) / (0.95 * calcfy * z) + (isDoubly ? AsPrime : 0);
+
+    return {
+      K: K.toFixed(3),
+      z: z.toFixed(0),
+      x: x.toFixed(0),
+      isDoubly,
+      statusText,
+      As: As.toFixed(0),
+      AsPrime: AsPrime.toFixed(0)
+    };
+  }, [calcM, calcb, calcd, calcfcu, calcfy]);
+
   useEffect(() => {
     async function loadNotes() {
       try {
@@ -160,27 +205,6 @@ export default function Home() {
 
     window.addEventListener('scroll', updateActiveLink, { passive: true });
     updateActiveLink();
-
-    // ── Initialize Mermaid JS and render diagrams after DOM insertion ──
-    if (typeof window !== 'undefined') {
-      const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js';
-      script.async = true;
-      script.onload = () => {
-        // @ts-ignore
-        if (window.mermaid) {
-          // @ts-ignore
-          window.mermaid.initialize({
-            startOnLoad: false,
-            theme: 'neutral',
-            securityLevel: 'loose'
-          });
-          // @ts-ignore
-          window.mermaid.init(undefined, document.querySelectorAll('.mermaid'));
-        }
-      };
-      document.body.appendChild(script);
-    }
 
     // Trigger MathJax typeset if already loaded on navigation
     // @ts-ignore
@@ -514,20 +538,10 @@ Minimum dead (uplift / stability / pattern): 1.0G<sub>k</sub></div>
         <div class="card"><p><strong>Slab Load Distribution Schematics:</strong></p>
         
         <h4>One-Way Slab Load Path (UDL to Beams)</h4>
-        <div class="mermaid">
-        graph TD
-            Slab[One-Way Slab panel: L_y/L_x > 2] -->|50% load| Beam1[Beam A: UDL load = n * L_x / 2]
-            Slab -->|50% load| Beam2[Beam B: UDL load = n * L_x / 2]
-        </div>
+        <img src="/images/one-way-slab.svg" alt="One-Way Slab Load Distribution" class="schematic" style="display:block; max-width:100%; height:auto; margin:12px 0;" />
 
         <h4>Two-Way Slab Load Path (Trapezoidal &amp; Triangular)</h4>
-        <div class="mermaid">
-        graph TD
-            Slab2[Two-Way Slab panel: L_y/L_x <= 2] -->|Short Edges| Tri[Triangular load on Short Beams]
-            Slab2 -->|Long Edges| Trap[Trapezoidal load on Long Beams]
-            Tri -->|V_x| ShortBeam[V_x = beta_vx * n * L_x]
-            Trap -->|V_y| LongBeam[V_y = beta_vy * n * L_x]
-        </div>
+        <img src="/images/two-way-slab.svg" alt="Two-Way Slab Load Distribution" class="schematic" style="display:block; max-width:100%; height:auto; margin:12px 0;" />
         </div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -789,14 +803,7 @@ w<sub>u</sub> = 1.4G<sub>k</sub> + 1.6Q<sub>k</sub>   <span>(Table 2.1)</span></
             <p>⚠️ <strong>Critical Warning:</strong> Smearing a point load into a UDL (e.g. dividing the point load by span and adding it to the UDL) is incorrect. It significantly underestimates the bending moment at mid-span and changes the shear force diagram shape.</p>
 
             <h4>Beam Loading Elevation Schematic</h4>
-            <div class="mermaid">
-            graph TD
-                subgraph Loading Diagram on Beam Span
-                    Col[Transfer Column Load: P_col] -->|Point Load| BeamCenter((Beam midspan))
-                    SecBeam[Secondary Beam Reaction: P_beam] -->|Point Load| BeamQuarter((Beam span/4))
-                    UDL[Uniformly Distributed Load: w_u = selfweight + walls + slab] -->|Distributed load| BeamSpan[Full length of Beam]
-                end
-            </div>
+            <img src="/images/beam-loading.svg" alt="Beam Loading Schematic" class="schematic" style="display:block; max-width:100%; height:auto; margin:12px 0;" />
             
             <h4>Bending Moment comparison:</h4>
             <ul>
@@ -997,14 +1004,7 @@ N<sub>total</sub> = &Sigma; N<sub>floor</sub> for all floors above (cumulative)<
 Short (braced):   l<sub>e</sub>/h &le; 15
 Short (unbraced): l<sub>e</sub>/h &le; 10</div>
         <h4>Visualizing Column Effective Length (l<sub>e</sub> = &beta; &times; l<sub>clear</sub>)</h4>
-        <div class="mermaid">
-        graph TD
-            subgraph Column Buckling Profiles
-                Cond1[Both Ends Fixed: beta = 0.75] -->|Buckles in middle 75%| Profile1[l_e = 0.75 * l_clear]
-                Cond2[Both Ends Pinned: beta = 1.00] -->|Buckles over full length| Profile2[l_e = 1.00 * l_clear]
-                Cond3[Cantilever: beta = 2.20] -->|Sway buckling| Profile3[l_e = 2.20 * l_clear]
-            end
-        </div>
+        <img src="/images/column-buckling.svg" alt="Column Buckling Profiles" class="schematic" style="display:block; max-width:100%; height:auto; margin:12px 0;" />
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
@@ -1164,23 +1164,7 @@ Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</di
         <h3>1 &mdash; Structural Framing Layout Plan</h3>
         <p>The framing layout consists of a standard grid bay measuring 4.0m &times; 5.0m. Column lines are placed at grid intersections, with edge beams framing the perimeter and supporting the two-way concrete floor slab.</p>
 
-        <div class="mermaid">
-        flowchart TD
-            %% Nodes for column positions
-            A1((Col A1)) ===|Beam B1: 5.0m| A2((Col A2))
-            A1 ===|Beam B2: 4.0m| B1((Col B1))
-            A2 ===|Beam B2: 4.0m| B2((Col B2))
-            B1 ===|Beam B1: 5.0m| B2((Col B2))
-            
-            style A1 fill:#000,stroke:#000,color:#fff;
-            style A2 fill:#000,stroke:#000,color:#fff;
-            style B1 fill:#000,stroke:#000,color:#fff;
-            style B2 fill:#000,stroke:#000,color:#fff;
-            
-            subgraph Slab Panel S1
-                dir[Lx = 4.0m, Ly = 5.0m]
-            end
-        </div>
+        <img src="/images/framing-layout.svg" alt="Worked Example framing plan" class="schematic" style="display:block; max-width:100%; height:auto; margin:12px 0;" />
 
         <h3>2 &mdash; Slab Panel S1 Design (Two-Way Restrained)</h3>
         <p>We design Slab Panel S1 (\\(L_x = 4.0\\)m, \\(L_y = 5.0\\)m) as a two-way restrained panel since it is cast monolithically with supporting beams on all four sides, and \\(L_y / L_x = 5.0 / 4.0 = 1.25 \\le 2.0\\).</p>
@@ -1406,6 +1390,96 @@ For a square footing, width B = &radic;1.4 &asymp; 1.18m &rarr; Specify a 1.2m &
 </a>
 
       ` }} />
+
+      {/* Interactive Flexural Section Calculator & Canvas Visualizer */}
+      <div style={{
+        background: 'var(--light-bg)',
+        border: '1px solid var(--rule)',
+        borderRadius: 'var(--radius)',
+        padding: '24px',
+        margin: '28px 0',
+        fontFamily: 'Inter, sans-serif',
+        maxWidth: 'var(--max-w)',
+        marginLeft: 'auto',
+        marginRight: 'auto'
+      }}>
+        <h3 style={{ fontFamily: 'Lora, serif', fontSize: '18px', fontWeight: '400', color: 'var(--black)', marginBottom: '6px' }}>Interactive Flexural Design Visualizer</h3>
+        <p style={{ fontSize: '12.5px', color: 'var(--mid-gray)', marginBottom: '20px' }}>
+          Slide the parameters to see the stress-block neutral axis depth (x), lever arm (z), and reinforcement changes in real time.
+        </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+          
+          {/* Controls */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div>
+              <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontFamily: 'var(--mono)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                <span>Moment (M):</span> <strong>{calcM} kNm</strong>
+              </label>
+              <input type="range" min="20" max="300" value={calcM} onChange={(e) => setCalcM(Number(e.target.value))} style={{ width: '100%' }} />
+            </div>
+
+            <div>
+              <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontFamily: 'var(--mono)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                <span>Width (b):</span> <strong>{calcb} mm</strong>
+              </label>
+              <input type="range" min="150" max="500" value={calcb} onChange={(e) => setCalcb(Number(e.target.value))} style={{ width: '100%' }} />
+            </div>
+
+            <div>
+              <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontFamily: 'var(--mono)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                <span>Effective Depth (d):</span> <strong>{calcd} mm</strong>
+              </label>
+              <input type="range" min="200" max="700" value={calcd} onChange={(e) => setCalcd(Number(e.target.value))} style={{ width: '100%' }} />
+            </div>
+
+            <div>
+              <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontFamily: 'var(--mono)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                <span>Concrete f_cu:</span> <strong>{calcfcu} N/mm²</strong>
+              </label>
+              <input type="range" min="20" max="50" value={calcfcu} onChange={(e) => setCalcfcu(Number(e.target.value))} style={{ width: '100%' }} />
+            </div>
+          </div>
+
+          {/* Calculations & Visualization */}
+          <div style={{ display: 'flex', flexDirection: 'column', justifycontent: 'space-between', borderLeft: '1px solid var(--rule)', paddingLeft: '24px' }}>
+            <div style={{ fontSize: '13px', lineheight: '1.6' }}>
+              <div>Status: <span className="cl" style={{ background: calcResults.isDoubly ? '#8a5a2f' : 'var(--accent)' }}>{calcResults.statusText}</span></div>
+              <div style={{ marginTop: '8px' }}>Factor <strong>K</strong> = {calcResults.K} {Number(calcResults.K) > 0.156 ? '> 0.156 (Doubly)' : '≤ 0.156 (Singly)'}</div>
+              <div>Lever arm <strong>z</strong> = {calcResults.z} mm</div>
+              <div>Neutral axis <strong>x</strong> = {calcResults.x} mm</div>
+              <div style={{ marginTop: '8px', fontSize: '14px', fontWeight: 'bold' }}>
+                Req. Tension Area (As): <span style={{ color: 'var(--accent)' }}>{calcResults.As} mm²</span>
+              </div>
+              {calcResults.isDoubly && (
+                <div style={{ fontSize: '13.5px', color: '#8a5a2f', fontWeight: '600' }}>
+                  Req. Compression Area (As'): {calcResults.AsPrime} mm²
+                </div>
+              )}
+            </div>
+
+            {/* Dynamic SVG Visualizer of Beam Section */}
+            <svg width="100%" height="90" viewBox="0 0 200 90" style={{ background: '#ffffff', border: '1px solid var(--rule)', borderRadius: 'var(--radius)', marginTop: '12px' }}>
+              <rect x="60" y="5" width="80" height="80" fill="var(--light-bg)" stroke="var(--black)" strokeWidth="1.5" />
+              <rect x="60" y="5" width="80" height={Math.max(4, Math.min(80, (Number(calcResults.x) / calcd) * 80))} fill="rgba(47, 93, 138, 0.1)" />
+              <line x1="55" y1={5 + (Number(calcResults.x) / calcd) * 80} x2="145" y2={5 + (Number(calcResults.x) / calcd) * 80} stroke="var(--accent)" strokeWidth="1.2" strokeDasharray="3 2" />
+              <text x="150" y={8 + (Number(calcResults.x) / calcd) * 80} fontFamily="monospace" fontSize="7" fill="var(--accent)">N.A.</text>
+
+              <circle cx="75" cy="75" r="4" fill="var(--black)" />
+              <circle cx="100" cy="75" r="4" fill="var(--black)" />
+              <circle cx="125" cy="75" r="4" fill="var(--black)" />
+              
+              {calcResults.isDoubly && (
+                <>
+                  <circle cx="75" cy="15" r="3.5" fill="#8a5a2f" />
+                  <circle cx="125" cy="15" r="3.5" fill="#8a5a2f" />
+                </>
+              )}
+            </svg>
+          </div>
+
+        </div>
+      </div>
 
       {/* Floating Ask Question Button (Left) */}
       <button
