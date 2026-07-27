@@ -334,6 +334,13 @@ p strong { color: var(--black); }
   font-family: var(--mono); font-size: 9.5px; padding: 1px 6px;
   border-radius: 2px; letter-spacing: 0.04em;
   vertical-align: middle; margin: 0 2px; white-space: nowrap;
+  cursor: help;
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+.cl:hover, .ref-code:hover, .ref-standard:hover, .ref-handbook:hover, .ref-thumb:hover, .ref-assumption:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  transform: translateY(-1px);
 }
 /* 1. BS 8110 Code Requirement — blueprint blue */
 .cl, .ref-code { background: var(--accent); }

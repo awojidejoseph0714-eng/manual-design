@@ -351,7 +351,7 @@ export default function Home() {
 
     <!-- ===================== REFERENCE LEGEND ===================== -->
     <div class="ref-legend">
-      <div class="ref-legend-title">Reference Classification Key</div>
+      <div class="ref-legend-title">Reference Classification Key <span style="font-size: 0.85em; font-weight: normal; opacity: 0.85;">(Hover over any badge to view full code citation)</span></div>
       <span class="ref-legend-item"><span class="swatch code"></span> BS&nbsp;8110 Code Requirement</span>
       <span class="ref-legend-item"><span class="swatch standard"></span> Other British Standard</span>
       <span class="ref-legend-item"><span class="swatch handbook"></span> Handbook Guidance</span>
@@ -384,8 +384,8 @@ export default function Home() {
         &bull; <strong>Deflection:</strong> Slabs and beams must not sag excessively (visual alarm, damage to partitions). Controlled via span-to-depth limits.<br>
         &bull; <strong>Cracking:</strong> Cracks must be limited to prevent water ingress and steel corrosion. Controlled via maximum bar spacing limits.</p>
 
-        <h3>3 &mdash; Durability &amp; Fire Protection <span class="ref-code">BS 8110-1:1997, Table 3.3</span> <span class="ref-code">BS 8110-1:1997, Table 3.4</span></h3>
-        <p>Concrete acts as a protective shield for steel. Cover is chosen based on exposure class (mild, moderate, severe) per <span class="ref-code">BS 8110-1:1997, Table 3.3</span> and required fire resistance (typically 1 to 2 hours) per <span class="ref-code">BS 8110-1:1997, Table 3.4</span>. See the full cover tables for specific member, exposure, and fire conditions &mdash; the required nominal cover depends on member type, concrete grade, exposure classification, and fire period.</p>
+        <h3>3 &mdash; Durability &amp; Fire Protection <span class="ref-code" title="BS 8110-1:1997">Table 3.3</span> <span class="ref-code" title="BS 8110-1:1997">Table 3.4</span></h3>
+        <p>Concrete acts as a protective shield for steel. Cover is chosen based on exposure class (mild, moderate, severe) per <span class="ref-code" title="BS 8110-1:1997">Table 3.3</span> and required fire resistance (typically 1 to 2 hours) per <span class="ref-code" title="BS 8110-1:1997">Table 3.4</span>. See the full cover tables for specific member, exposure, and fire conditions &mdash; the required nominal cover depends on member type, concrete grade, exposure classification, and fire period.</p>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
@@ -395,7 +395,7 @@ export default function Home() {
           <h2>Materials and Partial Safety Factors</h2>
         </div>
         <p>Every calculation in this guide uses <strong>limit state design</strong>: real (characteristic) loads and material strengths are each factored to a "worst realistic case" before being combined, so the structure has a built-in margin against the things you can't predict exactly.</p>
-        <h3>Material Partial Safety Factors <span class="ref-code">BS 8110-1:1997, Table 2.2</span></h3>
+        <h3>Material Partial Safety Factors <span class="ref-code" title="BS 8110-1:1997">Table 2.2</span></h3>
         <div class="table-wrap"><table>
           <tr><th>Material / Effect</th><th>&gamma;<sub>m</sub> (Post-Amd 3, 2005)</th><th>&gamma;<sub>m</sub> (Pre-Amd 3, Original)</th></tr>
           <tr><td>Concrete in flexure or axial load</td><td>1.5</td><td>1.5</td></tr>
@@ -407,7 +407,7 @@ export default function Home() {
         <div class="formula">f<sub>cu</sub> = characteristic concrete cube strength &mdash; typically 25, 30, 35, 40 N/mm&sup2; for RC frames
 f<sub>y</sub>  = characteristic steel yield strength &mdash; 460 N/mm&sup2; (high yield), 250 N/mm&sup2; (mild steel)
 E<sub>c</sub>  &asymp; 20 to 30 kN/mm&sup2; depending on f<sub>cu</sub> (for deflection/stiffness calcs)</div>
-        <div class="card"><p><strong>Design strength</strong> is characteristic strength &divide; &gamma;<sub>m</sub>. For reinforcement, <span class="ref-code">BS 8110-1:1997, Amendment 3 (2005)</span> changed &gamma;<sub>m</sub> from 1.15 to 1.05. This gives:<br>
+        <div class="card"><p><strong>Design strength</strong> is characteristic strength &divide; &gamma;<sub>m</sub>. For reinforcement, <span class="ref-code" title="BS 8110-1:1997">Amendment 3 (2005)</span> changed &gamma;<sub>m</sub> from 1.15 to 1.05. This gives:<br>
         &bull; <strong>Post-Amendment 3 (Current):</strong> Design steel stress = 1/1.05 &times; f<sub>y</sub> &asymp; <strong>0.95f<sub>y</sub></strong><br>
         &bull; <strong>Pre-Amendment 3 (Older/Textbook):</strong> Design steel stress = 1/1.15 &times; f<sub>y</sub> &asymp; <strong>0.87f<sub>y</sub></strong> (still widely taught in many universities)</p></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
@@ -424,13 +424,13 @@ E<sub>c</sub>  &asymp; 20 to 30 kN/mm&sup2; depending on f<sub>cu</sub> (for def
           <tr><td>Q<sub>k</sub></td><td>Characteristic imposed (live) load &mdash; people, furniture, movable partitions, stored goods; from <span class="ref-standard">BS 6399-1:1996</span></td></tr>
           <tr><td>W<sub>k</sub></td><td>Characteristic wind load &mdash; from <span class="ref-standard">BS 6399-2:1997</span> (or CP3 Ch V historically)</td></tr>
         </table></div>
-        <h3>Standard Load Combinations <span class="ref-code">BS 8110-1:1997, Table 2.1</span></h3>
+        <h3>Standard Load Combinations <span class="ref-code" title="BS 8110-1:1997">Table 2.1</span></h3>
         <div class="formula">Dead + Imposed:           1.4G<sub>k</sub> + 1.6Q<sub>k</sub>
 Dead + Wind:              1.0G<sub>k</sub> + 1.4W<sub>k</sub>  (or 1.4G<sub>k</sub> + 1.4W<sub>k</sub>, check both)
 Dead + Imposed + Wind:    1.2G<sub>k</sub> + 1.2Q<sub>k</sub> + 1.2W<sub>k</sub>
 Minimum dead (uplift / stability / pattern): 1.0G<sub>k</sub></div>
         <p>This guide's slab, beam, and column sections deal mainly with the gravity case (1.4G<sub>k</sub>+1.6Q<sub>k</sub>) since that governs the great majority of members; wind/lateral combinations are flagged specifically wherever they matter.</p>
-        <div class="warn">Always check the minimum-load case (1.0G<sub>k</sub> only, no live load) on adjacent spans too &mdash; for continuous members this "unloaded span" case, paired with a fully loaded neighbouring span, often produces the true maximum hogging moment at a support <span class="ref-code">BS 8110-1:1997, Cl. 3.2.1.2.2</span>.</div>
+        <div class="warn">Always check the minimum-load case (1.0G<sub>k</sub> only, no live load) on adjacent spans too &mdash; for continuous members this "unloaded span" case, paired with a fully loaded neighbouring span, often produces the true maximum hogging moment at a support <span class="ref-code" title="BS 8110-1:1997">Cl. 3.2.1.2.2</span>.</div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
@@ -439,13 +439,13 @@ Minimum dead (uplift / stability / pattern): 1.0G<sub>k</sub></div>
           <span class="step-num">0.3</span>
           <h2>The Universal Flexure Method (K and Lever Arm)</h2>
         </div>
-        <p>Slabs, beams, and columns (in bending) are all ultimately designed for flexure the same way. Learn this once; it is reused in every part of this guide. <span class="ref-code">BS 8110-1:1997, Cl. 3.4.4.4</span></p>
+        <p>Slabs, beams, and columns (in bending) are all ultimately designed for flexure the same way. Learn this once; it is reused in every part of this guide. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.4.4</span></p>
         <div class="flow">
-          <div class="flow-item"><strong>1 &mdash; Compute K</strong>K = M / (bd&sup2;f<sub>cu</sub>) &mdash; a non-dimensional measure of how hard the section is being worked. <span class="ref-code">BS 8110-1:1997, Cl. 3.4.4.4</span></div>
-          <div class="flow-item"><strong>2 &mdash; Compare to K'</strong>K' = 0.156 (singly reinforced limit, no redistribution) <span class="ref-code">BS 8110-1:1997, Cl. 3.4.4.4</span>. If K &le; K', section works with tension steel alone. If K &gt; K', compression steel is needed too.</div>
-          <div class="flow-item"><strong>3 &mdash; Find lever arm z</strong>z = d[0.5 + &radic;(0.25 &minus; K/0.9)], capped at 0.95d <span class="ref-code">BS 8110-1:1997, Cl. 3.4.4.4</span>.</div>
+          <div class="flow-item"><strong>1 &mdash; Compute K</strong>K = M / (bd&sup2;f<sub>cu</sub>) &mdash; a non-dimensional measure of how hard the section is being worked. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.4.4</span></div>
+          <div class="flow-item"><strong>2 &mdash; Compare to K'</strong>K' = 0.156 (singly reinforced limit, no redistribution) <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.4.4</span>. If K &le; K', section works with tension steel alone. If K &gt; K', compression steel is needed too.</div>
+          <div class="flow-item"><strong>3 &mdash; Find lever arm z</strong>z = d[0.5 + &radic;(0.25 &minus; K/0.9)], capped at 0.95d <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.4.4</span>.</div>
           <div class="flow-item"><strong>4 &mdash; Solve for steel</strong>A<sub>s</sub> = M / (0.95f<sub>y</sub>z) &mdash; or M / (0.87f<sub>y</sub>z) for pre-amendment.</div>
-          <div class="flow-item"><strong>5 &mdash; Check limits</strong>Compare A<sub>s</sub> against the minimum and maximum steel percentages for that member type <span class="ref-code">BS 8110-1:1997, Table 3.25</span>.</div>
+          <div class="flow-item"><strong>5 &mdash; Check limits</strong>Compare A<sub>s</sub> against the minimum and maximum steel percentages for that member type <span class="ref-code" title="BS 8110-1:1997">Table 3.25</span>.</div>
         </div>
         <div class="card blue"><p>For slabs, b = 1000mm (design a 1-metre-wide strip). For beams, b = actual beam width (or effective flange width for T/L sections). For columns, the same stress-block logic underlies the design charts in Part 3, just combined with axial load N.</p></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
@@ -490,32 +490,32 @@ Minimum dead (uplift / stability / pattern): 1.0G<sub>k</sub></div>
         <div class="section-header"><span class="step-num">STEP S1</span><h2>Identify the Slab Type</h2></div>
         <p>Slab analysis branches early. Identify the type first; everything downstream (coefficients, formulas, detailing) follows from this choice.</p>
         <div class="type-card">
-          <div class="meta">TYPE 1 &mdash; <span class="ref-code">BS 8110-1:1997, Cl. 3.5.2</span></div>
+          <div class="meta">TYPE 1 &mdash; <span class="ref-code" title="BS 8110-1:1997">Cl. 3.5.2</span></div>
           <h3>One-Way Spanning Solid Slab</h3>
           <p>Supported on two opposite sides only, or l<sub>y</sub>/l<sub>x</sub> &gt; 2.0 on four sides.</p>
         </div>
         <div class="type-card">
-          <div class="meta">TYPE 2 &mdash; <span class="ref-code">BS 8110-1:1997, Cl. 3.5.3.3</span></div>
+          <div class="meta">TYPE 2 &mdash; <span class="ref-code" title="BS 8110-1:1997">Cl. 3.5.3.3</span></div>
           <h3>Two-Way Spanning Slab, Simply Supported (Corners Free to Lift)</h3>
           <p>Rectangular panel, l<sub>y</sub>/l<sub>x</sub> &le; 2.0, supported on four sides with no corner restraint.</p>
         </div>
         <div class="type-card">
-          <div class="meta">TYPE 3 &mdash; <span class="ref-code">BS 8110-1:1997, Cl. 3.5.3.4 / 3.5.3.5</span></div>
+          <div class="meta">TYPE 3 &mdash; <span class="ref-code" title="BS 8110-1:1997">Cl. 3.5.3.4 / 3.5.3.5</span></div>
           <h3>Two-Way Spanning Slab, Restrained (Corners Held Down)</h3>
           <p>Cast monolithically with edge beams/adjacent panels so corners are restrained &mdash; torsion reinforcement provided at corners. The most common floor slab type in framed buildings.</p>
         </div>
         <div class="type-card">
-          <div class="meta">TYPE 4 &mdash; <span class="ref-code">BS 8110-1:1997, Cl. 3.7</span></div>
+          <div class="meta">TYPE 4 &mdash; <span class="ref-code" title="BS 8110-1:1997">Cl. 3.7</span></div>
           <h3>Flat Slab (Supported Directly on Columns)</h3>
           <p>No beams &mdash; slab bears directly on columns, with or without drop panels or column heads. <span class="ref-thumb">Engineering guidance</span> Punching shear is typically a governing design consideration.</p>
         </div>
         <div class="type-card">
-          <div class="meta">TYPE 5 &mdash; <span class="ref-code">BS 8110-1:1997, Cl. 3.6</span></div>
+          <div class="meta">TYPE 5 &mdash; <span class="ref-code" title="BS 8110-1:1997">Cl. 3.6</span></div>
           <h3>Ribbed / Waffle Slab</h3>
           <p>Closely spaced ribs (one-way) or ribs in both directions (waffle) with a thin top flange &mdash; reduces self-weight on longer spans.</p>
         </div>
         <div class="type-card">
-          <div class="meta">TYPE 6 &mdash; <span class="ref-code">BS 8110-1:1997, Cl. 3.4.6</span></div>
+          <div class="meta">TYPE 6 &mdash; <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.6</span></div>
           <h3>Cantilever Slab</h3>
           <p>Projects beyond its support with a free edge &mdash; balconies, canopies. Deflection and top-steel anchorage govern.</p>
         </div>
@@ -538,8 +538,8 @@ Minimum dead (uplift / stability / pattern): 1.0G<sub>k</sub></div>
           <tr><td>Self-weight of slab</td><td>&gamma;<sub>c</sub> &times; h (&gamma;<sub>c</sub> &asymp; 24 kN/m&sup3; <span class="ref-thumb" title="Widely adopted normal-weight reinforced concrete density">Typical RC density</span>, h in m)</td><td>Dead (Gk)</td></tr>
           <tr><td>Screed / finishes</td><td>&gamma;<sub>screed</sub> &times; thickness (50mm screed &asymp; 1.1 kN/m&sup2;) <span class="ref-thumb" title="Calculated: ~22 kN/m&sup3; &times; 0.05 m. Screed density varies by type.">Calculated estimate</span></td><td>Dead (Gk)</td></tr>
           <tr><td>Ceiling / services</td><td>Nominal 0.25&ndash;0.5 kN/m&sup2; <span class="ref-thumb">Typical preliminary allowance</span></td><td>Dead (Gk)</td></tr>
-          <tr><td>Lightweight movable partitions</td><td>UDL allowance per <span class="ref-standard">BS 6399-1:1996, Cl. 5.2</span>, typically 1.0 kN/m&sup2;. Applies where partitions are lightweight and movable; where actual wall positions are known, model the wall load directly. Classified as G<sub>k</sub> per the standard.</td><td>Dead (Gk)</td></tr>
-          <tr><td>Imposed / live load</td><td><span class="ref-standard">BS 6399-1:1996, Table 1</span> (office 2.5, residential 1.5 kN/m&sup2;)</td><td>Live (Qk)</td></tr>
+          <tr><td>Lightweight movable partitions</td><td>UDL allowance per <span class="ref-standard" title="BS 6399-1:1996">Cl. 5.2</span>, typically 1.0 kN/m&sup2;. Applies where partitions are lightweight and movable; where actual wall positions are known, model the wall load directly. Classified as G<sub>k</sub> per the standard.</td><td>Dead (Gk)</td></tr>
+          <tr><td>Imposed / live load</td><td><span class="ref-standard" title="BS 6399-1:1996">Table 1</span> (office 2.5, residential 1.5 kN/m&sup2;)</td><td>Live (Qk)</td></tr>
         </table></div>
         <div class="formula">n = 1.4G<sub>k</sub> + 1.6Q<sub>k</sub>   (ultimate design load per m&sup2;)
 n<sub>min</sub> = 1.0G<sub>k</sub>   (minimum load case &mdash; pattern loading)</div>
@@ -560,7 +560,7 @@ n<sub>min</sub> = 1.0G<sub>k</sub>   (minimum load case &mdash; pattern loading)
 
       <section id="s3">
         <div class="section-header"><span class="step-num">STEP S3</span><h2>Trial Thickness and Effective Depth</h2></div>
-        <h3>Preliminary Sizing &mdash; Basic Span/Overall Depth Ratios <span class="ref-code">BS 8110-1:1997, Cl. 3.4.6.3, Table 3.9</span></h3>
+        <h3>Preliminary Sizing &mdash; Basic Span/Overall Depth Ratios <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.6.3, Table 3.9</span></h3>
         <div class="table-wrap"><table>
           <tr><th>Slab Type</th><th>Typical span/depth (overall h) <span class="ref-thumb">Preliminary sizing guide</span></th><th>Basic span/eff. depth <span class="ref-code">Table 3.9</span></th></tr>
           <tr><td>One-way, simply supported</td><td>span / 25 to span / 28</td><td>20</td></tr>
@@ -579,8 +579,8 @@ n<sub>min</sub> = 1.0G<sub>k</sub>   (minimum load case &mdash; pattern loading)
         &bull; <strong>h = 150mm:</strong> Standard residential/office slab panels (3.0m to 4.5m) &mdash; <em>the most widely used standard thickness in practice.</em><br>
         &bull; <strong>h = 175mm to 200mm:</strong> Large span panels (4.5m to 6.0m) or panels carrying heavy masonry partition walls.</p></div>
         
-        <h3>Minimum Cover <span class="ref-code">BS 8110-1:1997, Table 3.3</span></h3>
-        <p>Typically 20&ndash;25mm internal/mild exposure, checked against fire resistance in <span class="ref-code">BS 8110-1:1997, Table 3.4 / Fig 3.2</span>.</p>
+        <h3>Minimum Cover <span class="ref-code" title="BS 8110-1:1997">Table 3.3</span></h3>
+        <p>Typically 20&ndash;25mm internal/mild exposure, checked against fire resistance in <span class="ref-code" title="BS 8110-1:1997">Table 3.4 / Fig 3.2</span>.</p>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
@@ -589,7 +589,7 @@ n<sub>min</sub> = 1.0G<sub>k</sub>   (minimum load case &mdash; pattern loading)
         <h3>Simply Supported &mdash; UDL</h3>
         <div class="formula">M<sub>max</sub> (midspan, per m width) = n &times; l&sup2; / 8
 V<sub>max</sub> (at support, per m width) = n &times; l / 2</div>
-        <h3>Continuous One-Way Slab &mdash; Coefficients <span class="ref-code">BS 8110-1:1997, Table 3.12</span></h3>
+        <h3>Continuous One-Way Slab &mdash; Coefficients <span class="ref-code" title="BS 8110-1:1997">Table 3.12</span></h3>
         <div class="formula">Conditions: spans approx. equal, loads substantially UDL, Q<sub>k</sub> &le; G<sub>k</sub>, &ge;3 spans
 M = coefficient &times; n &times; l&sup2;
 V = coefficient &times; n &times; l</div>
@@ -608,15 +608,15 @@ M<sub>sy</sub> = &alpha;<sub>sy</sub> &times; n &times; l<sub>x</sub>&sup2;   (l
 
       <section id="s6">
         <div class="section-header"><span class="step-num">STEP S6</span><h2>Two-Way Spanning Slabs &mdash; Restrained (Corners Held Down)</h2></div>
-        <h3>Panel Classification <span class="ref-code">BS 8110-1:1997, Table 3.14</span></h3>
+        <h3>Panel Classification <span class="ref-code" title="BS 8110-1:1997">Table 3.14</span></h3>
         <p>Classify each panel: interior panel, or one/two/three/four edges discontinuous &mdash; each has its own set of moment coefficients.</p>
         <div class="formula">Midspan (sagging):  M<sub>sx</sub> = &beta;<sub>sx</sub>nl<sub>x</sub>&sup2;,  M<sub>sy</sub> = &beta;<sub>sy</sub>nl<sub>x</sub>&sup2;
 Support (hogging):  M<sub>hx</sub> = &beta;<sub>hx</sub>nl<sub>x</sub>&sup2;,  M<sub>hy</sub> = &beta;<sub>hy</sub>nl<sub>x</sub>&sup2;
   (&beta; from Table 3.14 by panel type and l<sub>y</sub>/l<sub>x</sub>)</div>
-        <h3>Shear <span class="ref-code">BS 8110-1:1997, Table 3.15</span></h3>
+        <h3>Shear <span class="ref-code" title="BS 8110-1:1997">Table 3.15</span></h3>
         <div class="formula">V<sub>x</sub> = &beta;<sub>vx</sub> &times; n &times; l<sub>x</sub>   (short edge)
 V<sub>y</sub> = &beta;<sub>vy</sub> &times; n &times; l<sub>x</sub>   (long edge)</div>
-        <h3>Corner (Torsion) Reinforcement <span class="ref-code">BS 8110-1:1997, Cl. 3.5.3.5</span></h3>
+        <h3>Corner (Torsion) Reinforcement <span class="ref-code" title="BS 8110-1:1997">Cl. 3.5.3.5</span></h3>
         <div class="formula">A<sub>s,corner</sub> = (3/4) &times; A<sub>sx</sub> (max short-span steel)
 Extend l<sub>x</sub>/5 both directions from corner; both faces at discontinuous corners</div>
         <div class="card"><p><strong>Torsion Steel Detailing <span class="ref-handbook">Oyenuga &amp; Arya</span>:</strong><br>
@@ -627,21 +627,21 @@ Extend l<sub>x</sub>/5 both directions from corner; both faces at discontinuous 
       <section id="s7">
         <div class="section-header"><span class="step-num">STEP S7</span><h2>Flat Slabs</h2></div>
         <div class="formula">Divide each panel into:
-  column strip  (0.5 &times; panel width, centred on column line) <span class="ref-code">BS 8110-1:1997, Cl. 3.7.2.3</span>
+  column strip  (0.5 &times; panel width, centred on column line) <span class="ref-code" title="BS 8110-1:1997">Cl. 3.7.2.3</span>
   middle strip  (the remainder)</div>
         <div class="table-wrap"><table>
           <tr><th>Method</th><th>When Used</th></tr>
           <tr><td>Equivalent frame method</td><td>Standard &mdash; analyse each direction as a frame of columns and slab strips</td></tr>
-          <tr><td>Simplified coefficients</td><td>Regular grid, &ge;3 spans, UDL, restricted per <span class="ref-code">BS 8110-1:1997, Cl. 3.7.2.7</span></td></tr>
+          <tr><td>Simplified coefficients</td><td>Regular grid, &ge;3 spans, UDL, restricted per <span class="ref-code" title="BS 8110-1:1997">Cl. 3.7.2.7</span></td></tr>
           <tr><td>Finite element / grillage</td><td>Irregular grids, large openings, transfer conditions</td></tr>
         </table></div>
-        <h3>Punching Shear <span class="ref-code">BS 8110-1:1997, Cl. 3.7.7</span></h3>
-        <div class="formula">Check on a perimeter at 1.5d from the column face <span class="ref-code">BS 8110-1:1997, Cl. 3.7.7.1</span>:
+        <h3>Punching Shear <span class="ref-code" title="BS 8110-1:1997">Cl. 3.7.7</span></h3>
+        <div class="formula">Check on a perimeter at 1.5d from the column face <span class="ref-code" title="BS 8110-1:1997">Cl. 3.7.7.1</span>:
 v = V<sub>eff</sub> / (u &times; d)
-V<sub>eff</sub> = V<sub>t</sub> &times; [1 + 1.5(M<sub>t</sub>/V<sub>t</sub>)(1/x)] <span class="ref-code">BS 8110-1:1997, Cl. 3.7.7.3</span>
-Compare v against v<sub>c</sub> (<span class="ref-code">BS 8110-1:1997, Table 3.8</span>)</div>
+V<sub>eff</sub> = V<sub>t</sub> &times; [1 + 1.5(M<sub>t</sub>/V<sub>t</sub>)(1/x)] <span class="ref-code" title="BS 8110-1:1997">Cl. 3.7.7.3</span>
+Compare v against v<sub>c</sub> (<span class="ref-code" title="BS 8110-1:1997">Table 3.8</span>)</div>
         <div class="warn">Punching shear governs flat slab design far more often than flexure &mdash; always check every column, especially edge/corner columns.</div>
-        <h3>Integrity Steel <span class="ref-code">BS 8110-1:1997, Cl. 3.7.3</span></h3>
+        <h3>Integrity Steel <span class="ref-code" title="BS 8110-1:1997">Cl. 3.7.3</span></h3>
         <p>At least two bottom bars in each direction should pass through each column, continuous or well lapped, for robustness.</p>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -650,12 +650,12 @@ Compare v against v<sub>c</sub> (<span class="ref-code">BS 8110-1:1997, Table 3.
         <div class="section-header"><span class="step-num">STEP S8</span><h2>Ribbed and Waffle Slabs</h2></div>
         <div class="table-wrap"><table>
           <tr><th>Element</th><th>Typical Limit</th></tr>
-          <tr><td>Rib spacing</td><td>&le; 1.5m centres <span class="ref-code">BS 8110-1:1997, Cl. 3.6.1.3</span></td></tr>
-          <tr><td>Rib width</td><td>&ge; 125mm typical <span class="ref-code">BS 8110-1:1997, Cl. 3.6.1.3</span></td></tr>
-          <tr><td>Topping thickness</td><td>&ge; 40mm, often 50&ndash;75mm with light mesh <span class="ref-code">BS 8110-1:1997, Cl. 3.6.1.3</span></td></tr>
+          <tr><td>Rib spacing</td><td>&le; 1.5m centres <span class="ref-code" title="BS 8110-1:1997">Cl. 3.6.1.3</span></td></tr>
+          <tr><td>Rib width</td><td>&ge; 125mm typical <span class="ref-code" title="BS 8110-1:1997">Cl. 3.6.1.3</span></td></tr>
+          <tr><td>Topping thickness</td><td>&ge; 40mm, often 50&ndash;75mm with light mesh <span class="ref-code" title="BS 8110-1:1997">Cl. 3.6.1.3</span></td></tr>
         </table></div>
         <p>Analyse the slab as a solid slab or series of beams (as Steps S4&ndash;S6), then design each rib as a flanged (T) beam using the topping as the compression flange &mdash; see Part 2, Step B6.</p>
-        <div class="formula">b<sub>eff</sub> per rib = b<sub>w</sub> + l<sub>z</sub>/5 each side (&le; rib spacing) <span class="ref-code">BS 8110-1:1997, Cl. 3.4.1.5</span>
+        <div class="formula">b<sub>eff</sub> per rib = b<sub>w</sub> + l<sub>z</sub>/5 each side (&le; rib spacing) <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.1.5</span>
   l<sub>z</sub> = distance between points of zero moment along the span</div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -664,36 +664,36 @@ Compare v against v<sub>c</sub> (<span class="ref-code">BS 8110-1:1997, Table 3.
         <div class="section-header"><span class="step-num">STEP S9</span><h2>Cantilever Slabs</h2></div>
         <div class="formula">M<sub>max</sub> (fixed support, hogging, per m) = n &times; l&sup2; / 2
 V<sub>max</sub> (at fixed support) = n &times; l</div>
-        <div class="formula">Basic span/effective-depth ratio = 7 (most conservative of all slab types) <span class="ref-code">BS 8110-1:1997, Table 3.9</span></div>
-        <p>Cantilevers are almost always deflection-critical &mdash; check early. Anchor top steel a full anchorage length into the back span <span class="ref-code">BS 8110-1:1997, Cl. 3.12.9.4</span> to ensure adequate development of the hogging reinforcement past the support.</p>
+        <div class="formula">Basic span/effective-depth ratio = 7 (most conservative of all slab types) <span class="ref-code" title="BS 8110-1:1997">Table 3.9</span></div>
+        <p>Cantilevers are almost always deflection-critical &mdash; check early. Anchor top steel a full anchorage length into the back span <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.9.4</span> to ensure adequate development of the hogging reinforcement past the support.</p>
         <div class="warn">Never assume a cantilever's self-weight alone "counterbalances" the load &mdash; verify the back-span/support has adequate capacity and continuity explicitly.</div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
       <section id="s10">
         <div class="section-header"><span class="step-num">STEP S10</span><h2>Flexural Design, Shear, and Deflection (All Types)</h2></div>
-        <h3>1 &mdash; Flexural Design <span class="ref-code">BS 8110-1:1997, Cl. 3.5.4 / Cl. 3.4.4</span></h3>
+        <h3>1 &mdash; Flexural Design <span class="ref-code" title="BS 8110-1:1997">Cl. 3.5.4 / Cl. 3.4.4</span></h3>
         <div class="formula">K = M / (1000 &times; d&sup2; &times; f<sub>cu</sub>)   (b = 1000mm per metre strip)
 z = d[0.5 + &radic;(0.25 &minus; K/0.9)] &le; 0.95d
 A<sub>s</sub> = M / (0.95f<sub>y</sub>z) per metre width &mdash; or M / (0.87f<sub>y</sub>z) for pre-amendment</div>
         <div class="table-wrap"><table>
           <tr><th>Condition</th><th>Limit</th><th>Reference</th></tr>
-          <tr><td>Minimum steel, each direction (f<sub>y</sub>=460)</td><td>0.13% of gross section</td><td><span class="ref-code">BS 8110-1:1997, Table 3.25</span></td></tr>
-          <tr><td>Max bar spacing, main steel</td><td>3d or 750mm, lesser (note: designers often use 250-300mm to control cracks <span class="ref-thumb">Practical detailing preference</span>)</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.12.11.2.7</span></td></tr>
-          <tr><td>Max bar spacing, secondary steel</td><td>3d or 750mm, lesser</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.12.11.2.8</span></td></tr>
+          <tr><td>Minimum steel, each direction (f<sub>y</sub>=460)</td><td>0.13% of gross section</td><td><span class="ref-code" title="BS 8110-1:1997">Table 3.25</span></td></tr>
+          <tr><td>Max bar spacing, main steel</td><td>3d or 750mm, lesser (note: designers often use 250-300mm to control cracks <span class="ref-thumb">Practical detailing preference</span>)</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.11.2.7</span></td></tr>
+          <tr><td>Max bar spacing, secondary steel</td><td>3d or 750mm, lesser</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.11.2.8</span></td></tr>
         </table></div>
 
-        <h3>2 &mdash; Shear Check in Slabs <span class="ref-code">BS 8110-1:1997, Cl. 3.5.5</span></h3>
+        <h3>2 &mdash; Shear Check in Slabs <span class="ref-code" title="BS 8110-1:1997">Cl. 3.5.5</span></h3>
         <p>In solid suspended slabs, shear reinforcement is rarely practical or required; design shear stress \\(v\\) should normally not exceed concrete shear resistance \\(v_c\\).</p>
-        <div class="formula">v = V / (b &times; d)   (where b = 1000mm per metre strip) <span class="ref-code">BS 8110-1:1997, Cl. 3.5.5.1</span>
-v<sub>c</sub> = (0.79 / &gamma;<sub>m</sub>) &times; (100A<sub>s</sub> / bd)<sup>1/3</sup> &times; (400 / d)<sup>1/4</sup> &times; (f<sub>cu</sub> / 25)<sup>1/3</sup> <span class="ref-code">BS 8110-1:1997, Table 3.8</span>
-Check 1: If v &le; v<sub>c</sub> &rarr; No shear reinforcement required (typical solid slab condition) <span class="ref-code">BS 8110-1:1997, Table 3.16</span>
+        <div class="formula">v = V / (b &times; d)   (where b = 1000mm per metre strip) <span class="ref-code" title="BS 8110-1:1997">Cl. 3.5.5.1</span>
+v<sub>c</sub> = (0.79 / &gamma;<sub>m</sub>) &times; (100A<sub>s</sub> / bd)<sup>1/3</sup> &times; (400 / d)<sup>1/4</sup> &times; (f<sub>cu</sub> / 25)<sup>1/3</sup> <span class="ref-code" title="BS 8110-1:1997">Table 3.8</span>
+Check 1: If v &le; v<sub>c</sub> &rarr; No shear reinforcement required (typical solid slab condition) <span class="ref-code" title="BS 8110-1:1997">Table 3.16</span>
 Check 2: If v > v<sub>c</sub> in solid slabs &rarr; Increase slab depth (h) or concrete strength (f<sub>cu</sub>), as links in thin slabs (&lt;200mm) are difficult to install and anchor <span class="ref-thumb">Practical construction guidance</span></div>
 
-        <h3>3 &mdash; Deflection Control (Span-to-Effective Depth Check) <span class="ref-code">BS 8110-1:1997, Cl. 3.5.7 / Cl. 3.4.6</span></h3>
+        <h3>3 &mdash; Deflection Control (Span-to-Effective Depth Check) <span class="ref-code" title="BS 8110-1:1997">Cl. 3.5.7 / Cl. 3.4.6</span></h3>
         <p>Slab deflection is assessed along the short span (\\(l_x\\)) under serviceability limit state (SLS) conditions by verifying that the span-to-effective depth ratio does not exceed allowable limits.</p>
-        <div class="formula">Allowable span/d = basic ratio (<span class="ref-code">BS 8110-1:1997, Table 3.9</span>) &times; tension mod. factor F<sub>1</sub> (<span class="ref-code">BS 8110-1:1997, Table 3.10</span>) &times; compression mod. factor F<sub>2</sub> (<span class="ref-code">BS 8110-1:1997, Table 3.11</span>)
-Tension modifier: F<sub>1</sub> = 0.55 + (477 &minus; f<sub>s</sub>) / [120(0.9 + M / bd&sup2;)] &le; 2.0 (where f<sub>s</sub> = (2/3)f<sub>y</sub> &times; A<sub>s,req</sub> / A<sub>s,prov</sub>) <span class="ref-code">BS 8110-1:1997, Cl. 3.4.6.5</span>
+        <div class="formula">Allowable span/d = basic ratio (<span class="ref-code" title="BS 8110-1:1997">Table 3.9</span>) &times; tension mod. factor F<sub>1</sub> (<span class="ref-code" title="BS 8110-1:1997">Table 3.10</span>) &times; compression mod. factor F<sub>2</sub> (<span class="ref-code" title="BS 8110-1:1997">Table 3.11</span>)
+Tension modifier: F<sub>1</sub> = 0.55 + (477 &minus; f<sub>s</sub>) / [120(0.9 + M / bd&sup2;)] &le; 2.0 (where f<sub>s</sub> = (2/3)f<sub>y</sub> &times; A<sub>s,req</sub> / A<sub>s,prov</sub>) <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.6.5</span>
 Check: Actual short span / d &le; Allowable span / d &rarr; Deflection is satisfactory</div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -701,13 +701,13 @@ Check: Actual short span / d &le; Allowable span / d &rarr; Deflection is satisf
       <section id="s11">
         <div class="section-header"><span class="step-num">STEP S11</span><h2>Detailing (All Slab Types)</h2></div>
         <ul class="check">
-          <li>Simply supported: extend &ge;50% of midspan steel to within 0.1l of each support; rest may stop at 0.15l from support. <span class="ref-code">BS 8110-1:1997, Cl. 3.12.10.3.1</span></li>
-          <li>Continuous: extend top steel &ge;0.15l into span at interior supports; stop half at 0.25l. <span class="ref-code">BS 8110-1:1997, Cl. 3.12.10.3.2</span></li>
-          <li>Anchorage at simple ends: &ge;50% of midspan steel, anchored &ge;12&phi; past face of support. <span class="ref-code">BS 8110-1:1997, Cl. 3.12.10.3.1</span></li>
-          <li>Secondary steel: 0.13% of gross area for one-way slabs (distribution/shrinkage steel, f<sub>y</sub>=460). <span class="ref-code">BS 8110-1:1997, Table 3.25</span></li>
-          <li>Flat slabs: top steel over column heads per column-strip requirements, integrity steel through columns. <span class="ref-code">BS 8110-1:1997, Cl. 3.7.3</span></li>
+          <li>Simply supported: extend &ge;50% of midspan steel to within 0.1l of each support; rest may stop at 0.15l from support. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.10.3.1</span></li>
+          <li>Continuous: extend top steel &ge;0.15l into span at interior supports; stop half at 0.25l. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.10.3.2</span></li>
+          <li>Anchorage at simple ends: &ge;50% of midspan steel, anchored &ge;12&phi; past face of support. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.10.3.1</span></li>
+          <li>Secondary steel: 0.13% of gross area for one-way slabs (distribution/shrinkage steel, f<sub>y</sub>=460). <span class="ref-code" title="BS 8110-1:1997">Table 3.25</span></li>
+          <li>Flat slabs: top steel over column heads per column-strip requirements, integrity steel through columns. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.7.3</span></li>
           <li>Ribbed slabs: check bar spacing within the rib, provide links in ribs as for a beam where shear requires.</li>
-          <li>Cantilevers: never terminate top bars at/before the support &mdash; full anchorage into back span. <span class="ref-code">BS 8110-1:1997, Cl. 3.12.9.4</span></li>
+          <li>Cantilevers: never terminate top bars at/before the support &mdash; full anchorage into back span. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.9.4</span></li>
         </ul>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -739,11 +739,11 @@ Check: Actual short span / d &le; Allowable span / d &rarr; Deflection is satisf
         <div class="section-header"><span class="step-num">STEP B1</span><h2>Classify the Beam</h2></div>
         <div class="table-wrap"><table>
           <tr><th>Type</th><th>Criterion</th><th>BS 8110 Clause</th></tr>
-          <tr><td>Simply supported beam</td><td>Single span, free rotation at both ends</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.4.1</span></td></tr>
-          <tr><td>Continuous beam</td><td>Two or more spans over intermediate supports</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.4.3, Table 3.5/3.6</span></td></tr>
-          <tr><td>Cantilever beam</td><td>Fixed one end, free the other &mdash; hogging throughout</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.4.6</span></td></tr>
-          <tr><td>Rectangular beam</td><td>Solid rectangular section, no flange contribution</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.4.4.1</span></td></tr>
-          <tr><td>Flanged beam (T/L)</td><td>Cast monolithically with slab &mdash; slab acts as compression flange</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.4.1.5</span></td></tr>
+          <tr><td>Simply supported beam</td><td>Single span, free rotation at both ends</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.1</span></td></tr>
+          <tr><td>Continuous beam</td><td>Two or more spans over intermediate supports</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.3, Table 3.5/3.6</span></td></tr>
+          <tr><td>Cantilever beam</td><td>Fixed one end, free the other &mdash; hogging throughout</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.6</span></td></tr>
+          <tr><td>Rectangular beam</td><td>Solid rectangular section, no flange contribution</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.4.1</span></td></tr>
+          <tr><td>Flanged beam (T/L)</td><td>Cast monolithically with slab &mdash; slab acts as compression flange</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.1.5</span></td></tr>
         </table></div>
         <h3>Also Establish</h3>
         <ul class="check">
@@ -761,7 +761,7 @@ Check: Actual short span / d &le; Allowable span / d &rarr; Deflection is satisf
           <tr><th>Source</th><th>How it Loads the Beam</th><th>Load Type</th></tr>
           <tr><td>Self-weight</td><td>w = &gamma;<sub>c</sub> &times; b &times; h</td><td>Dead (Gk)</td></tr>
           <tr><td>Slab reaction (one-way)</td><td>UDL from half the slab span each side of the beam</td><td>Dead + Live</td></tr>
-          <tr><td>Slab reaction (two-way)</td><td>Triangular/trapezoidal, via &beta;<sub>vx</sub>, &beta;<sub>vy</sub> <span class="ref-code">BS 8110-1:1997, Table 3.15</span></td><td>Dead + Live</td></tr>
+          <tr><td>Slab reaction (two-way)</td><td>Triangular/trapezoidal, via &beta;<sub>vx</sub>, &beta;<sub>vy</sub> <span class="ref-code" title="BS 8110-1:1997">Table 3.15</span></td><td>Dead + Live</td></tr>
           <tr><td>Walls carried directly</td><td>w = &gamma;<sub>wall</sub> &times; thickness &times; height</td><td>Dead (Gk)</td></tr>
           <tr><td>Secondary beam landing on primary</td><td>Point load = secondary beam's reaction at that support</td><td>Dead + Live</td></tr>
           <tr><td>Finishes/services</td><td>UDL per m&sup2; of tributary area, converted to per-metre run</td><td>Dead (Gk)</td></tr>
@@ -824,9 +824,9 @@ w<sub>u</sub> = 1.4G<sub>k</sub> + 1.6Q<sub>k</sub>   <span>(Table 2.1)</span></
         <div class="section-header"><span class="step-num">STEP B3</span><h2>Effective Span and Trial Depth</h2></div>
         <div class="formula">Simply supported: l<sub>eff</sub> = min(clear span + d, centre-to-centre of supports)
 Continuous:       l<sub>eff</sub> = centre-to-centre of supports
-Cantilever:       l<sub>eff</sub> = length to face of support + d/2</div> <span class="ref-code">BS 8110-1:1997, Cl. 3.4.1.2</span>
+Cantilever:       l<sub>eff</sub> = length to face of support + d/2</div> <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.1.2</span>
         <div class="table-wrap"><table>
-          <tr><th>Beam Type</th><th>Typical span/depth (overall h) <span class="ref-thumb">Preliminary sizing guide</span></th><th>Basic span/d limit <span class="ref-code">BS 8110-1:1997, Table 3.9</span></th></tr>
+          <tr><th>Beam Type</th><th>Typical span/depth (overall h) <span class="ref-thumb">Preliminary sizing guide</span></th><th>Basic span/d limit <span class="ref-code" title="BS 8110-1:1997">Table 3.9</span></th></tr>
           <tr><td>Simply supported</td><td>span / 12 to span / 15</td><td>20</td></tr>
           <tr><td>Continuous</td><td>span / 15 to span / 18</td><td>26</td></tr>
           <tr><td>Cantilever</td><td>span / 6 to span / 8</td><td>7</td></tr>
@@ -843,9 +843,9 @@ Cantilever:       l<sub>eff</sub> = length to face of support + d/2</div> <span 
         <div class="table-wrap"><table>
           <tr><th>Method</th><th>When to Use</th><th>Clause</th></tr>
           <tr><td>Simply supported formula</td><td>Single span, standard UDL/point loads</td><td>Basic statics</td></tr>
-          <tr><td>Moment/shear coefficients</td><td>Approx. equal spans (&plusmn;15%), UDL dominant, &ge;3 spans</td><td><span class="ref-code">BS 8110-1:1997, Table 3.5/3.6</span></td></tr>
-          <tr><td>Moment distribution (manual)</td><td>Unequal spans, mixed loading</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.4.3</span> (permits elastic analysis including moment distribution)</td></tr>
-          <tr><td>Computer frame/grillage</td><td>Beams part of a rigid frame with columns, complex loads</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.2.1</span></td></tr>
+          <tr><td>Moment/shear coefficients</td><td>Approx. equal spans (&plusmn;15%), UDL dominant, &ge;3 spans</td><td><span class="ref-code" title="BS 8110-1:1997">Table 3.5/3.6</span></td></tr>
+          <tr><td>Moment distribution (manual)</td><td>Unequal spans, mixed loading</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.3</span> (permits elastic analysis including moment distribution)</td></tr>
+          <tr><td>Computer frame/grillage</td><td>Beams part of a rigid frame with columns, complex loads</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.2.1</span></td></tr>
         </table></div>
         <div class="card"><p><strong>Conditions for Table 3.5/3.6 coefficients:</strong> spans approximately equal, loads substantially UDL, Q<sub>k</sub> &le; G<sub>k</sub>. Otherwise, run a proper elastic/moment-distribution analysis with pattern loading.</p></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
@@ -856,30 +856,30 @@ Cantilever:       l<sub>eff</sub> = length to face of support + d/2</div> <span 
         <div class="formula">Simply supported, UDL:          M<sub>max</sub> = w<sub>u</sub>l&sup2;/8,   V<sub>max</sub> = w<sub>u</sub>l/2
 Simply supported, point at mid: M<sub>max</sub> = Pl/4,      V<sub>max</sub> = P/2
 Cantilever, UDL:                M<sub>max</sub> = w<sub>u</sub>l&sup2;/2,   V<sub>max</sub> = w<sub>u</sub>l</div>
-        <div class="warn">Pattern loading (beams not qualifying for coefficients): run full load on all spans, and alternate spans loaded with 1.4G<sub>k</sub>+1.6Q<sub>k</sub> while others carry 1.0G<sub>k</sub>, to capture true maximum span and support moments. <span class="ref-code">BS 8110-1:1997, Cl. 3.2.1.2.2</span></div>
-        <h3>Redistribution <span class="ref-code">BS 8110-1:1997, Cl. 3.2.2</span></h3>
-        <p>Elastic moments may be redistributed up to 30% <span class="ref-code">BS 8110-1:1997, Cl. 3.2.2.1</span> (x/d &le; 0.6 after redistribution), provided equilibrium is maintained and envelopes adjusted accordingly.</p>
+        <div class="warn">Pattern loading (beams not qualifying for coefficients): run full load on all spans, and alternate spans loaded with 1.4G<sub>k</sub>+1.6Q<sub>k</sub> while others carry 1.0G<sub>k</sub>, to capture true maximum span and support moments. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.2.1.2.2</span></div>
+        <h3>Redistribution <span class="ref-code" title="BS 8110-1:1997">Cl. 3.2.2</span></h3>
+        <p>Elastic moments may be redistributed up to 30% <span class="ref-code" title="BS 8110-1:1997">Cl. 3.2.2.1</span> (x/d &le; 0.6 after redistribution), provided equilibrium is maintained and envelopes adjusted accordingly.</p>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
       <section id="b6">
         <div class="section-header"><span class="step-num">STEP B6</span><h2>Flexural (Bending) Design</h2></div>
-        <div class="formula">K = M / (bd&sup2;f<sub>cu</sub>);  K' = 0.156 <span class="ref-code">BS 8110-1:1997, Cl. 3.4.4.4</span>
+        <div class="formula">K = M / (bd&sup2;f<sub>cu</sub>);  K' = 0.156 <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.4.4</span>
 If K &le; K': z = d[0.5 + &radic;(0.25 &minus; K/0.9)] &le; 0.95d
 A<sub>s</sub> = M / (0.95f<sub>y</sub>z) &mdash; or M / (0.87f<sub>y</sub>z) for pre-amendment</div>
         <h3>Doubly Reinforced Section (K &gt; K')</h3>
         <div class="formula">A<sub>s</sub>' = (K&minus;K')f<sub>cu</sub>bd&sup2; / [0.95f<sub>y</sub>(d&minus;d')]   (or 0.87f<sub>y</sub> for pre-amendment)
 A<sub>s</sub>  = K'f<sub>cu</sub>bd&sup2; / (0.95f<sub>y</sub>z') + A<sub>s</sub>'   (z' = 0.775d; or 0.87f<sub>y</sub> for pre-amendment)</div>
-        <h3>Flanged (T/L) Beams <span class="ref-code">BS 8110-1:1997, Cl. 3.4.1.5</span></h3>
+        <h3>Flanged (T/L) Beams <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.1.5</span></h3>
         <div class="formula">b<sub>eff</sub> (T-beam) = b<sub>w</sub> + l<sub>z</sub>/5   (or actual flange width, whichever is less; note: this is l<sub>z</sub>/10 on each side of the web)
 b<sub>eff</sub> (L-beam) = b<sub>w</sub> + l<sub>z</sub>/10  (or actual flange width, whichever is less; note: this is l<sub>z</sub>/10 on one side of the web)
   l<sub>z</sub> &asymp; 0.7 &times; effective span for a continuous beam <span class="ref-thumb" title="Common simplification of distance between zero-moment points">Simplified approximation</span></div>
         <div class="table-wrap"><table>
           <tr><th>Condition</th><th>Limit (f<sub>y</sub> = 460)</th><th>Reference</th></tr>
-          <tr><td>Min tension steel, rectangular</td><td>0.13% of b &times; h</td><td><span class="ref-code">BS 8110-1:1997, Table 3.25</span></td></tr>
-          <tr><td>Min tension steel, flanged (web in tension)</td><td>b<sub>w</sub>/b &lt; 0.4: 0.18% of b<sub>w</sub>&times;h<br>b<sub>w</sub>/b &ge; 0.4: 0.13% of b<sub>w</sub>&times;h</td><td><span class="ref-code">BS 8110-1:1997, Table 3.25</span></td></tr>
-          <tr><td>Min tension steel, flanged (flange in tension)</td><td>T-beam: 0.26% of b<sub>w</sub>&times;h<br>L-beam: 0.20% of b<sub>w</sub>&times;h</td><td><span class="ref-code">BS 8110-1:1997, Table 3.25</span></td></tr>
-          <tr><td>Max tension or compression steel</td><td>4% of gross area each (tension &amp; compression)</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.12.6.1</span></td></tr>
+          <tr><td>Min tension steel, rectangular</td><td>0.13% of b &times; h</td><td><span class="ref-code" title="BS 8110-1:1997">Table 3.25</span></td></tr>
+          <tr><td>Min tension steel, flanged (web in tension)</td><td>b<sub>w</sub>/b &lt; 0.4: 0.18% of b<sub>w</sub>&times;h<br>b<sub>w</sub>/b &ge; 0.4: 0.13% of b<sub>w</sub>&times;h</td><td><span class="ref-code" title="BS 8110-1:1997">Table 3.25</span></td></tr>
+          <tr><td>Min tension steel, flanged (flange in tension)</td><td>T-beam: 0.26% of b<sub>w</sub>&times;h<br>L-beam: 0.20% of b<sub>w</sub>&times;h</td><td><span class="ref-code" title="BS 8110-1:1997">Table 3.25</span></td></tr>
+          <tr><td>Max tension or compression steel</td><td>4% of gross area each (tension &amp; compression)</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.6.1</span></td></tr>
         </table></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -887,20 +887,20 @@ b<sub>eff</sub> (L-beam) = b<sub>w</sub> + l<sub>z</sub>/10  (or actual flange w
       <section id="b7">
         <div class="section-header"><span class="step-num">STEP B7</span><h2>Shear Design</h2></div>
         <div class="formula">v = V / (b<sub>v</sub>d) &le; 0.8&radic;f<sub>cu</sub> or 5 N/mm&sup2; (lesser)
-v<sub>c</sub> = 0.79[100A<sub>s</sub>/(b<sub>v</sub>d)]&sup1;&sol;&sup3;(400/d)&frac14;/&gamma;<sub>m</sub> &times; (f<sub>cu</sub>/25)&sup1;&sol;&sup3; <span class="ref-code">BS 8110-1:1997, Table 3.8</span></div>
+v<sub>c</sub> = 0.79[100A<sub>s</sub>/(b<sub>v</sub>d)]&sup1;&sol;&sup3;(400/d)&frac14;/&gamma;<sub>m</sub> &times; (f<sub>cu</sub>/25)&sup1;&sol;&sup3; <span class="ref-code" title="BS 8110-1:1997">Table 3.8</span></div>
         <div class="table-wrap"><table>
           <tr><th>Condition</th><th>Provision</th></tr>
           <tr><td>v &lt; 0.5v<sub>c</sub></td><td>Nominal links only</td></tr>
           <tr><td>0.5v<sub>c</sub> &le; v &lt; (v<sub>c</sub>+0.4)</td><td>Min links: A<sub>sv</sub>/s<sub>v</sub> = 0.4b<sub>v</sub>/(0.95f<sub>yv</sub>)  [or 0.87 for pre-amendment]</td></tr>
           <tr><td>v &ge; (v<sub>c</sub>+0.4)</td><td>Design links: A<sub>sv</sub>/s<sub>v</sub> = b<sub>v</sub>(v&minus;v<sub>c</sub>)/(0.95f<sub>yv</sub>)  [or 0.87 for pre-amendment]</td></tr>
           <tr><td>v &gt; 0.8&radic;f<sub>cu</sub> or 5N/mm&sup2;</td><td>Section too small &mdash; increase b or d</td></tr>
-        </table></div> <span class="ref-code">BS 8110-1:1997, Cl. 3.4.5.3</span>
-        <div class="formula">Max link spacing s<sub>v</sub> &le; 0.75d;  max lateral leg spacing &le; d <span class="ref-code">BS 8110-1:1997, Cl. 3.4.5.5</span></div>
+        </table></div> <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.5.3</span>
+        <div class="formula">Max link spacing s<sub>v</sub> &le; 0.75d;  max lateral leg spacing &le; d <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.5.5</span></div>
         <div class="card"><p><strong>Practical Detailing of Shear Links (<span class="ref-handbook">Oyenuga</span>):</strong><br>
         &bull; <strong>Link Diameter:</strong> Use high-yield steel links of at least <strong>8mm diameter</strong> (10mm if beam width &gt;300mm or load is heavy).<br>
         &bull; <strong>Practical Spacing:</strong> Spacings are rounded to clean structural multiples &mdash; e.g., 100mm, 150mm, 200mm, 250mm, or 300mm.<br>
         &bull; <strong>Link Zoning:</strong> Since shear is maximum at support faces and drops rapidly toward midspan, design links are concentrated near the supports (up to 1.5d to 2.0d from the face) and transitioned to nominal/minimum links at 250-300mm spacing for the remainder of the span.</p></div>
-        <div class="card blue"><p><strong>Critical section:</strong> checked at distance d from the face of the support. <span class="ref-code">BS 8110-1:1997, Cl. 3.4.5.10</span></p></div>
+        <div class="card blue"><p><strong>Critical section:</strong> checked at distance d from the face of the support. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.5.10</span></p></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
@@ -908,35 +908,35 @@ v<sub>c</sub> = 0.79[100A<sub>s</sub>/(b<sub>v</sub>d)]&sup1;&sol;&sup3;(400/d)&
         <div class="section-header"><span class="step-num">STEP B8</span><h2>Deflection Check</h2></div>
         <div class="table-wrap"><table>
           <tr><th>Support Condition</th><th>Basic span/d</th><th>Reference</th></tr>
-          <tr><td>Cantilever</td><td>7</td><td><span class="ref-code">BS 8110-1:1997, Table 3.9</span></td></tr>
-          <tr><td>Simply supported</td><td>20</td><td><span class="ref-code">BS 8110-1:1997, Table 3.9</span></td></tr>
-          <tr><td>Continuous</td><td>26</td><td><span class="ref-code">BS 8110-1:1997, Table 3.9</span></td></tr>
+          <tr><td>Cantilever</td><td>7</td><td><span class="ref-code" title="BS 8110-1:1997">Table 3.9</span></td></tr>
+          <tr><td>Simply supported</td><td>20</td><td><span class="ref-code" title="BS 8110-1:1997">Table 3.9</span></td></tr>
+          <tr><td>Continuous</td><td>26</td><td><span class="ref-code" title="BS 8110-1:1997">Table 3.9</span></td></tr>
         </table></div>
         <div class="formula">Allowable span/d = basic ratio &times; mod. factor (tension, Table 3.10) &times; mod. factor (compression, Table 3.11)
 Check: actual span/d &le; allowable span/d</div>
-        <p>Flanged beams with b<sub>w</sub>/b &lt; 0.3: apply the additional reduction factor <span class="ref-code">BS 8110-1:1997, Cl. 3.4.6.4</span>. Spans &gt;10m: apply the correction factor 10/span <span class="ref-code">BS 8110-1:1997, Cl. 3.4.6.3</span>.</p>
+        <p>Flanged beams with b<sub>w</sub>/b &lt; 0.3: apply the additional reduction factor <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.6.4</span>. Spans &gt;10m: apply the correction factor 10/span <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.6.3</span>.</p>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
       <section id="b9">
         <div class="section-header"><span class="step-num">STEP B9</span><h2>Cracking / Crack Control</h2></div>
-        <div class="formula">Clear bar spacing &le; 47000/f<sub>s</sub> (mm), &le; 300mm   <span class="ref-code">BS 8110-1:1997, Cl. 3.12.11.2.3 / Table 3.28</span>
+        <div class="formula">Clear bar spacing &le; 47000/f<sub>s</sub> (mm), &le; 300mm   <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.11.2.3 / Table 3.28</span>
   f<sub>s</sub> = service stress in tension steel (N/mm&sup2;) = (2/3)f<sub>y</sub> &times; (A<sub>s,req</sub>/A<sub>s,prov</sub>) &times; (1/&beta;<sub>b</sub>)
-  (simplified: max clear spacing 155&ndash;300mm depending on redistribution &mdash; <span class="ref-code">BS 8110-1:1997, Table 3.28</span>)</div>
-        <p>Side face bars required where overall depth &gt;750mm: spacing &le;250mm, &ge;0.1% of side face area (b &times; 2 &times; (h&minus;x)/3 zone) per side <span class="ref-code">BS 8110-1:1997, Cl. 3.12.11.2.6</span>.</p>
+  (simplified: max clear spacing 155&ndash;300mm depending on redistribution &mdash; <span class="ref-code" title="BS 8110-1:1997">Table 3.28</span>)</div>
+        <p>Side face bars required where overall depth &gt;750mm: spacing &le;250mm, &ge;0.1% of side face area (b &times; 2 &times; (h&minus;x)/3 zone) per side <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.11.2.6</span>.</p>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
       <section id="b10">
         <div class="section-header"><span class="step-num">STEP B10</span><h2>Detailing and Curtailment</h2></div>
         <ul class="check">
-          <li>Simply supported: extend &ge;50% of bottom steel to within 0.1l of each support end; bend the rest up or stop at 0.15l from the support face with a 12&phi; anchorage. <span class="ref-code">BS 8110-1:1997, Cl. 3.12.10.3</span></li>
-          <li>Continuous &mdash; midspan steel: stop 50% at 0.15l from each support face; rest continues to within 0.1l of the far support. <span class="ref-code">BS 8110-1:1997, Cl. 3.12.10.3</span></li>
-          <li>Continuous &mdash; support steel (hogging): extend &ge;0.15l into the span on each side; lap with midspan steel where needed. <span class="ref-code">BS 8110-1:1997, Cl. 3.12.10.3</span></li>
-          <li>Cantilever: all top steel must extend a full anchorage length into the back span or supporting member &mdash; do not stop at the root face. <span class="ref-code">BS 8110-1:1997, Cl. 3.12.10.3</span></li>
+          <li>Simply supported: extend &ge;50% of bottom steel to within 0.1l of each support end; bend the rest up or stop at 0.15l from the support face with a 12&phi; anchorage. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.10.3</span></li>
+          <li>Continuous &mdash; midspan steel: stop 50% at 0.15l from each support face; rest continues to within 0.1l of the far support. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.10.3</span></li>
+          <li>Continuous &mdash; support steel (hogging): extend &ge;0.15l into the span on each side; lap with midspan steel where needed. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.10.3</span></li>
+          <li>Cantilever: all top steel must extend a full anchorage length into the back span or supporting member &mdash; do not stop at the root face. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.10.3</span></li>
           <li>Link spacing: &le;0.75d throughout; increase near supports where shear is high and reduce toward midspan where shear drops.</li>
           <li>Minimum 2 top bars + 2 bottom bars throughout regardless of moment (for handling and concrete placement). <span class="ref-thumb">Practical detailing minimum</span></li>
-          <li>Bar spacing limits: main bars not closer than h<sub>agg</sub>+5mm <span class="ref-code">BS 8110-1:1997, Cl. 3.12.11.1</span>; not more than the cracking spacing from Step B9.</li>
+          <li>Bar spacing limits: main bars not closer than h<sub>agg</sub>+5mm <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.11.1</span>; not more than the cracking spacing from Step B9.</li>
         </ul>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -967,11 +967,11 @@ Check: actual span/d &le; allowable span/d</div>
         <div class="section-header"><span class="step-num">STEP C1</span><h2>Classify the Column</h2></div>
         <div class="table-wrap"><table>
           <tr><th>Classification</th><th>Criterion</th><th>BS 8110</th></tr>
-          <tr><td>Short column (braced)</td><td>l<sub>e</sub>/b &le; 15 <em>and</em> l<sub>e</sub>/h &le; 15</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.8.1.3</span></td></tr>
-          <tr><td>Short column (unbraced)</td><td>l<sub>e</sub>/b &le; 10 <em>and</em> l<sub>e</sub>/h &le; 10</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.8.1.3</span></td></tr>
-          <tr><td>Slender column</td><td>Exceeds the short-column limits above &mdash; additional moment M<sub>add</sub> required</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.8.3</span></td></tr>
-          <tr><td>Braced column</td><td>Lateral load carried by shear walls/cores, not by this column</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.8.1.5</span></td></tr>
-          <tr><td>Unbraced column</td><td>Column itself contributes to lateral stability &mdash; sway frame</td><td><span class="ref-code">BS 8110-1:1997, Cl. 3.8.1.5</span></td></tr>
+          <tr><td>Short column (braced)</td><td>l<sub>e</sub>/b &le; 15 <em>and</em> l<sub>e</sub>/h &le; 15</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.8.1.3</span></td></tr>
+          <tr><td>Short column (unbraced)</td><td>l<sub>e</sub>/b &le; 10 <em>and</em> l<sub>e</sub>/h &le; 10</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.8.1.3</span></td></tr>
+          <tr><td>Slender column</td><td>Exceeds the short-column limits above &mdash; additional moment M<sub>add</sub> required</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.8.3</span></td></tr>
+          <tr><td>Braced column</td><td>Lateral load carried by shear walls/cores, not by this column</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.8.1.5</span></td></tr>
+          <tr><td>Unbraced column</td><td>Column itself contributes to lateral stability &mdash; sway frame</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.8.1.5</span></td></tr>
         </table></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -982,9 +982,9 @@ Check: actual span/d &le; allowable span/d</div>
         <div class="formula">N<sub>floor</sub> = &Sigma;(beam reactions framing in at that level) + column self-weight for storey
 N<sub>total</sub> = &Sigma; N<sub>floor</sub> for all floors above (cumulative)</div>
         <div class="formula">Column self-weight: N<sub>sw</sub> = 24 &times; b &times; h &times; storey-height  (kN, b and h in m)</div>
-        <h3>Live Load Reduction <span class="ref-standard">BS 6399-1:1996, Cl. 6.2</span></h3>
+        <h3>Live Load Reduction <span class="ref-standard" title="BS 6399-1:1996">Cl. 6.2</span></h3>
         <p>For columns supporting more than one floor, the imposed (live) load may be reduced by a percentage that increases with the number of floors, because statistically not all floors are simultaneously fully loaded. Check the table in BS 6399-1 Cl. 6.2 for the applicable reduction factor.</p>
-        <div class="card"><p><strong>Minimum eccentricity:</strong> BS 8110 requires that at minimum, a column is designed for an eccentricity of 0.05h or 20mm (whichever is the <strong>lesser</strong>) even if the analysis gives a smaller moment &mdash; giving a minimum design moment M<sub>min</sub> = N &times; e<sub>min</sub> <span class="ref-code">BS 8110-1:1997, Cl. 3.8.2.4</span> (h is the dimension in the plane of bending being considered).</p></div>
+        <div class="card"><p><strong>Minimum eccentricity:</strong> BS 8110 requires that at minimum, a column is designed for an eccentricity of 0.05h or 20mm (whichever is the <strong>lesser</strong>) even if the analysis gives a smaller moment &mdash; giving a minimum design moment M<sub>min</sub> = N &times; e<sub>min</sub> <span class="ref-code" title="BS 8110-1:1997">Cl. 3.8.2.4</span> (h is the dimension in the plane of bending being considered).</p></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
@@ -996,9 +996,9 @@ N<sub>total</sub> = &Sigma; N<sub>floor</sub> for all floors above (cumulative)<
     One end Condition 1, other Condition 2 &rarr; &beta; = 0.80
     Both ends Condition 2 (semi-rigid/nominal joints) &rarr; &beta; = 0.85
     Both ends Condition 3 (pinned/simple joints) &rarr; &beta; = 1.00
-  <span class="ref-code">BS 8110-1:1997, Table 3.19</span>
+  <span class="ref-code" title="BS 8110-1:1997">Table 3.19</span>
   &beta; factors for unbraced columns (Table 3.20): range from 1.2 to 2.2+ (cantilever = 2.20)
-  <span class="ref-code">BS 8110-1:1997, Table 3.20</span></div>
+  <span class="ref-code" title="BS 8110-1:1997">Table 3.20</span></div>
         <div class="formula">Slenderness ratio: l<sub>e</sub>/h (about the minor axis typically governs)
 Short (braced):   l<sub>e</sub>/h &le; 15
 Short (unbraced): l<sub>e</sub>/h &le; 10</div>
@@ -1011,27 +1011,27 @@ Short (unbraced): l<sub>e</sub>/h &le; 10</div>
         <div class="section-header"><span class="step-num">STEP C4</span><h2>Design Moments</h2></div>
         <h3>Short Columns</h3>
         <p>Use the moments directly from the analysis (beam reactions &times; eccentricity, frame analysis, or minimum eccentricity &mdash; whichever is greater).</p>
-        <h3>Slender Columns &mdash; Additional Moment <span class="ref-code">BS 8110-1:1997, Cl. 3.8.3</span></h3>
+        <h3>Slender Columns &mdash; Additional Moment <span class="ref-code" title="BS 8110-1:1997">Cl. 3.8.3</span></h3>
         <div class="formula">M<sub>add</sub> = N &times; a<sub>u</sub>
 a<sub>u</sub>  = &beta;<sub>a</sub> &times; K &times; h
   &beta;<sub>a</sub> = (1/2000) &times; (l<sub>e</sub>/h)&sup2;
   K = deflection reduction factor = (N<sub>uz</sub> - N) / (N<sub>uz</sub> - N<sub>bal</sub>) &le; 1.0
 Design moment: M<sub>i</sub> = M<sub>2</sub> + M<sub>add</sub> (at mid-height critical point, braced slender columns)
-<span class="ref-code">BS 8110-1:1997, Cl. 3.8.3.1</span></div>
+<span class="ref-code" title="BS 8110-1:1997">Cl. 3.8.3.1</span></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
       <section id="c5">
         <div class="section-header"><span class="step-num">STEP C5</span><h2>Axial Load + Uniaxial Bending (Simplified &amp; Chart Methods)</h2></div>
         
-        <h3>1 &mdash; Simplified Symmetrical Design (No charts needed) <span class="ref-code">BS 8110-1:1997, Cl. 3.8.4.3 &amp; 3.8.4.4</span></h3>
+        <h3>1 &mdash; Simplified Symmetrical Design (No charts needed) <span class="ref-code" title="BS 8110-1:1997">Cl. 3.8.4.3 &amp; 3.8.4.4</span></h3>
         <p>In standard multi-storey building frames, columns are often braced and carry approximately symmetrical loads. BS 8110 (and Oyenuga's manual) provides two highly useful simplified hand equations to design these columns directly without interaction charts:</p>
         
-        <div class="card"><p><strong>Case A: Symmetrical Beam Layout (Spans differ by &le;15%) <span class="ref-code">BS 8110-1:1997, Cl. 3.8.4.3</span></strong><br>
+        <div class="card"><p><strong>Case A: Symmetrical Beam Layout (Spans differ by &le;15%) <span class="ref-code" title="BS 8110-1:1997">Cl. 3.8.4.3</span></strong><br>
         If the column supports beams of approximately equal spans, carrying uniform loads, design for axial load alone using:<br>
         <span style="font-family:var(--mono); font-size:13.5px; display:block; margin-top:8px;">N = 0.35f<sub>cu</sub>A<sub>c</sub> + 0.67f<sub>y</sub>A<sub>sc</sub></span></p></div>
         
-        <div class="card"><p><strong>Case B: Nominal Eccentricity / Unequal Spans <span class="ref-code">BS 8110-1:1997, Cl. 3.8.4.4</span></strong><br>
+        <div class="card"><p><strong>Case B: Nominal Eccentricity / Unequal Spans <span class="ref-code" title="BS 8110-1:1997">Cl. 3.8.4.4</span></strong><br>
         If the column carries nominal moments (e.g. slight beam asymmetry or single floor reactions), use the reduced concrete factor to account for eccentricity:<br>
         <span style="font-family:var(--mono); font-size:13.5px; display:block; margin-top:8px;">N = 0.30f<sub>cu</sub>A<sub>c</sub> + 0.67f<sub>y</sub>A<sub>sc</sub></span></p></div>
         
@@ -1045,19 +1045,19 @@ Design moment: M<sub>i</sub> = M<sub>2</sub> + M<sub>add</sub> (at mid-height cr
         <div class="formula">N / (bh&middot;f<sub>cu</sub>)   (normalised axial load)
 M / (bh&sup2;&middot;f<sub>cu</sub>)  (normalised moment)
 &rarr; read off  100A<sub>sc</sub> / (bh)  (required steel percentage)</div>
-        <div class="card"><p><strong>Minimum steel:</strong> 0.4% of gross section <span class="ref-code">BS 8110-1:1997, Table 3.25</span>. <strong>Maximum steel:</strong> 6% of gross section for vertically cast columns, 8% for horizontally cast columns (or 10% at laps in both cases), per <span class="ref-code">BS 8110-1:1997, Cl. 3.12.6.2</span>.</p></div>
+        <div class="card"><p><strong>Minimum steel:</strong> 0.4% of gross section <span class="ref-code" title="BS 8110-1:1997">Table 3.25</span>. <strong>Maximum steel:</strong> 6% of gross section for vertically cast columns, 8% for horizontally cast columns (or 10% at laps in both cases), per <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.6.2</span>.</p></div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
       <section id="c6">
         <div class="section-header"><span class="step-num">STEP C6</span><h2>Biaxial Bending</h2></div>
-        <p>Where moments exist in both axes simultaneously, use the BS 8110 equivalent uniaxial moment approach <span class="ref-code">BS 8110-1:1997, Cl. 3.8.4.5</span>:</p>
+        <p>Where moments exist in both axes simultaneously, use the BS 8110 equivalent uniaxial moment approach <span class="ref-code" title="BS 8110-1:1997">Cl. 3.8.4.5</span>:</p>
         <div class="formula">If M<sub>x</sub>/h' &ge; M<sub>y</sub>/b':
   Design for M<sub>x</sub>' = M<sub>x</sub> + &beta;(h'/b')M<sub>y</sub>  (about x-x axis only)
 If M<sub>x</sub>/h' &lt; M<sub>y</sub>/b':
   Design for M<sub>y</sub>' = M<sub>y</sub> + &beta;(b'/h')M<sub>x</sub>  (about y-y axis only)
 
-&beta; from Table 3.22 <span class="ref-code">BS 8110-1:1997, Table 3.22</span> &mdash; function of N/(bhf<sub>cu</sub>), ranges 1.00 down to 0.30
+&beta; from Table 3.22 <span class="ref-code" title="BS 8110-1:1997">Table 3.22</span> &mdash; function of N/(bhf<sub>cu</sub>), ranges 1.00 down to 0.30
 h' and b' = effective depth to the compression reinforcement in each direction</div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -1087,10 +1087,10 @@ Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</di
       <section id="c9">
         <div class="section-header"><span class="step-num">STEP C9</span><h2>Detailing &mdash; Columns</h2></div>
         <ul class="check">
-          <li>Minimum 4 bars (rectangular sections), 6 bars (circular) &mdash; one bar per corner minimum. <span class="ref-code">BS 8110-1:1997, Cl. 3.12.5.3</span></li>
-          <li>Main bar diameter &ge; 12mm; link diameter &ge; 6mm or &frac14; &times; main bar diameter (whichever is greater). <span class="ref-code">BS 8110-1:1997, Cl. 3.12.7.1</span></li>
-          <li>Link spacing &le; 12 &times; smallest compression bar diameter, &le; the lesser column dimension, and &le; 300mm. <span class="ref-code">BS 8110-1:1997, Cl. 3.12.7.1</span></li>
-          <li>At laps: reduce link spacing to &le; 0.6 &times; normal spacing, with min. 3 sets of links in the lap zone. <span class="ref-code">BS 8110-1:1997, Cl. 3.12.8.13</span></li>
+          <li>Minimum 4 bars (rectangular sections), 6 bars (circular) &mdash; one bar per corner minimum. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.5.3</span></li>
+          <li>Main bar diameter &ge; 12mm; link diameter &ge; 6mm or &frac14; &times; main bar diameter (whichever is greater). <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.7.1</span></li>
+          <li>Link spacing &le; 12 &times; smallest compression bar diameter, &le; the lesser column dimension, and &le; 300mm. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.7.1</span></li>
+          <li>At laps: reduce link spacing to &le; 0.6 &times; normal spacing, with min. 3 sets of links in the lap zone. <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.8.13</span></li>
           <li>Where column dimensions change, provide adequate lapping and starter-bar length to maintain load path continuity.</li>
           <li>At beam-column junctions: provide horizontal links (confinement) within the joint zone per Cl. 3.12.8.1.</li>
           <li>Kicker: provide a concrete kicker &ge; 75mm above the slab/foundation <span class="ref-thumb">Practical construction recommendation</span> &mdash; steel starter bars must extend adequately past the kicker for the column above.</li>
@@ -1116,7 +1116,7 @@ Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</di
             <li>Choose the structural form: beam-and-slab, flat slab, or combination.</li>
             <li>Identify bracing: shear walls, cores, or moment frames for lateral stability.</li>
             <li>Establish grid: typical bay sizes 5&ndash;9m for beams, 4&ndash;7m for flat slabs. <span class="ref-thumb">Typical preliminary planning ranges</span></li>
-            <li>Choose materials: f<sub>cu</sub>, f<sub>y</sub>, cover class <span class="ref-code">BS 8110-1:1997, Table 3.3/3.4</span>.</li>
+            <li>Choose materials: f<sub>cu</sub>, f<sub>y</sub>, cover class <span class="ref-code" title="BS 8110-1:1997">Table 3.3/3.4</span>.</li>
           </ul>
         </div>
 
@@ -1146,10 +1146,10 @@ Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</di
         <div class="building-card">
           <h3>Phase 4 &mdash; Robustness and Tying</h3>
           <ul>
-            <li>Provide horizontal ties (peripheral and internal) per <span class="ref-code">BS 8110-1:1997, Cl. 3.12.3</span>.</li>
-            <li>Provide vertical ties in columns/walls per <span class="ref-code">BS 8110-1:1997, Cl. 3.12.3.5</span>.</li>
+            <li>Provide horizontal ties (peripheral and internal) per <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.3</span>.</li>
+            <li>Provide vertical ties in columns/walls per <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.3.5</span>.</li>
             <li>Ensure flat slabs have integrity steel through column heads.</li>
-            <li>Check that the structure can survive notional removal of any one element <span class="ref-code">BS 8110-2:1985, Cl. 2.6</span> without disproportionate collapse.</li>
+            <li>Check that the structure can survive notional removal of any one element <span class="ref-code" title="BS 8110-2:1985">Cl. 2.6</span> without disproportionate collapse.</li>
           </ul>
         </div>
 
@@ -1181,9 +1181,9 @@ Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</di
           <tr><td>Slab Self-Weight</td><td>\\(24\\text{ kN/m}^3 \\times 0.15\\text{m}\\) <span class="ref-thumb">Typical RC density</span></td><td>3.6 kN/m&sup2; (G<sub>k</sub>)</td></tr>
           <tr><td>Screed &amp; Finishes</td><td>Nominal allowance</td><td>1.2 kN/m&sup2; (G<sub>k</sub>) <span class="ref-assumption">Project assumption</span></td></tr>
           <tr><td>Ceiling &amp; Services</td><td>Nominal allowance</td><td>0.3 kN/m&sup2; (G<sub>k</sub>) <span class="ref-assumption">Project assumption</span></td></tr>
-          <tr><td>Partition Allowance</td><td>UDL per code</td><td>1.0 kN/m&sup2; (G<sub>k</sub>) <span class="ref-standard">BS 6399-1:1996, Cl. 5.2</span></td></tr>
+          <tr><td>Partition Allowance</td><td>UDL per code</td><td>1.0 kN/m&sup2; (G<sub>k</sub>) <span class="ref-standard" title="BS 6399-1:1996">Cl. 5.2</span></td></tr>
           <tr><td><strong>Total Dead Load (G<sub>k</sub>)</strong></td><td>\\(\\sum\\) above</td><td><strong>6.1 kN/m&sup2;</strong></td></tr>
-          <tr><td><strong>Imposed Live Load (Q<sub>k</sub>)</strong></td><td>Residential occupancy</td><td><strong>1.5 kN/m&sup2;</strong> <span class="ref-standard">BS 6399-1:1996, Table 1</span></td></tr>
+          <tr><td><strong>Imposed Live Load (Q<sub>k</sub>)</strong></td><td>Residential occupancy</td><td><strong>1.5 kN/m&sup2;</strong> <span class="ref-standard" title="BS 6399-1:1996">Table 1</span></td></tr>
         </table></div>
         
         <div class="formula">Design load (ULS): n = 1.4G<sub>k</sub> + 1.6Q<sub>k</sub> = 1.4(6.1) + 1.6(1.5) = 10.94 kN/m&sup2;</div>
@@ -1203,27 +1203,27 @@ A<sub>s</sub> = M / (0.95f<sub>y</sub>z) = 8.75 &times; 10⁶ / (0.95 &times; 46
         <h4>Shear Check (At Short-Span Continuous Support)</h4>
         <p>Using Table 3.15 shear coefficients for a two-way interior restrained panel (\\(L_y/L_x = 1.25\\)):</p>
         <ul>
-          <li>Shear force coefficient along short span \\(\\beta_{vx} = 0.38\\) <span class="ref-code">BS 8110-1:1997, Table 3.15</span>.</li>
+          <li>Shear force coefficient along short span \\(\\beta_{vx} = 0.38\\) <span class="ref-code" title="BS 8110-1:1997">Table 3.15</span>.</li>
           <li>Design maximum support shear force per metre width: \\(V_x = \\beta_{vx} \\times n \\times L_x = 0.38 \\times 10.94 \\times 4.0 = 16.63\\text{ kN/m}\\).</li>
-          <li>Design shear stress per metre width: \\(v = V_x / (bd) = 16.63 \\times 10^3 / (1000 \\times 125) = 0.133\\text{ N/mm}^2\\) <span class="ref-code">BS 8110-1:1997, Cl. 3.5.5.1</span>.</li>
+          <li>Design shear stress per metre width: \\(v = V_x / (bd) = 16.63 \\times 10^3 / (1000 \\times 125) = 0.133\\text{ N/mm}^2\\) <span class="ref-code" title="BS 8110-1:1997">Cl. 3.5.5.1</span>.</li>
         </ul>
         <div class="formula">Concrete shear resistance v<sub>c</sub> for support steel Y10 @ 250mm (A<sub>s,prov</sub> = 314 mm&sup2;/m):
-v<sub>c</sub> = (0.79 / &gamma;<sub>m</sub>) &times; (100A<sub>s</sub> / bd)<sup>1/3</sup> &times; (400 / d)<sup>1/4</sup> &times; (f<sub>cu</sub> / 25)<sup>1/3</sup> <span class="ref-code">BS 8110-1:1997, Table 3.8</span>
-&gamma;<sub>m</sub> = 1.25 <span class="ref-code">BS 8110-1:1997, Table 2.2</span>;  (100A<sub>s</sub> / bd) = (100 &times; 314) / (1000 &times; 125) = 0.251%
+v<sub>c</sub> = (0.79 / &gamma;<sub>m</sub>) &times; (100A<sub>s</sub> / bd)<sup>1/3</sup> &times; (400 / d)<sup>1/4</sup> &times; (f<sub>cu</sub> / 25)<sup>1/3</sup> <span class="ref-code" title="BS 8110-1:1997">Table 3.8</span>
+&gamma;<sub>m</sub> = 1.25 <span class="ref-code" title="BS 8110-1:1997">Table 2.2</span>;  (100A<sub>s</sub> / bd) = (100 &times; 314) / (1000 &times; 125) = 0.251%
 v<sub>c</sub> = (0.79 / 1.25) &times; (0.251)<sup>1/3</sup> &times; (400 / 125)<sup>1/4</sup> &times; (25 / 25)<sup>1/3</sup> = 0.632 &times; 0.631 &times; 1.337 &times; 1.0 = 0.533 N/mm&sup2;
-Check: v (0.133 N/mm&sup2;) &le; v<sub>c</sub> (0.533 N/mm&sup2;) &rarr; No shear reinforcement required <span class="ref-code">BS 8110-1:1997, Table 3.16</span></div>
+Check: v (0.133 N/mm&sup2;) &le; v<sub>c</sub> (0.533 N/mm&sup2;) &rarr; No shear reinforcement required <span class="ref-code" title="BS 8110-1:1997">Table 3.16</span></div>
 
         <h4>Deflection Control Check (Span-to-Effective Depth Ratio)</h4>
         <p>Slab deflection is checked along the short span (\\(L_x = 4000\\)mm, \\(d = 125\\)mm) under serviceability conditions:</p>
         <ul>
-          <li>Basic span-to-effective depth ratio for a continuous two-way rectangular slab: \\((L_x / d)_{basic} = 26\\) <span class="ref-code">BS 8110-1:1997, Table 3.9</span>.</li>
+          <li>Basic span-to-effective depth ratio for a continuous two-way rectangular slab: \\((L_x / d)_{basic} = 26\\) <span class="ref-code" title="BS 8110-1:1997">Table 3.9</span>.</li>
           <li>At short-span midspan: \\(M_{sx} = 6.65\\text{ kNm/m}\\), \\(M / (bd^2) = 6.65 \\times 10^6 / (1000 \\times 125^2) = 0.426\\text{ N/mm}^2\\).</li>
           <li>Required steel at midspan is governed by minimum reinforcement \\(A_{s,req} = 195\\text{ mm}^2/\\text{m}\\); provided Y10 @ 250mm gives \\(A_{s,prov} = 314\\text{ mm}^2/\\text{m}\\).</li>
-          <li>Service stress: \\(f_s = (2/3) f_y (A_{s,req} / A_{s,prov}) = (2/3) \\times 460 \\times (195 / 314) = 190.5\\text{ N/mm}^2\\) <span class="ref-code">BS 8110-1:1997, Cl. 3.4.6.5</span>.</li>
+          <li>Service stress: \\(f_s = (2/3) f_y (A_{s,req} / A_{s,prov}) = (2/3) \\times 460 \\times (195 / 314) = 190.5\\text{ N/mm}^2\\) <span class="ref-code" title="BS 8110-1:1997">Cl. 3.4.6.5</span>.</li>
         </ul>
-        <div class="formula">Tension steel modification factor F<sub>1</sub> <span class="ref-code">BS 8110-1:1997, Table 3.10</span>:
+        <div class="formula">Tension steel modification factor F<sub>1</sub> <span class="ref-code" title="BS 8110-1:1997">Table 3.10</span>:
 F<sub>1</sub> = 0.55 + (477 &minus; f<sub>s</sub>) / [120(0.9 + M / bd&sup2;)] = 0.55 + (477 &minus; 190.5) / [120(0.9 + 0.426)] = 2.35 &rarr; Cap at maximum 2.0
-Allowable short span / d ratio = Basic ratio &times; F<sub>1</sub> = 26 &times; 2.0 = 52.0 <span class="ref-code">BS 8110-1:1997, Cl. 3.5.7</span>
+Allowable short span / d ratio = Basic ratio &times; F<sub>1</sub> = 26 &times; 2.0 = 52.0 <span class="ref-code" title="BS 8110-1:1997">Cl. 3.5.7</span>
 Actual short span / d ratio = L<sub>x</sub> / d = 4000 / 125 = 32.0
 Check: Actual ratio (32.0) &le; Allowable ratio (52.0) &rarr; Deflection is satisfactory under SLS</div>
 
