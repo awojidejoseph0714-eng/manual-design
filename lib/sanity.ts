@@ -4,12 +4,12 @@ const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'qwx4nvq1';
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
 const apiVersion = '2021-10-21';
 
-// Read-only client for client-side fetching (uses CDN)
+// Read-only client for client-side fetching (disabled CDN to avoid stale cache on newly published notes)
 export const sanityClient = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: true,
+  useCdn: false,
 });
 
 // Server-side write client (requires SANITY_API_WRITE_TOKEN in environment)

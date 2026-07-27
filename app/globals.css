@@ -326,14 +326,53 @@ p { margin-bottom: 12px; font-size: 14.5px; color: var(--dark-gray); }
 p strong { color: var(--black); }
 
 /* =====================================
-   CLAUSE BADGE
+   REFERENCE BADGES — Five-Tier System
    ===================================== */
-.cl {
-  display: inline-block; background: var(--accent); color: var(--white);
+/* Shared badge base */
+.cl, .ref-code, .ref-standard, .ref-handbook, .ref-thumb, .ref-assumption {
+  display: inline-block; color: var(--white);
   font-family: var(--mono); font-size: 9.5px; padding: 1px 6px;
   border-radius: 2px; letter-spacing: 0.04em;
   vertical-align: middle; margin: 0 2px; white-space: nowrap;
 }
+/* 1. BS 8110 Code Requirement — blueprint blue */
+.cl, .ref-code { background: var(--accent); }
+/* 2. Other British Standard (BS 6399, BS 648, etc.) — muted teal */
+.ref-standard { background: #3a7d6e; }
+/* 3. Handbook Guidance (Oyenuga, Arya, Reynolds) — warm amber */
+.ref-handbook { background: #8a6d2f; }
+/* 4. Rule of Thumb / Engineering Judgment — slate grey */
+.ref-thumb { background: var(--mid-gray); }
+/* 5. Project Assumption (worked examples) — soft red-brown */
+.ref-assumption { background: #8a4a3a; }
+
+/* =====================================
+   REFERENCE LEGEND
+   ===================================== */
+.ref-legend {
+  display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center;
+  padding: 12px 18px; margin: 18px 0 24px;
+  background: var(--light-bg); border: 1px solid var(--rule);
+  border-radius: var(--radius); font-family: var(--sans); font-size: 12px;
+}
+.ref-legend-title {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--mid-gray); margin-right: 6px;
+  width: 100%;
+}
+.ref-legend-item {
+  display: inline-flex; align-items: center; gap: 5px;
+  color: var(--dark-gray); font-size: 12px;
+}
+.ref-legend-item .swatch {
+  display: inline-block; width: 10px; height: 10px;
+  border-radius: 2px;
+}
+.ref-legend-item .swatch.code { background: var(--accent); }
+.ref-legend-item .swatch.standard { background: #3a7d6e; }
+.ref-legend-item .swatch.handbook { background: #8a6d2f; }
+.ref-legend-item .swatch.thumb { background: var(--mid-gray); }
+.ref-legend-item .swatch.assumption { background: #8a4a3a; }
 
 /* =====================================
    CARDS
@@ -473,7 +512,12 @@ ul.check li::before {
 .building-card h3::after { background: rgba(255,255,255,0.1); }
 .building-card ul { padding-left: 18px; }
 .building-card ul li { margin-bottom: 6px; font-size: 13.5px; line-height: 1.65; color: rgba(255,255,255,0.82); }
-.building-card .cl { background: rgba(255,255,255,0.15); color: var(--white); }
+.building-card .cl,
+.building-card .ref-code,
+.building-card .ref-standard,
+.building-card .ref-handbook,
+.building-card .ref-thumb,
+.building-card .ref-assumption { background: rgba(255,255,255,0.15); color: var(--white); }
 
 /* =====================================
    GLOSSARY
