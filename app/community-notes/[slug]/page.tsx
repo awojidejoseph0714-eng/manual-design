@@ -170,8 +170,22 @@ export default function ArticleDetail({ params }: { params: { slug: string } }) 
   useEffect(() => {
     async function loadArticle() {
       try {
-        const query = `*[_type == "communityNote" && slug.current == $slug][0]`;
-        const fetched = await sanityClient.fetch(query, { slug: params.slug });
+        let fetched: Article | null = null;
+        try {
+          const res = await fetch(`/api/notes?slug=${encodeURIComponent(params.slug)}`, { cache: 'no-store' });
+          if (res.ok) {
+            const data = await res.json();
+            fetched = data.note || null;
+          }
+        } catch (serverErr) {
+          console.warn('Server fetch failed, falling back to client fetch:', serverErr);
+        }
+
+        if (!fetched) {
+          const query = `*[_type == "communityNote" && slug.current == $slug][0]`;
+          fetched = await sanityClient.fetch(query, { slug: params.slug }).catch(() => null);
+        }
+
         if (fetched) {
           setArticle(fetched);
         } else {
