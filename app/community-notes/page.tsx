@@ -124,7 +124,7 @@ const defaultFAQs: Article[] = [
 const seedDiscussions: DiscussionTopic[] = [
   {
     id: "disc-1",
-    topic: "Part 2 · Beams & Shear",
+    topic: "Part 3 · Beams & Shear",
     content: "When designing high-strength transfer beams (C50/60 and above), why does BS 8110 cap maximum concrete shear resistance v_c at 0.8 √f_cu instead of scaling linearly with higher strength grades?\n\nIn ultra-high-strength mixtures, diagonal shear cracks shear straight through the aggregate particles rather than around them, resulting in a remarkably smooth crack face with almost zero friction or aggregate interlock resistance.",
     author: "David M.",
     date: "4 hours ago",
@@ -235,7 +235,7 @@ const seedDiscussions: DiscussionTopic[] = [
   },
   {
     id: "disc-6",
-    topic: "Part 3 · Slender Columns",
+    topic: "Part 5 · Slender Columns",
     content: "In a double-height commercial entrance lobby, our rectangular concrete column is 300mm x 600mm with a clear height of 5.2m. When applying minimal design moments, do we check e_min against 0.05 multiplied by the overall column height, or 0.05 multiplied by the cross-sectional depth in the direction of bending?",
     author: "Kelvin N.",
     date: "5 days ago",
@@ -250,10 +250,13 @@ const availableTopics = [
   "Part 1 · Solid Slabs",
   "Part 1 · Flat & Ribbed Slabs",
   "Part 1 · Slab Loading & Walls",
-  "Part 2 · Beams & Shear",
-  "Part 2 · Deflection & Cracking",
-  "Part 3 · Slender Columns",
-  "Part 4 · Foundations & Robustness",
+  "Part 2 · Stairs",
+  "Part 3 · Beams & Shear",
+  "Part 3 · Deflection & Cracking",
+  "Part 4 · Walls",
+  "Part 5 · Slender Columns",
+  "Part 6 · Foundations",
+  "Part 7 · Building & Robustness",
   "General Design & Practice"
 ];
 
