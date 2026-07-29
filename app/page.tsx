@@ -211,9 +211,32 @@ export default function Home() {
     };
   }, []);
 
+  const handleGlobalClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (target.closest('#menuToggle')) {
+      if (sidebar?.classList.contains('open')) {
+        sidebar?.classList.remove('open');
+        overlay?.classList.remove('open', 'visible');
+      } else {
+        sidebar?.classList.add('open');
+        overlay?.classList.add('open', 'visible');
+      }
+    } else if (target.closest('#sidebarOverlay')) {
+      sidebar?.classList.remove('open');
+      overlay?.classList.remove('open', 'visible');
+    } else if (target.closest('.sidebar-link')) {
+      if (window.innerWidth <= 960) {
+        sidebar?.classList.remove('open');
+        overlay?.classList.remove('open', 'visible');
+      }
+    }
+  };
+
   return (
     <>
-      <div dangerouslySetInnerHTML={{ __html: pageHtml !== null ? pageHtml : `
+      <div onClick={handleGlobalClick} dangerouslySetInnerHTML={{ __html: pageHtml !== null ? pageHtml : `
 
 
 <a href="#main-content" class="skip-link">Skip to content</a>

@@ -478,9 +478,7 @@ export default function CommunityNotes() {
   return (
     <div className="notes-container" style={{ padding: '60px 0 120px 0', fontFamily: 'Inter, sans-serif', maxWidth: '780px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px' }}>
       <div style={{ paddingBottom: '12px', marginBottom: '8px' }}>
-        <Link href="/" className="back-btn" style={{ textDecoration: 'none', color: 'var(--mid-gray)', fontSize: '11px', fontFamily: 'var(--mono)', letterSpacing: '0.1em', display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '24px' }}>
-          &larr; Back to Manual Design Guide
-        </Link>
+
         <h1 style={{ fontFamily: 'Lora, serif', fontWeight: '400', fontSize: '34px', color: 'var(--black)', marginBottom: '8px' }}>FAQ &amp; Notes</h1>
         <p style={{ fontFamily: 'var(--mono)', fontSize: '11.5px', color: 'var(--mid-gray)', letterSpacing: '0.04em' }}>
           BS 8110 Structural Knowledge Base &middot; Curated FAQ &middot; Peer Discussion
@@ -650,11 +648,12 @@ export default function CommunityNotes() {
         Ask Question
       </button>
 
-      {/* Floating Back to Guide Button (Left) */}
+      {/* Floating Back to Guide Button (Top Left) */}
       <Link
         href="/"
         className="floating-faq-btn-left"
         aria-label="Back to guide"
+        style={{ top: '24px', bottom: 'auto', left: '24px' }}
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: "-1px" }}><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
         Back to Guide
