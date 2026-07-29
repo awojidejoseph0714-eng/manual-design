@@ -130,15 +130,28 @@ export default function Home() {
 
     function openSidebar() {
       sidebar?.classList.add('open');
-      overlay?.classList.add('open');
+      overlay?.classList.add('open', 'visible');
     }
 
     function closeSidebar() {
       sidebar?.classList.remove('open');
-      overlay?.classList.remove('open');
+      overlay?.classList.remove('open', 'visible');
     }
 
-    toggleBtn?.addEventListener('click', openSidebar);
+    function toggleSidebar() {
+      if (sidebar?.classList.contains('open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    }
+
+    // Expose to window so inline HTML onclick attributes operate reliably
+    (window as any).openSidebar = openSidebar;
+    (window as any).closeSidebar = closeSidebar;
+    (window as any).toggleSidebar = toggleSidebar;
+
+    toggleBtn?.addEventListener('click', toggleSidebar);
     overlay?.addEventListener('click', closeSidebar);
 
     // Close on link click for mobile
@@ -189,9 +202,12 @@ export default function Home() {
     }
 
     return () => {
-      toggleBtn?.removeEventListener('click', openSidebar);
+      toggleBtn?.removeEventListener('click', toggleSidebar);
       overlay?.removeEventListener('click', closeSidebar);
       window.removeEventListener('scroll', updateActiveLink);
+      delete (window as any).openSidebar;
+      delete (window as any).closeSidebar;
+      delete (window as any).toggleSidebar;
     };
   }, []);
 
@@ -233,7 +249,16 @@ export default function Home() {
       <a class="sidebar-link" href="#s10"><span class="link-num">S10</span>Flexure, Shear &amp; Deflection</a>
       <a class="sidebar-link" href="#s11"><span class="link-num">S11</span>Detailing</a>
 
-      <div class="sidebar-section-label">Part 2 &mdash; Beams</div>
+      <div class="sidebar-section-label">Part 2 &mdash; Stairs</div>
+      <a class="sidebar-link" href="#st1"><span class="link-num">ST1</span>Components</a>
+      <a class="sidebar-link" href="#st2"><span class="link-num">ST2</span>Classification</a>
+      <a class="sidebar-link" href="#st3"><span class="link-num">ST3</span>Loading</a>
+      <a class="sidebar-link" href="#st4"><span class="link-num">ST4</span>Effective Span</a>
+      <a class="sidebar-link" href="#st5"><span class="link-num">ST5</span>Moments &amp; Shear</a>
+      <a class="sidebar-link" href="#st6"><span class="link-num">ST6</span>Design &amp; Deflection</a>
+      <a class="sidebar-link" href="#st7"><span class="link-num">ST7</span>Detailing</a>
+
+      <div class="sidebar-section-label">Part 3 &mdash; Beams</div>
       <a class="sidebar-link" href="#b1"><span class="link-num">B1</span>Classification</a>
       <a class="sidebar-link" href="#b2"><span class="link-num">B2</span>Loading</a>
       <a class="sidebar-link" href="#b3"><span class="link-num">B3</span>Effective Span &amp; Depth</a>
@@ -245,7 +270,15 @@ export default function Home() {
       <a class="sidebar-link" href="#b9"><span class="link-num">B9</span>Cracking</a>
       <a class="sidebar-link" href="#b10"><span class="link-num">B10</span>Detailing</a>
 
-      <div class="sidebar-section-label">Part 3 &mdash; Columns</div>
+      <div class="sidebar-section-label">Part 4 &mdash; Walls</div>
+      <a class="sidebar-link" href="#wa1"><span class="link-num">WA1</span>Classification</a>
+      <a class="sidebar-link" href="#wa2"><span class="link-num">WA2</span>Slenderness</a>
+      <a class="sidebar-link" href="#wa3"><span class="link-num">WA3</span>Plain Walls</a>
+      <a class="sidebar-link" href="#wa4"><span class="link-num">WA4</span>Reinforced Walls</a>
+      <a class="sidebar-link" href="#wa5"><span class="link-num">WA5</span>Shear</a>
+      <a class="sidebar-link" href="#wa6"><span class="link-num">WA6</span>Detailing</a>
+
+      <div class="sidebar-section-label">Part 5 &mdash; Columns</div>
       <a class="sidebar-link" href="#c1"><span class="link-num">C1</span>Classification</a>
       <a class="sidebar-link" href="#c2"><span class="link-num">C2</span>Loading</a>
       <a class="sidebar-link" href="#c3"><span class="link-num">C3</span>Slenderness</a>
@@ -256,7 +289,15 @@ export default function Home() {
       <a class="sidebar-link" href="#c8"><span class="link-num">C8</span>Design Charts</a>
       <a class="sidebar-link" href="#c9"><span class="link-num">C9</span>Detailing</a>
 
-      <div class="sidebar-section-label">Part 4 &mdash; Building</div>
+      <div class="sidebar-section-label">Part 6 &mdash; Foundations</div>
+      <a class="sidebar-link" href="#fd1"><span class="link-num">FD1</span>Bearing &amp; Loading</a>
+      <a class="sidebar-link" href="#fd2"><span class="link-num">FD2</span>Pad Footings</a>
+      <a class="sidebar-link" href="#fd3"><span class="link-num">FD3</span>Combined Footings</a>
+      <a class="sidebar-link" href="#fd4"><span class="link-num">FD4</span>Strip Footings</a>
+      <a class="sidebar-link" href="#fd5"><span class="link-num">FD5</span>Raft Foundations</a>
+      <a class="sidebar-link" href="#fd6"><span class="link-num">FD6</span>Detailing</a>
+
+      <div class="sidebar-section-label">Part 7 &mdash; Building</div>
       <a class="sidebar-link" href="#building"><span class="link-num">W1</span>Whole-Building Guide</a>
       <a class="sidebar-link" href="#worked-example"><span class="link-num">W2</span>G+1 Worked Example</a>
       <a class="sidebar-link" href="#quickref"><span class="link-num">W3</span>Quick Reference</a>
@@ -264,7 +305,7 @@ export default function Home() {
       <a class="sidebar-link" href="#bibliography"><span class="link-num">W5</span>Bibliography &amp; References</a>
 
       <div class="sidebar-section-label">Extras</div>
-      <a class="sidebar-link" href="/community-notes" style="font-weight: 600; color: var(--accent);"><span class="link-num">&rarr;</span>Community Notes (FAQ)</a>
+      <a class="sidebar-link" href="/community-notes" style="font-weight: 600; color: var(--accent);"><span class="link-num">&rarr;</span>FAQ &amp; Notes</a>
     </nav>
   </aside>
 
@@ -275,7 +316,7 @@ export default function Home() {
       <div class="header-inner">
         <div class="header-label">Structural Concrete &mdash; Complete Manual Design Guide</div>
         <h1>Designing Slabs, Beams &amp; Columns<br><em>by Hand, under BS 8110</em></h1>
-        <p class="header-sub">BS 8110-1:1997 &middot; One combined, step-by-step reference from load take-down to detailing &middot; <a href="/community-notes" style="color: var(--accent); text-decoration: underline; font-weight: 600;">Browse Community Notes (FAQ) &rarr;</a></p>
+        <p class="header-sub">BS 8110-1:1997 &middot; One combined, step-by-step reference from load take-down to detailing &middot; <a href="/community-notes" style="color: var(--accent); text-decoration: underline; font-weight: 600;">Browse FAQ &amp; Notes &rarr;</a></p>
       </div>
     </header>
 
@@ -312,7 +353,19 @@ export default function Home() {
           </ol>
         </div>
         <div class="toc-card">
-          <h3>Part 2 &mdash; Beams</h3>
+          <h3>Part 2 &mdash; Stairs</h3>
+          <ol>
+            <li><a href="#st1">Components</a></li>
+            <li><a href="#st2">Classification</a></li>
+            <li><a href="#st3">Loading</a></li>
+            <li><a href="#st4">Effective Span</a></li>
+            <li><a href="#st5">Moments &amp; Shear</a></li>
+            <li><a href="#st6">Design &amp; Deflection</a></li>
+            <li><a href="#st7">Detailing</a></li>
+          </ol>
+        </div>
+        <div class="toc-card">
+          <h3>Part 3 &mdash; Beams</h3>
           <ol>
             <li><a href="#b1">Classification</a></li>
             <li><a href="#b2">Loading</a></li>
@@ -326,8 +379,19 @@ export default function Home() {
             <li><a href="#b10">Detailing</a></li>
           </ol>
         </div>
+        <div class="toc-card">
+          <h3>Part 4 &mdash; Walls</h3>
+          <ol>
+            <li><a href="#wa1">Classification</a></li>
+            <li><a href="#wa2">Slenderness</a></li>
+            <li><a href="#wa3">Plain Walls</a></li>
+            <li><a href="#wa4">Reinforced Walls</a></li>
+            <li><a href="#wa5">Shear</a></li>
+            <li><a href="#wa6">Detailing</a></li>
+          </ol>
+        </div>
         <div class="toc-card lighter">
-          <h3>Part 3 &mdash; Columns</h3>
+          <h3>Part 5 &mdash; Columns</h3>
           <ol>
             <li><a href="#c1">Classification</a></li>
             <li><a href="#c2">Loading</a></li>
@@ -341,7 +405,18 @@ export default function Home() {
           </ol>
         </div>
         <div class="toc-card lighter">
-          <h3>Part 4 &mdash; Building</h3>
+          <h3>Part 6 &mdash; Foundations</h3>
+          <ol>
+            <li><a href="#fd1">Bearing &amp; Loading</a></li>
+            <li><a href="#fd2">Pad Footings</a></li>
+            <li><a href="#fd3">Combined Footings</a></li>
+            <li><a href="#fd4">Strip Footings</a></li>
+            <li><a href="#fd5">Raft Foundations</a></li>
+            <li><a href="#fd6">Detailing</a></li>
+          </ol>
+        </div>
+        <div class="toc-card lighter">
+          <h3>Part 7 &mdash; Building</h3>
           <ol>
             <li><a href="#building">Whole-Building Guidelines</a></li>
             <li><a href="#worked-example">G+1 Worked Example</a></li>
@@ -718,9 +793,124 @@ Check: Actual short span / d &le; Allowable span / d &rarr; Deflection is satisf
 
     </div>
 
-    <!-- ===================== PART 2 — BEAMS ===================== -->
+    <!-- ===================== PART 2 — STAIRS ===================== -->
     <div class="part-bar p2">
-      <div class="part-bar-inner"><span class="part-label">Part 2</span><h2>Beams &mdash; All Types</h2></div>
+      <div class="part-bar-inner"><span class="part-label">Part 2</span><h2>Stairs &mdash; All Types</h2></div>
+    </div>
+    <nav class="section-nav" aria-label="Stairs sections">
+      <div class="section-nav-inner">
+        <a href="#st1">ST1 &middot; Components</a>
+        <a href="#st2">ST2 &middot; Classification</a>
+        <a href="#st3">ST3 &middot; Loading</a>
+        <a href="#st4">ST4 &middot; Effective Span</a>
+        <a href="#st5">ST5 &middot; Moments &amp; Shear</a>
+        <a href="#st6">ST6 &middot; Design &amp; Deflection</a>
+        <a href="#st7">ST7 &middot; Detailing</a>
+      </div>
+    </nav>
+
+    <div class="content-wrap">
+
+      <section id="st1">
+        <div class="section-header"><span class="step-num">STEP ST1</span><h2>Components of Stairs</h2></div>
+        <p>Stairs are specialized inclined slab elements. To design them, you must understand their geometrical components:</p>
+        <div class="table-wrap"><table>
+          <tr><th>Component</th><th>Description</th></tr>
+          <tr><td><strong>Tread (Going)</strong></td><td>The horizontal portion of a step where the foot is placed. Minimum usually 250mm.</td></tr>
+          <tr><td><strong>Riser</strong></td><td>The vertical portion of a step. Maximum usually 175mm for public stairs.</td></tr>
+          <tr><td><strong>Waist</strong></td><td>The minimum structural thickness of the inclined slab, measured perpendicularly to the soffit.</td></tr>
+          <tr><td><strong>Flight</strong></td><td>An uninterrupted series of steps between landings.</td></tr>
+          <tr><td><strong>Landing</strong></td><td>A flat platform between flights used to change direction or provide a rest area.</td></tr>
+          <tr><td><strong>Nosing</strong></td><td>The front edge of the tread, sometimes projecting over the riser.</td></tr>
+        </table></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="st2">
+        <div class="section-header"><span class="step-num">STEP ST2</span><h2>Classify the Stair Type</h2></div>
+        <div class="table-wrap"><table>
+          <tr><th>Type</th><th>Structural Behavior</th><th>BS 8110 Clause</th></tr>
+          <tr><td><strong>Straight Flight</strong></td><td>Spans longitudinally between supports (beams/walls) at the top and bottom of the flight.</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.10.1</span></td></tr>
+          <tr><td><strong>Transversely Spanning</strong></td><td>Steps act individually, cantilevering from a central spine wall or spanning between side walls.</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.10.1.2</span></td></tr>
+          <tr><td><strong>Dog-Leg Stairs</strong></td><td>Flights spanning longitudinally between landings that span transversely into side walls.</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.10.1</span></td></tr>
+          <tr><td><strong>Open-Well Stairs</strong></td><td>Similar to dog-leg but with a gap between parallel flights. May involve complex torsion.</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.10.1</span></td></tr>
+        </table></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="st3">
+        <div class="section-header"><span class="step-num">STEP ST3</span><h2>Determine Loading on Stairs</h2></div>
+        <h3>1. Dead Loads (Self-Weight)</h3>
+        <p>The self-weight of the stair consists of the inclined waist and the triangular steps. It must be calculated per horizontal meter.</p>
+        <div class="formula">
+          <p><strong>Steps:</strong> w<sub>steps</sub> = 0.5 &times; Riser &times; &gamma;<sub>c</sub></p>
+          <p><strong>Waist:</strong> w<sub>waist</sub> = Waist &times; &gamma;<sub>c</sub> &times; &radic;(Tread&sup2; + Riser&sup2;) / Tread</p>
+        </div>
+        <p>Add finishes (e.g., <span class="ref-assumption">0.5 to 1.5 kN/m&sup2;</span> for tiles and screed).</p>
+        
+        <h3>2. Imposed Loads</h3>
+        <p>Imposed loading for stairs is typically higher than general floor areas to account for emergency egress concentration.</p>
+        <div class="table-wrap"><table>
+          <tr><th>Usage Type</th><th>Imposed Load (Qk)</th><th>Reference</th></tr>
+          <tr><td>Domestic / Residential</td><td>1.5 kN/m&sup2;</td><td><span class="ref-standard" title="BS 6399-1:1996">Table 1</span></td></tr>
+          <tr><td>Offices (general stairs)</td><td>3.0 kN/m&sup2; or 4.0 kN/m&sup2;</td><td><span class="ref-standard" title="BS 6399-1:1996">Table 1</span></td></tr>
+          <tr><td>Public Assembly / Institutional</td><td>4.0 kN/m&sup2; or 5.0 kN/m&sup2;</td><td><span class="ref-standard" title="BS 6399-1:1996">Table 1</span></td></tr>
+        </table></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="st4">
+        <div class="section-header"><span class="step-num">STEP ST4</span><h2>Effective Span</h2></div>
+        <p>The calculation of effective span depends on how the stair is supported <span class="ref-code" title="BS 8110-1:1997">Cl. 3.10.1.3</span>:</p>
+        <ul class="check">
+          <li><strong>Supported simply at ends:</strong> Span = distance between centers of support (or clear span + d).</li>
+          <li><strong>Built into walls/beams:</strong> If supported at both ends on walls/beams, take effective span as the clear distance + half the support width (up to a max of clear + 150mm) <span class="ref-code" title="BS 8110-1:1997">Cl. 3.10.1.4</span>.</li>
+          <li><strong>With landings:</strong> Where a flight spans onto a landing spanning in the same direction, the effective span is the center-to-center distance of the supporting beams.</li>
+        </ul>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="st5">
+        <div class="section-header"><span class="step-num">STEP ST5</span><h2>Design Moments and Shear</h2></div>
+        <h3>Ultimate Design Load (n)</h3>
+        <div class="formula">n = 1.4G<sub>k</sub> + 1.6Q<sub>k</sub></div>
+        <h3>Longitudinal Spanning (Stairs simply supported)</h3>
+        <div class="formula">
+          M = (n &times; l&sup2;) / 8<br/>
+          V = (n &times; l) / 2
+        </div>
+        <p>Where flights are continuous over a support (e.g., landing), nominal top reinforcement should be provided to control cracking <span class="ref-thumb">Nominal hogging steel</span>.</p>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="st6">
+        <div class="section-header"><span class="step-num">STEP ST6</span><h2>Flexural Design &amp; Deflection</h2></div>
+        <p>Stairs are designed identically to one-way solid slabs <span class="ref-code" title="BS 8110-1:1997">Cl. 3.10.1.1</span>.</p>
+        <ul class="check">
+          <li><strong>Flexure:</strong> Calculate K = M / (b&middot;d&sup2;&middot;f<sub>cu</sub>), z, and A<sub>s</sub> exactly as a slab. The depth "d" is based on the waist thickness.</li>
+          <li><strong>Deflection Check:</strong> Check span/effective-depth ratio as per slabs. Because stairs often span 3-5m and have a waist of 150-200mm, deflection is usually the governing criteria <span class="ref-thumb">Deflection governs</span>.</li>
+          <li><strong>Shear:</strong> Shear is rarely critical for stairs due to their thickness relative to their span. Check v &le; v<sub>c</sub>.</li>
+        </ul>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="st7">
+        <div class="section-header"><span class="step-num">STEP ST7</span><h2>Detailing of Stairs</h2></div>
+        <p>Correct detailing at the intersection of the flight and the landing is critical to prevent spalling of the concrete cover.</p>
+        <div class="table-wrap"><table>
+          <tr><th>Joint Type</th><th>Detailing Requirement</th></tr>
+          <tr><td><strong>Opening Joints</strong><br/>(e.g., flight arriving at bottom landing)</td><td>Tension bars from the flight and landing must cross each other and extend into the compression zone to be anchored. <strong>Do not</strong> bend a single bar around the inner corner, as tension will cause the concrete cover to spall off <span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.11.2</span>.</td></tr>
+          <tr><td><strong>Closing Joints</strong><br/>(e.g., flight arriving at top landing)</td><td>Tension is on the outside face. A continuous bar bent around the outside corner is acceptable and standard practice.</td></tr>
+          <tr><td><strong>Transverse Steel</strong></td><td>Provide distribution steel (secondary reinforcement) of at least 0.13% of the gross section (using waist thickness) <span class="ref-code" title="BS 8110-1:1997">Table 3.25</span>.</td></tr>
+        </table></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+    </div>
+
+    <!-- ===================== PART 3 — BEAMS ===================== -->
+    <div class="part-bar p2">
+      <div class="part-bar-inner"><span class="part-label">Part 3</span><h2>Beams &mdash; All Types</h2></div>
     </div>
     <nav class="section-nav" aria-label="Beams sections">
       <div class="section-nav-inner">
@@ -947,9 +1137,107 @@ Check: actual span/d &le; allowable span/d</div>
 
     </div>
 
-    <!-- ===================== PART 3 — COLUMNS ===================== -->
+    <!-- ===================== PART 4 — WALLS ===================== -->
+    <div class="part-bar p4">
+      <div class="part-bar-inner"><span class="part-label">Part 4</span><h2>Walls &mdash; All Types</h2></div>
+    </div>
+    <nav class="section-nav" aria-label="Walls sections">
+      <div class="section-nav-inner">
+        <a href="#wa1">WA1 &middot; Classification</a>
+        <a href="#wa2">WA2 &middot; Slenderness</a>
+        <a href="#wa3">WA3 &middot; Plain Walls</a>
+        <a href="#wa4">WA4 &middot; Reinforced Walls</a>
+        <a href="#wa5">WA5 &middot; Shear</a>
+        <a href="#wa6">WA6 &middot; Detailing</a>
+      </div>
+    </nav>
+
+    <div class="content-wrap">
+
+      <section id="wa1">
+        <div class="section-header"><span class="step-num">STEP WA1</span><h2>Classify the Wall</h2></div>
+        <p>A wall is a vertical load-bearing member whose length exceeds four times its thickness <span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.1.1</span>. If length &le; 4 &times; thickness, it is designed as a column.</p>
+        <div class="table-wrap"><table>
+          <tr><th>Classification</th><th>Definition</th><th>Clause</th></tr>
+          <tr><td><strong>Plain Wall</strong></td><td>Contains less than 0.4% vertical reinforcement. Resists load primarily through concrete compressive strength.</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.4</span></td></tr>
+          <tr><td><strong>Reinforced Wall</strong></td><td>Contains at least 0.4% vertical reinforcement. Steel contributes to load-carrying capacity.</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.3</span></td></tr>
+          <tr><td><strong>Braced Wall</strong></td><td>Lateral stability is provided by other elements (e.g., intersecting shear walls, lift shafts).</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.1.3</span></td></tr>
+          <tr><td><strong>Unbraced Wall</strong></td><td>The wall itself provides lateral stability to the structure.</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.1.4</span></td></tr>
+        </table></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="wa2">
+        <div class="section-header"><span class="step-num">STEP WA2</span><h2>Slenderness &amp; Effective Height</h2></div>
+        <p>The effective height (l<sub>e</sub>) depends on the end conditions and whether the wall is braced or unbraced. For most braced walls resisting axial load, l<sub>e</sub> = 0.75l<sub>0</sub> (if fully restrained at top and bottom) or 0.85l<sub>0</sub> (if restrained at one end only) <span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.2.2</span>.</p>
+        
+        <h3>Slenderness Limits</h3>
+        <p>Calculate the slenderness ratio: l<sub>e</sub> / h. To prevent buckling failures, BS 8110 imposes strict limits:</p>
+        <ul class="check">
+          <li><strong>Braced plain walls:</strong> l<sub>e</sub>/h &le; 30 <span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.4.4</span></li>
+          <li><strong>Unbraced plain walls:</strong> l<sub>e</sub>/h &le; 30</li>
+          <li><strong>Braced reinforced walls:</strong> l<sub>e</sub>/h &le; 40 (If &gt; 40, must be designed with extreme care)</li>
+          <li><strong>Unbraced reinforced walls:</strong> l<sub>e</sub>/h &le; 30 (or &le; 40 if reinforcement &lt; 1%)</li>
+        </ul>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="wa3">
+        <div class="section-header"><span class="step-num">STEP WA3</span><h2>Design of Plain Walls</h2></div>
+        <p>In plain walls, tension is generally avoided. The design relies on the concrete's compressive capacity, reduced by slenderness and eccentricity factors.</p>
+        <div class="formula">
+          <p><strong>n<sub>w</sub> = 0.3(h - 2e<sub>x</sub>)f<sub>cu</sub></strong></p>
+        </div>
+        <p>Where n<sub>w</sub> is the ultimate axial load resistance per meter length, h is the wall thickness, and e<sub>x</sub> is the resultant eccentricity <span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.4.1</span>.</p>
+        <p>For slender plain walls, calculate an additional eccentricity due to deflection: e<sub>a</sub> = (l<sub>e</sub>)&sup2; / (2500h). Total eccentricity e<sub>x</sub> = e<sub>applied</sub> + e<sub>a</sub>.</p>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="wa4">
+        <div class="section-header"><span class="step-num">STEP WA4</span><h2>Design of Reinforced Walls</h2></div>
+        <p>If axial loads are highly eccentric (e &gt; h/6) or the wall must resist significant bending moments (like a shear wall or basement retaining wall), it is designed as a reinforced member.</p>
+        
+        <h3>Axial Load Only (or very small moments)</h3>
+        <p>If a braced wall carries mostly axial load (similar to a column), the ultimate capacity is:</p>
+        <div class="formula">
+          <p><strong>n = 0.35f<sub>cu</sub>A<sub>c</sub> + 0.67f<sub>y</sub>A<sub>sc</sub></strong></p>
+        </div>
+        <p>Where A<sub>c</sub> is the concrete area per meter, and A<sub>sc</sub> is the area of vertical steel per meter <span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.3.6.2</span>.</p>
+
+        <h3>Significant Bending (In-Plane or Out-of-Plane)</h3>
+        <p>For walls subjected to significant moments, design the cross-section similar to a column using strain compatibility or column interaction design charts <span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.3.6.1</span>. If the wall is acting as a retaining wall, design a 1m strip as a cantilever beam for out-of-plane flexure.</p>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="wa5">
+        <div class="section-header"><span class="step-num">STEP WA5</span><h2>Shear in Walls</h2></div>
+        <p>Shear is critical in structural core walls (shear walls). The average shear stress v = V / (0.8h&middot;l).</p>
+        <ul class="check">
+          <li>Check that v &le; 0.8&radic;f<sub>cu</sub> or 5 N/mm&sup2; (whichever is less) <span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.3.8</span>.</li>
+          <li>If v &le; v<sub>c</sub> + 0.4, provide minimum horizontal reinforcement (0.25% or 0.3%).</li>
+          <li>If v &gt; v<sub>c</sub> + 0.4, calculate required shear reinforcement exactly as for beams.</li>
+        </ul>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="wa6">
+        <div class="section-header"><span class="step-num">STEP WA6</span><h2>Detailing of Walls</h2></div>
+        <div class="table-wrap"><table>
+          <tr><th>Rule</th><th>Limit</th><th>Clause</th></tr>
+          <tr><td>Min Vertical Steel (Reinforced Wall)</td><td>0.4% of gross area (0.004Ac)</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.5.4</span></td></tr>
+          <tr><td>Min Horizontal Steel</td><td>0.3% of gross area (0.25% if f<sub>y</sub>=460)</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.5.4</span></td></tr>
+          <tr><td>Max Vertical Steel</td><td>4.0% of gross area (except at laps)</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.5.4</span></td></tr>
+          <tr><td>Requirement for Links</td><td>If vertical steel &gt; 2%, links MUST be provided (as per columns)</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.7.4</span></td></tr>
+        </table></div>
+        <p>Bars should typically be arranged in two faces (two layers) if the wall thickness is greater than 150mm <span class="ref-thumb">Good detailing practice</span>.</p>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+    </div>
+
+    <!-- ===================== PART 5 — COLUMNS ===================== -->
     <div class="part-bar p3">
-      <div class="part-bar-inner"><span class="part-label">Part 3</span><h2>Columns &mdash; All Types</h2></div>
+      <div class="part-bar-inner"><span class="part-label">Part 5</span><h2>Columns &mdash; All Types</h2></div>
     </div>
     <nav class="section-nav" aria-label="Columns sections">
       <div class="section-nav-inner">
@@ -1104,9 +1392,113 @@ Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</di
 
     </div>
 
-    <!-- ===================== PART 4 ===================== -->
-    <div class="part-bar p4">
-      <div class="part-bar-inner"><span class="part-label">Part 4</span><h2>Whole-Building Guidance &amp; Quick Reference</h2></div>
+    <!-- ===================== PART 6 — FOUNDATIONS ===================== -->
+    <div class="part-bar p6">
+      <div class="part-bar-inner"><span class="part-label">Part 6</span><h2>Foundations &mdash; All Types</h2></div>
+    </div>
+    <nav class="section-nav" aria-label="Foundations sections">
+      <div class="section-nav-inner">
+        <a href="#fd1">FD1 &middot; Bearing &amp; Loading</a>
+        <a href="#fd2">FD2 &middot; Pad Footings</a>
+        <a href="#fd3">FD3 &middot; Combined Footings</a>
+        <a href="#fd4">FD4 &middot; Strip Footings</a>
+        <a href="#fd5">FD5 &middot; Raft Foundations</a>
+        <a href="#fd6">FD6 &middot; Detailing</a>
+      </div>
+    </nav>
+
+    <div class="content-wrap">
+
+      <section id="fd1">
+        <div class="section-header"><span class="step-num">STEP FD1</span><h2>Bearing Capacity &amp; Foundation Loading</h2></div>
+        <p>Foundations transfer loads from columns and walls safely into the ground. Before structural design, the geotechnical bearing capacity must be known.</p>
+        
+        <h3>1. Serviceability vs. Ultimate Limit State</h3>
+        <p><strong>Base size sizing:</strong> Sizing of the foundation area is ALWAYS done at the Serviceability Limit State (SLS) using unfactored loads (Gk + Qk) <span class="ref-code" title="BS 8110-1:1997">Cl. 2.6.2.1</span>.</p>
+        <p><strong>Structural design:</strong> Bending moments and shear forces for concrete thickness and reinforcement are calculated at the Ultimate Limit State (ULS) using factored loads (1.4Gk + 1.6Qk) <span class="ref-code" title="BS 8110-1:1997">Cl. 2.4.4.1</span>.</p>
+        
+        <h3>2. Safe Bearing Capacity (SBC)</h3>
+        <p>Base Area Required = (Total Service Load on Column + Self-weight of Base) / SBC</p>
+        <p>If self-weight is not initially known, add 10% to 15% of the column load as a trial self-weight <span class="ref-thumb">Initial sizing rule</span>.</p>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="fd2">
+        <div class="section-header"><span class="step-num">STEP FD2</span><h2>Design of Isolated Pad Footings</h2></div>
+        <p>Isolated pads support a single column. They are usually square but may be rectangular if space is constrained.</p>
+        
+        <h3>1. Flexure (Bending)</h3>
+        <p>Calculate the upward soil pressure at ULS (p = N_uls / Area). The critical section for bending is at the face of the column <span class="ref-code" title="BS 8110-1:1997">Cl. 3.11.2.2</span>. Treat the projecting portion of the pad as an inverted cantilever.</p>
+        
+        <h3>2. Vertical Shear (Face Shear)</h3>
+        <p>The critical section for vertical shear is at a distance '1.0d' from the column face <span class="ref-code" title="BS 8110-1:1997">Cl. 3.11.2.2</span>. Check v = V / (b&middot;d) &le; v<sub>c</sub>. Shear links are almost never used in pad footings; increase depth 'h' if it fails.</p>
+
+        <h3>3. Punching Shear</h3>
+        <p>Punching shear is checked on perimeters around the column <span class="ref-code" title="BS 8110-1:1997">Cl. 3.7.7.2</span>.</p>
+        <ul class="check">
+          <li><strong>At column perimeter:</strong> Maximum shear stress v<sub>max</sub> = V / (u<sub>0</sub>&middot;d) &le; 0.8&radic;f<sub>cu</sub> or 5 N/mm&sup2;.</li>
+          <li><strong>At critical perimeter (1.5d from face):</strong> v = V / (u<sub>1</sub>&middot;d) &le; v<sub>c</sub>. (Note: V here is the total column load minus the upward soil pressure within the perimeter u<sub>1</sub>).</li>
+        </ul>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="fd3">
+        <div class="section-header"><span class="step-num">STEP FD3</span><h2>Design of Combined Footings</h2></div>
+        <p>Used when two columns are close together and their pads would overlap, or an exterior column is right on the property line preventing a concentric pad.</p>
+        
+        <h3>1. Plan Dimensions</h3>
+        <p>The centroid of the combined base area MUST align exactly with the resultant of the unfactored loads from the two columns to ensure uniform soil pressure.</p>
+        
+        <h3>2. Structural Analysis</h3>
+        <p>Treat the footing as an inverted beam subjected to uniform upward soil pressure (ULS) and supported downward by the two columns.</p>
+        <ul class="check">
+          <li><strong>Longitudinal Bending:</strong> Causes tension at the bottom under the columns (sagging) and tension at the top between the columns (hogging).</li>
+          <li><strong>Transverse Bending:</strong> The base acts as a cantilever projecting out from the column centerlines. Calculate transverse reinforcement exactly like a pad footing.</li>
+        </ul>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="fd4">
+        <div class="section-header"><span class="step-num">STEP FD4</span><h2>Design of Strip Footings</h2></div>
+        <p>Continuous bases supporting load-bearing walls, or a closely spaced row of columns.</p>
+        
+        <h3>1. Wall Strip Footings</h3>
+        <p>Design a 1m transverse slice. It behaves as a cantilever projecting out from each side of the wall. Flexure, shear, and detailing are identical to a pad footing but evaluated per meter run.</p>
+        
+        <h3>2. Continuous Column Strips</h3>
+        <p>Similar to combined footings, but continuous over multiple columns. Analyzed as an inverted continuous beam. Significant longitudinal top steel (hogging over columns) and bottom steel (sagging between columns) is required.</p>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="fd5">
+        <div class="section-header"><span class="step-num">STEP FD5</span><h2>Raft (Mat) Foundations</h2></div>
+        <p>A continuous slab covering the entire footprint of the building, used when individual bases would cover &gt;50% of the site area, or on poor soils to minimize differential settlement.</p>
+        
+        <h3>1. Solid Flat Slab Raft</h3>
+        <p>Designed exactly like an inverted flat slab floor <span class="ref-code" title="BS 8110-1:1997">Cl. 3.7.1</span>. Columns act as the "supports" pulling downward, while soil pressure acts upward. Punching shear at columns is the most critical check.</p>
+        
+        <h3>2. Beam-and-Slab Raft</h3>
+        <p>Used for heavy loads. Ground beams span between columns (usually forming a grid), and the raft slab spans between the ground beams. Designed as a traditional beam-and-slab floor turned upside down.</p>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+      <section id="fd6">
+        <div class="section-header"><span class="step-num">STEP FD6</span><h2>Detailing of Foundations</h2></div>
+        <div class="table-wrap"><table>
+          <tr><th>Rule</th><th>Limit</th><th>Clause</th></tr>
+          <tr><td>Cover to Reinforcement</td><td>Min 75mm if cast directly against earth (blinding recommended: 50mm cover on blinding)</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.3.1.4</span></td></tr>
+          <tr><td>Minimum Tension Steel</td><td>0.13% of bh (for pad/strip bases acting as slabs)</td><td><span class="ref-code" title="BS 8110-1:1997">Table 3.25</span></td></tr>
+          <tr><td>Anchorage / Curtailment</td><td>Extend bars a full anchorage length beyond the critical section. In most pads, extend to the edge minus cover.</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.9.4</span></td></tr>
+          <tr><td>Column Starter Bars</td><td>Must match column reinforcement and lap effectively (compression lap length) above the base. Provide a 90&deg; bend at the bottom resting on the mat.</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.8.15</span></td></tr>
+        </table></div>
+        <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
+      </section>
+
+    </div>
+
+    <!-- ===================== PART 7 ===================== -->
+    <div class="part-bar p7">
+      <div class="part-bar-inner"><span class="part-label">Part 7</span><h2>Whole-Building Guidance &amp; Quick Reference</h2></div>
     </div>
 
     <div class="content-wrap">
@@ -1448,9 +1840,9 @@ For a square footing, width B = &radic;1.4 &asymp; 1.18m &rarr; Specify a 1.2m &
 </div><!-- /app-layout -->
 
 
-<a href="/community-notes" class="floating-faq-btn" aria-label="Open Community Notes and FAQ">
+<a href="/community-notes" class="floating-faq-btn" aria-label="Open FAQ and Notes">
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: -1px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-  Community Notes (FAQ)
+  FAQ &amp; Notes
 </a>
 
       ` }} />

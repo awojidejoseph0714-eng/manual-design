@@ -214,7 +214,7 @@ export default function ArticleDetail({ params }: { params: { slug: string } }) 
       <div style={{ padding: '60px 24px', maxWidth: '760px', margin: '0 auto', fontFamily: 'Inter, sans-serif', textAlign: 'center' }}>
         <h1 style={{ fontFamily: 'Lora, serif', fontSize: '28px', fontWeight: '400', marginBottom: '14px' }}>Note Article Not Found</h1>
         <p style={{ fontSize: '14px', color: 'var(--mid-gray)', marginBottom: '24px' }}>The note slug you requested does not exist or has been removed.</p>
-        <Link href="/community-notes" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>Back to Community Notes</Link>
+        <Link href="/community-notes" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>Back to FAQ &amp; Notes</Link>
       </div>
     );
   }
@@ -225,7 +225,7 @@ export default function ArticleDetail({ params }: { params: { slug: string } }) 
         
         {/* Back Link */}
         <Link href="/community-notes" style={{ textDecoration: 'none', color: 'var(--mid-gray)', fontSize: '11px', fontFamily: 'var(--mono)', letterSpacing: '0.1em', display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '32px' }}>
-          &larr; Back to Community Notes
+          &larr; Back to FAQ &amp; Notes
         </Link>
 
         {/* Metadata */}

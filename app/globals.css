@@ -25,11 +25,14 @@
   --accent-bg:   #eef3f7;
 
   /* Per-Part identity colors (sidebar rail + part-bar underline only) */
-  --part-0: #6b6b6b;
-  --part-1: #2f5d8a;
-  --part-2: #8a5a2f;
-  --part-3: #4f7a52;
-  --part-4: #0f0f0f;
+  --part-0: #e0e0e0;
+  --part-1: #c0c0c0;
+  --part-2: #a0a0a0;
+  --part-3: #808080;
+  --part-4: #606060;
+  --part-5: #404040;
+  --part-6: #303030;
+  --part-7: #202020;
 
   --mono:  'IBM Plex Mono', monospace;
   --serif: 'Lora', serif;
@@ -142,7 +145,7 @@ body {
   z-index: 99;
   backdrop-filter: blur(2px);
 }
-.sidebar-overlay.visible { display: block; }
+.sidebar-overlay.visible, .sidebar-overlay.open { display: block; }
 
 /* Mobile FAB toggle */
 .mobile-menu-toggle {
@@ -206,6 +209,9 @@ header h1 em { font-style: italic; color: rgba(255,255,255,0.65); }
 .part-bar.p2 { --stripe: var(--part-2); }
 .part-bar.p3 { --stripe: var(--part-3); }
 .part-bar.p4 { --stripe: var(--part-4); }
+.part-bar.p5 { --stripe: var(--part-5); }
+.part-bar.p6 { --stripe: var(--part-6); }
+.part-bar.p7 { --stripe: var(--part-7); }
 .part-bar-inner {
   max-width: var(--max-w); margin: 0 auto;
   display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;

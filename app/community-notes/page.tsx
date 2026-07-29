@@ -19,28 +19,24 @@ interface Article {
   };
 }
 
-interface ForumAnswer {
+interface DiscussionReply {
   id: string;
   author: string;
-  authorRole: string;
   date: string;
   content: string;
-  votes: number;
-  isAccepted?: boolean;
+  likes: number;
+  dislikes: number;
 }
 
-interface ForumQuestion {
+interface DiscussionTopic {
   id: string;
-  title: string;
-  clauseRef?: string;
+  topic: string;
   content: string;
   author: string;
-  authorRole: string;
   date: string;
-  tags: string[];
-  votes: number;
-  views: number;
-  answers: ForumAnswer[];
+  likes: number;
+  dislikes: number;
+  replies: DiscussionReply[];
 }
 
 const defaultFAQs: Article[] = [
@@ -125,181 +121,161 @@ const defaultFAQs: Article[] = [
   }
 ];
 
-const seedForumQuestions: ForumQuestion[] = [
+const seedDiscussions: DiscussionTopic[] = [
   {
-    id: "so-1",
-    title: "Why does BS 8110 cap maximum concrete shear resistance v_c at 0.8 √f_cu instead of scaling linearly with higher strength grades?",
-    clauseRef: "BS 8110-1:1997, Cl. 3.4.5.2 & Table 3.8",
-    content: "When designing high-strength transfer beams (C50/60 and above), Table 3.8 formula uses (f_cu/25)^0.33 with an upper bound limit of f_cu <= 40 N/mm², and Cl. 3.4.5.2 caps maximum shear stress v at 0.8 √f_cu or 5 N/mm². Why doesn't the standard allow higher concrete shear capacity to be credited in ultra-high-strength structural mixtures?",
-    author: "Eng_David_MICE",
-    authorRole: "Principal Structural Engineer",
+    id: "disc-1",
+    topic: "Part 2 · Beams & Shear",
+    content: "When designing high-strength transfer beams (C50/60 and above), why does BS 8110 cap maximum concrete shear resistance v_c at 0.8 √f_cu instead of scaling linearly with higher strength grades?\n\nIn ultra-high-strength mixtures, diagonal shear cracks shear straight through the aggregate particles rather than around them, resulting in a remarkably smooth crack face with almost zero friction or aggregate interlock resistance.",
+    author: "David M.",
     date: "4 hours ago",
-    tags: ["Shear", "Beams", "Materials", "BS8110"],
-    votes: 24,
-    views: 312,
-    answers: [
+    likes: 24,
+    dislikes: 1,
+    replies: [
       {
-        id: "ans-101",
-        author: "Dr_Joseph_Chartered",
-        authorRole: "Senior Technical Lead & FIStructE",
+        id: "rep-101",
+        author: "Joseph A.",
         date: "3 hours ago",
-        content: "This restriction is rooted in the physical mechanics of aggregate interlock and crack propagation. In standard strength concrete (< C40/50), shear tension cracks propagate *around* the hard coarse aggregate particles, creating a rough intermeshed slip interface that mechanically interlocks across the shear plane.\n\nHowever, in high-strength concrete (f_cu > 50 N/mm²), the hardened mortar matrix is nearly as stiff and strong as the coarse aggregates themselves. When a diagonal shear crack initiates, it shears straight **through** the aggregate particles rather than around them. This results in a remarkably smooth crack face with almost zero friction or aggregate interlock resistance.\n\nTo prevent sudden, brittle diagonal shear explosions without warning, BS 8110 deliberately caps the shear stress contribution of concrete matrix at 0.8√f_cu (max 5.0 N/mm²), ensuring structural ductility is governed by yielding of vertical shear links rather than brittle matrix shear.",
-        votes: 19,
-        isAccepted: true
+        content: "Spot on with the aggregate interlock physics. To prevent sudden, brittle diagonal shear explosions without warning, BS 8110 deliberately caps the shear stress contribution of the concrete matrix at 0.8√f_cu (max 5.0 N/mm²), ensuring structural ductility is governed by yielding of vertical shear links rather than brittle matrix shear.",
+        likes: 19,
+        dislikes: 0
       },
       {
-        id: "ans-102",
-        author: "Structural_Reviewer_UK",
-        authorRole: "Senior Checking Engineer",
+        id: "rep-102",
+        author: "Samuel K.",
         date: "2 hours ago",
-        content: "Spot on with the aggregate interlock physics. Also worth mentioning that even in Eurocode 2 (BS EN 1992-1-1), a similar brittleness reduction factor is enforced for strength classes above C50/60 via the factor ν = 0.6 × (1 - f_ck / 250). Never attempt to rely on concrete tension alone in high-shear transfer zones—always detail robust closed links!",
-        votes: 7
+        content: "Also worth mentioning that even in Eurocode 2 (BS EN 1992-1-1), a similar brittleness reduction factor is enforced for strength classes above C50/60 via the factor ν = 0.6 × (1 - f_ck / 250). Never attempt to rely on concrete tension alone in high-shear transfer zones—always detail robust closed links!",
+        likes: 7,
+        dislikes: 0
       }
     ]
   },
   {
-    id: "so-2",
-    title: "Unbalanced corner column moment transfer in flat slab: Should we model torsional stiffness of edge strips under Cl. 3.7.4.2?",
-    clauseRef: "BS 8110-1:1997, Cl. 3.7.4.2 & Cl. 3.7.6.3",
-    content: "In a G+3 flat slab commercial office with no edge perimeter beams, the corner columns take significant moment transfer due to unbalanced gravity loading. When checking punching shear around the corner perimeter, how do you adjust the effective shear force V_eff if edge torsional stiffness is relatively flexible?",
-    author: "BIM_Consultant_9",
-    authorRole: "Structural Modeler",
+    id: "disc-2",
+    topic: "Part 1 · Flat Slabs & Punching Shear",
+    content: "In a G+3 flat slab commercial office with no edge perimeter beams, corner columns take significant moment transfer due to unbalanced gravity loading. When checking punching shear around the corner perimeter, should we adjust the effective shear force V_eff by modeling edge torsional stiffness or directly applying magnification factors?",
+    author: "Emmanuel B.",
     date: "1 day ago",
-    tags: ["Slabs", "Columns", "Flat-Slabs", "Punching-Shear"],
-    votes: 15,
-    views: 240,
-    answers: [
+    likes: 15,
+    dislikes: 0,
+    replies: [
       {
-        id: "ans-201",
-        author: "Olu_SE_Design",
-        authorRole: "Consulting Engineer",
+        id: "rep-201",
+        author: "Olukorede A.",
         date: "20 hours ago",
-        content: "For corner columns without spandrel beams, BS 8110 Cl. 3.7.6.3 directs that the applied punching shear force should be multiplied by the magnification factor **V_eff = 1.25 V_t** (for corner columns where moment is transferred about both axes simultaneously) to account for unbalanced eccentricity, rather than attempting complex FE torsional stiffness modeling of the edge concrete strip.\n\nMake sure your reinforcement detailing extends U-bar hairpins along the free slab edges and passes at least two bottom bars directly through the column cage core to guarantee structural integrity and prevent brittle drop-out.",
-        votes: 12,
-        isAccepted: true
+        content: "For corner columns without spandrel beams, BS 8110 Cl. 3.7.6.3 directs that the applied punching shear force should be multiplied by the magnification factor V_eff = 1.25 V_t to account for unbalanced eccentricity, rather than attempting complex FE torsional stiffness modeling of the edge concrete strip. Make sure your reinforcement detailing extends U-bar hairpins along the free slab edges!",
+        likes: 12,
+        dislikes: 0
       }
     ]
   },
   {
-    id: "so-3",
-    title: "Redistribution up to 30% (Cl. 3.2.2.1): When reducing support moments downwards in a multi-span continuous beam, how do you adjust reinforcement anchoring in the support node?",
-    clauseRef: "BS 8110-1:1997, Cl. 3.2.2.1 & Cl. 3.4.4.4",
-    content: "When we take advantage of 30% downward moment redistribution over internal supports to relieve congestion of top steel in continuous beam supports, we correspondingly increase midspan bottom steel. What critical checks on neutral axis depth ratio (x/d) must be verified to prevent premature crushing before plastic rotation can take place?",
-    author: "Joseph_SE_Lead",
-    authorRole: "Senior Structural Engineer",
+    id: "disc-3",
+    topic: "Part 0 · Fundamentals & Redistribution",
+    content: "When taking advantage of 30% downward moment redistribution over internal supports to relieve congestion of top steel in continuous beam supports, we correspondingly increase midspan bottom steel. What critical checks on neutral axis depth ratio (x/d) must be verified to prevent premature crushing before plastic rotation can take place?",
+    author: "Taiwo E.",
     date: "2 days ago",
-    tags: ["Beams", "Analysis", "Redistribution", "BS8110"],
-    votes: 19,
-    views: 410,
-    answers: [
+    likes: 19,
+    dislikes: 1,
+    replies: [
       {
-        id: "ans-301",
-        author: "Concrete_Guru_01",
-        authorRole: "Design Methodologist",
+        id: "rep-301",
+        author: "Chinedu O.",
         date: "1 day ago",
-        content: "Redistribution requires sufficient rotational ductility at the support plastic hinge so that the support angle can rotate without crushing the compressed bottom face of the beam concrete.\n\nUnder Cl. 3.4.4.4, you MUST restrict the neutral axis depth ratio using the formula:\n**x/d ≤ (β_b - 0.4) / 0.5**\nWhere β_b is the ratio of redistributed moment to elastic moment.\n\nFor a maximum 30% reduction (β_b = 0.70), this limits your maximum allowed neutral axis depth to **x/d ≤ 0.60**. If your applied moment causes x/d to exceed this limit, you are strictly prohibited from redistributing 30%, or you must introduce compression steel in the bottom of the support section to elevate ductility!",
-        votes: 16,
-        isAccepted: true
+        content: "Redistribution requires sufficient rotational ductility at the support plastic hinge so that the support angle can rotate without crushing the compressed bottom face of the beam concrete. Under Cl. 3.4.4.4, you must restrict the neutral axis depth ratio using x/d ≤ (β_b - 0.4) / 0.5. For a maximum 30% reduction (β_b = 0.70), this limits your maximum allowed neutral axis depth to x/d ≤ 0.60!",
+        likes: 16,
+        dislikes: 0
       },
       {
-        id: "ans-302",
-        author: "Eng_David_MICE",
-        authorRole: "Principal Structural Engineer",
+        id: "rep-302",
+        author: "David M.",
         date: "1 day ago",
-        content: "Also, do not forget the detailing rule in Cl. 3.12.10.3: when you redistribute support moments downward, the actual point of contraflexure moves further out into the span! You must extend your top curtailment reinforcement bars an additional distance equal to at least the effective depth (d) beyond the recalculated zero-moment point.",
-        votes: 8
+        content: "Also, remember the detailing rule in Cl. 3.12.10.3: when you redistribute support moments downward, the point of contraflexure moves further out into the span. You must extend your top curtailment reinforcement bars an additional distance equal to at least the effective depth (d) beyond the recalculated zero-moment point.",
+        likes: 8,
+        dislikes: 0
       }
     ]
   },
   {
-    id: "so-4",
-    title: "Can we omit top anti-crack steel entirely in short-span internal residential floor slabs (L_x < 3.0m) if deflection is well within Table 3.9 basic limits?",
-    clauseRef: "BS 8110-1:1997, Cl. 3.12.11.2.7",
+    id: "disc-4",
+    topic: "Part 1 · Slabs & Detailing",
     content: "In typical G+1 residential floor slab panels where L_x = 2.8m and slab thickness h = 150mm, the L/d ratio is barely 18 (vs allowable 26). If the panel is designed as simply supported between brick walls, can we completely eliminate top reinforcement mesh at the support boundaries to economize on site bar fixing?",
-    author: "Site_Engineer_Olu",
-    authorRole: "Site Project Manager",
+    author: "Grace F.",
     date: "3 days ago",
-    tags: ["Slabs", "Cracking", "Reinforcement", "Detailing"],
-    votes: 11,
-    views: 188,
-    answers: [
+    likes: 11,
+    dislikes: 0,
+    replies: [
       {
-        id: "ans-401",
-        author: "Dr_Joseph_Chartered",
-        authorRole: "Senior Technical Lead & FIStructE",
+        id: "rep-401",
+        author: "Joseph A.",
         date: "2 days ago",
-        content: "No, never completely eliminate top reinforcement at support perimeters even in nominally 'simply supported' residential slabs! In physical reality, masonry walls and beam supports always exert partial rotational restraint (clamping effect) due to dead weight and monolithic casting.\n\nWithout at least nominal top steel over supports (typically 0.13% of concrete area, e.g. Y8 or Y10 @ 250mm c/c extending 0.15 L_x into the span), wide unsightly tension cracks will form along the perimeter ceiling and flooring finishes. Cl. 3.12.10.3 requires nominal continuity steel over supports to preserve durability and finish integrity.",
-        votes: 14
+        content: "No, never completely eliminate top reinforcement at support perimeters even in nominally 'simply supported' residential slabs! In physical reality, masonry walls and beam supports always exert partial rotational restraint (clamping effect) due to dead weight and monolithic casting. Without at least nominal top steel over supports (typically 0.13% of concrete area, e.g. Y8 or Y10 @ 250mm c/c extending 0.15 L_x into the span), wide unsightly tension cracks will form along the perimeter ceiling and flooring finishes.",
+        likes: 14,
+        dislikes: 0
       }
     ]
   },
   {
-    id: "so-5",
-    title: "How to properly evaluate equivalent UDL (w_eq) when a doorway opening directly breaks an internal masonry block wall above a floor slab?",
-    clauseRef: "BS 6399-1:1996, Cl. 5.2 & Reynolds & Steedman",
-    content: "When calculating the line load of an internal 230mm sandcrete block wall of height 3.0m running parallel across a two-way slab span, if there is a standard 0.9m x 2.1m timber doorway opening in the middle of the wall, do we simply deduct the window/door area percentage (e.g. multiplied by 0.85 opening factor), or does the lintel transfer concentrated reaction point loads to either side of the doorway?",
-    author: "Design_Consultant_9",
-    authorRole: "Structural Analyst",
+    id: "disc-5",
+    topic: "Part 1 · Slab Loading & Walls",
+    content: "When calculating the line load of an internal 230mm sandcrete block wall of height 3.0m running parallel across a two-way slab span, if there is a standard 0.9m x 2.1m doorway opening in the middle of the wall, do we simply deduct the doorway area percentage (e.g. multiplied by 0.85 opening factor), or does the lintel transfer concentrated reaction point loads to either side of the doorway?",
+    author: "Babatunde R.",
     date: "4 days ago",
-    tags: ["Loading", "Slabs", "Beams", "BS6399"],
-    votes: 8,
-    views: 156,
-    answers: [
+    likes: 9,
+    dislikes: 0,
+    replies: [
       {
-        id: "ans-501",
-        author: "Olu_SE_Design",
-        authorRole: "Consulting Engineer",
+        id: "rep-501",
+        author: "Olukorede A.",
         date: "3 days ago",
-        content: "For general preliminary slab shear and flexure take-down, applying a uniform net reduction factor (typically 0.85 for domestic doors, or calculating net solid wall surface area) is widely accepted standard practice (Reynolds & Steedman engineering guidelines).\n\nHowever, if the opening is wide (e.g., a double folding arch > 1.8m wide), the masonry lintel above the opening will concentrate significant point loads at the door jamb bearings. In such cases, check local slab bending and punching shear right under the door jamb bearings, or position a concealed rib reinforcement band inside the slab depth to bridge the reaction.",
-        votes: 9,
-        isAccepted: true
+        content: "For general preliminary slab shear and flexure take-down, applying a uniform net reduction factor (typically 0.85 for domestic doors, or calculating net solid wall surface area) is widely accepted standard practice (Reynolds & Steedman). However, if the opening is wide (e.g., a double folding arch > 1.8m wide), the masonry lintel above the opening will concentrate significant point loads at the door jamb bearings. In such cases, check local slab bending right under the door bearings!",
+        likes: 9,
+        dislikes: 0
       }
     ]
   },
   {
-    id: "so-6",
-    title: "Difference between Cl. 3.8.2.4 nominal column eccentricity (h/20) and minimum structural eccentricity (20mm) in tall columns (>4.5m clear height)?",
-    clauseRef: "BS 8110-1:1997, Cl. 3.8.2.4",
-    content: "In a double-height commercial entrance lobby, our rectangular concrete column is 300mm x 600mm with a clear height of 5.2m. When applying Cl. 3.8.2.4 minimum design moment, do we check e_min against 0.05 multiplied by the overall column height, or 0.05 multiplied by the cross-sectional depth in the direction of bending?",
-    author: "Civil_Tech_UK",
-    authorRole: "Graduate Engineer",
+    id: "disc-6",
+    topic: "Part 3 · Slender Columns",
+    content: "In a double-height commercial entrance lobby, our rectangular concrete column is 300mm x 600mm with a clear height of 5.2m. When applying minimal design moments, do we check e_min against 0.05 multiplied by the overall column height, or 0.05 multiplied by the cross-sectional depth in the direction of bending?",
+    author: "Kelvin N.",
     date: "5 days ago",
-    tags: ["Columns", "Slenderness", "BS8110"],
-    votes: 14,
-    views: 121,
-    answers: []
+    likes: 14,
+    dislikes: 1,
+    replies: []
   }
 ];
 
-export default function CommunityNotes() {
-  // Navigation Tab State
-  const [activeTab, setActiveTab] = useState<'notes' | 'forum'>('notes');
+const availableTopics = [
+  "Part 0 · Fundamentals & Redistribution",
+  "Part 1 · Solid Slabs",
+  "Part 1 · Flat & Ribbed Slabs",
+  "Part 1 · Slab Loading & Walls",
+  "Part 2 · Beams & Shear",
+  "Part 2 · Deflection & Cracking",
+  "Part 3 · Slender Columns",
+  "Part 4 · Foundations & Robustness",
+  "General Design & Practice"
+];
 
-  // Curated Notes States
+export default function CommunityNotes() {
+  const [activeTab, setActiveTab] = useState<'notes' | 'discussion'>('notes');
   const [articles, setArticles] = useState<Article[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
 
-  // Stack Overflow Forum States & Filtering
-  const [forumQuestions, setForumQuestions] = useState<ForumQuestion[]>(seedForumQuestions);
-  const [forumSearch, setForumSearch] = useState('');
-  const [selectedForumTag, setSelectedForumTag] = useState('');
-  const [forumSort, setForumSort] = useState<'voted' | 'newest' | 'unanswered' | 'solved'>('voted');
-  const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(null);
+  const [discussions, setDiscussions] = useState<DiscussionTopic[]>(seedDiscussions);
+  const [discSearch, setDiscSearch] = useState('');
+  const [selectedTopic, setSelectedTopic] = useState('');
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   
-  // New Forum Question Modal & Forms
-  const [isForumModalOpen, setIsForumModalOpen] = useState(false);
-  const [forumTitle, setForumTitle] = useState('');
-  const [forumClause, setForumClause] = useState('');
-  const [forumContent, setForumContent] = useState('');
-  const [forumAuthor, setForumAuthor] = useState('');
-  const [forumTagsInput, setForumTagsInput] = useState('');
+  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+  const [newTopic, setNewTopic] = useState(availableTopics[0]);
+  const [newAuthor, setNewAuthor] = useState('');
+  const [newContent, setNewContent] = useState('');
 
-  // Reply / Answer State
-  const [answerAuthor, setAnswerAuthor] = useState('');
-  const [answerContent, setAnswerContent] = useState('');
+  const [replyAuthor, setReplyAuthor] = useState<{ [key: string]: string }>({});
+  const [replyContent, setReplyContent] = useState<{ [key: string]: string }>({});
 
-  // Inbox Question Modal States (Editorial FAQ inquiry)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [question, setQuestion] = useState('');
@@ -308,7 +284,6 @@ export default function CommunityNotes() {
   const [feedbackType, setFeedbackType] = useState<'none' | 'strong' | 'moderate' | null>(null);
   const [suggestedArticle, setSuggestedArticle] = useState<Article | null>(null);
 
-  // 1. Fetch community notes from Sanity server endpoint and merge with default FAQs
   useEffect(() => {
     async function loadNotes() {
       let fetched: Article[] = [];
@@ -322,68 +297,35 @@ export default function CommunityNotes() {
           fetched = (await sanityClient.fetch(query)) || [];
         }
       } catch (err) {
-        console.warn('Failed server fetch, trying fallback client fetch:', err);
-        try {
-          const query = '*[_type == "communityNote"] | order(date desc)';
-          fetched = (await sanityClient.fetch(query)) || [];
-        } catch (clientErr) {
-          console.warn('Failed to load notes from Sanity, using seed FAQs only:', clientErr);
-        }
+        console.warn('Fallback: Loading seed FAQs only.');
       }
-
-      // Merge live Sanity notes with default seed FAQs (avoiding duplicates by slug)
       const sanitySlugs = new Set(fetched.map(note => typeof note.slug === 'string' ? note.slug : note.slug?.current));
       const filteredDefaults = defaultFAQs.filter(df => !sanitySlugs.has(typeof df.slug === 'string' ? df.slug : (df.slug as any)?.current));
-      
       setArticles([...fetched, ...filteredDefaults]);
     }
     loadNotes();
   }, []);
 
-  // 2. Extract unique tags for editorial notes
   const allTags = useMemo(() => {
     const tags = new Set<string>();
     articles.forEach(art => art.tags?.forEach(t => tags.add(t)));
     return Array.from(tags).sort();
   }, [articles]);
 
-  // 3. Search and Highlight logic for editorial notes with Fuse.js
   const searchResults = useMemo(() => {
     let list = articles;
-
-    if (selectedTag) {
-      list = list.filter(art => art.tags?.includes(selectedTag));
-    }
-
-    if (!searchQuery.trim()) {
-      return list;
-    }
-
-    const fuse = new Fuse(list, {
-      keys: ['title', 'answer', 'tags'],
-      threshold: 0.35,
-      includeMatches: true,
-    });
-
+    if (selectedTag) list = list.filter(art => art.tags?.includes(selectedTag));
+    if (!searchQuery.trim()) return list;
+    const fuse = new Fuse(list, { keys: ['title', 'answer', 'tags'], threshold: 0.35, includeMatches: true });
     const results = fuse.search(searchQuery);
-
     return results.map(({ item, matches }) => {
       let title = item.title;
       let answer = item.answer;
-
       matches?.forEach(match => {
-        if (match.key === 'title') {
-          title = applyHighlight(item.title, match.indices);
-        } else if (match.key === 'answer') {
-          answer = applyHighlight(item.answer, match.indices);
-        }
+        if (match.key === 'title') title = applyHighlight(item.title, match.indices);
+        else if (match.key === 'answer') answer = applyHighlight(item.answer, match.indices);
       });
-
-      return {
-        ...item,
-        title,
-        answer,
-      };
+      return { ...item, title, answer };
     });
   }, [articles, searchQuery, selectedTag]);
 
@@ -391,7 +333,6 @@ export default function CommunityNotes() {
     let result = '';
     let lastIndex = 0;
     const sortedIndices = [...indices].sort((a, b) => a[0] - b[0]);
-
     for (const [start, end] of sortedIndices) {
       result += text.slice(lastIndex, start);
       result += `<mark>${text.slice(start, end + 1)}</mark>`;
@@ -401,174 +342,119 @@ export default function CommunityNotes() {
     return result;
   }
 
-  // 4. Extract unique forum tags
-  const forumTags = useMemo(() => {
-    const tagsSet = new Set<string>();
-    forumQuestions.forEach(q => q.tags.forEach(t => tagsSet.add(t)));
-    return Array.from(tagsSet).sort();
-  }, [forumQuestions]);
-
-  // 5. Filter & Sort Forum Questions
-  const filteredForumQuestions = useMemo(() => {
-    let list = [...forumQuestions];
-    if (selectedForumTag) {
-      list = list.filter(q => q.tags.map(t => t.toLowerCase()).includes(selectedForumTag.toLowerCase()));
+  const filteredDiscussions = useMemo(() => {
+    let list = [...discussions];
+    if (selectedTopic) {
+      list = list.filter(d => d.topic.toLowerCase().includes(selectedTopic.toLowerCase()));
     }
-    if (forumSearch.trim()) {
-      const qLower = forumSearch.toLowerCase();
-      list = list.filter(q => 
-        q.title.toLowerCase().includes(qLower) || 
-        q.content.toLowerCase().includes(qLower) ||
-        (q.clauseRef && q.clauseRef.toLowerCase().includes(qLower)) ||
-        q.tags.some(t => t.toLowerCase().includes(qLower))
+    if (discSearch.trim()) {
+      const qLower = discSearch.toLowerCase();
+      list = list.filter(d => 
+        d.content.toLowerCase().includes(qLower) || 
+        d.author.toLowerCase().includes(qLower) ||
+        d.topic.toLowerCase().includes(qLower)
       );
     }
-    if (forumSort === 'voted') {
-      list.sort((a, b) => b.votes - a.votes);
-    } else if (forumSort === 'newest') {
-      list.sort((a, b) => (a.id < b.id ? 1 : -1));
-    } else if (forumSort === 'unanswered') {
-      list = list.filter(q => q.answers.length === 0);
-    } else if (forumSort === 'solved') {
-      list = list.filter(q => q.answers.some(a => a.isAccepted));
-    }
     return list;
-  }, [forumQuestions, selectedForumTag, forumSearch, forumSort]);
+  }, [discussions, selectedTopic, discSearch]);
 
-  // Current expanded question
-  const activeForumQuestion = useMemo(() => {
-    return forumQuestions.find(q => q.id === expandedQuestionId) || null;
-  }, [forumQuestions, expandedQuestionId]);
-
-  // Vote handlers
-  const handleVoteQuestion = (id: string, delta: number, e: React.MouseEvent) => {
+  const handleLike = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setForumQuestions(prev => prev.map(q => {
-      if (q.id === id) {
-        return { ...q, votes: q.votes + delta };
-      }
-      return q;
-    }));
+    setDiscussions(prev => prev.map(d => d.id === id ? { ...d, likes: d.likes + 1 } : d));
   };
 
-  const handleVoteAnswer = (qId: string, aId: string, delta: number) => {
-    setForumQuestions(prev => prev.map(q => {
-      if (q.id === qId) {
+  const handleDislike = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDiscussions(prev => prev.map(d => d.id === id ? { ...d, dislikes: d.dislikes + 1 } : d));
+  };
+
+  const handleLikeReply = (topicId: string, replyId: string) => {
+    setDiscussions(prev => prev.map(d => {
+      if (d.id === topicId) {
         return {
-          ...q,
-          answers: q.answers.map(a => a.id === aId ? { ...a, votes: a.votes + delta } : a)
+          ...d,
+          replies: d.replies.map(r => r.id === replyId ? { ...r, likes: r.likes + 1 } : r)
         };
       }
-      return q;
+      return d;
     }));
   };
 
-  // Submit new forum question
-  const handleCreateForumQuestion = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!forumTitle.trim() || !forumContent.trim()) return;
-    const tagsArr = forumTagsInput.split(',').map(t => t.trim().replace(/^#/, '')).filter(Boolean);
-    if (tagsArr.length === 0) tagsArr.push('BS8110', 'Design');
-
-    const newQ: ForumQuestion = {
-      id: `so-${Date.now()}`,
-      title: forumTitle.trim(),
-      clauseRef: forumClause.trim() || 'BS 8110-1:1997 General Notice',
-      content: forumContent.trim(),
-      author: forumAuthor.trim() || 'Community_Engineer',
-      authorRole: 'Structural Engineer',
-      date: 'Just now',
-      tags: tagsArr,
-      votes: 1,
-      views: 1,
-      answers: []
-    };
-
-    setForumQuestions(prev => [newQ, ...prev]);
-    setIsForumModalOpen(false);
-    setForumTitle('');
-    setForumClause('');
-    setForumContent('');
-    setForumAuthor('');
-    setForumTagsInput('');
-
-    // Also notify /api/questions so backend logs the community contribution
-    try {
-      await fetch('/api/questions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'forum_user@manualdesign.org', question: `[FORUM Q&A: ${newQ.title}] ${newQ.content}` }),
-      });
-    } catch (err) {
-      console.log('Backend sync offline, stored in live UI state.');
-    }
-  };
-
-  // Submit Answer Handler
-  const handlePostAnswer = (qId: string, e: React.FormEvent) => {
-    e.preventDefault();
-    if (!answerContent.trim()) return;
-    const newAns: ForumAnswer = {
-      id: `ans-${Date.now()}`,
-      author: answerAuthor.trim() || 'Structural_Contributor',
-      authorRole: 'Community Practitioner',
-      date: 'Just now',
-      content: answerContent.trim(),
-      votes: 1
-    };
-
-    setForumQuestions(prev => prev.map(q => {
-      if (q.id === qId) {
+  const handleDislikeReply = (topicId: string, replyId: string) => {
+    setDiscussions(prev => prev.map(d => {
+      if (d.id === topicId) {
         return {
-          ...q,
-          answers: [...q.answers, newAns]
+          ...d,
+          replies: d.replies.map(r => r.id === replyId ? { ...r, dislikes: r.dislikes + 1 } : r)
         };
       }
-      return q;
+      return d;
     }));
-    setAnswerContent('');
-    setAnswerAuthor('');
   };
 
-  // Form Submit for Editorial Inbox Question
+  const handleCreateDiscussion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newContent.trim()) return;
+    const newDisc: DiscussionTopic = {
+      id: `disc-${Date.now()}`,
+      topic: newTopic || 'General Design & Practice',
+      content: newContent.trim(),
+      author: newAuthor.trim() || 'Anonymous Engineer',
+      date: 'Just now',
+      likes: 1,
+      dislikes: 0,
+      replies: []
+    };
+    setDiscussions(prev => [newDisc, ...prev]);
+    setIsNewModalOpen(false);
+    setNewContent('');
+    setNewAuthor('');
+  };
+
+  const handlePostReply = (topicId: string, e: React.FormEvent) => {
+    e.preventDefault();
+    const content = replyContent[topicId]?.trim();
+    if (!content) return;
+    const author = replyAuthor[topicId]?.trim() || 'Anonymous Engineer';
+    const newRep: DiscussionReply = {
+      id: `rep-${Date.now()}`,
+      author,
+      date: 'Just now',
+      content,
+      likes: 1,
+      dislikes: 0
+    };
+    setDiscussions(prev => prev.map(d => {
+      if (d.id === topicId) {
+        return { ...d, replies: [...d.replies, newRep] };
+      }
+      return d;
+    }));
+    setReplyContent(prev => ({ ...prev, [topicId]: '' }));
+    setReplyAuthor(prev => ({ ...prev, [topicId]: '' }));
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitLoading(true);
-
     try {
-      const fuse = new Fuse(articles, {
-        keys: ['title', 'answer'],
-        includeScore: true,
-        threshold: 0.7,
-      });
-
+      const fuse = new Fuse(articles, { keys: ['title', 'answer'], includeScore: true, threshold: 0.7 });
       const searchHits = fuse.search(question);
       let type: 'none' | 'strong' | 'moderate' = 'none';
       let suggested: Article | null = null;
-
       if (searchHits.length > 0) {
         const topHit = searchHits[0];
         const score = topHit.score || 1;
         suggested = topHit.item;
-
-        if (score < 0.4) {
-          type = 'strong';
-        } else if (score < 0.7) {
-          type = 'moderate';
-        }
+        if (score < 0.4) type = 'strong';
+        else if (score < 0.7) type = 'moderate';
       }
-
       const res = await fetch('/api/questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, question, website: honeypot }),
       });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Failed to submit question');
-      }
-
+      if (!res.ok) throw new Error('Submission failed');
       setFeedbackType(type);
       setSuggestedArticle(suggested);
       setEmail('');
@@ -587,157 +473,88 @@ export default function CommunityNotes() {
   };
 
   return (
-    <div className="notes-container" style={{ padding: '60px 0 120px 0', fontFamily: 'Inter, sans-serif', maxWidth: '880px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px' }}>
-      
-      {/* Header */}
-      <div style={{ paddingBottom: '20px', marginBottom: '16px' }}>
+    <div className="notes-container" style={{ padding: '60px 0 120px 0', fontFamily: 'Inter, sans-serif', maxWidth: '780px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px' }}>
+      <div style={{ paddingBottom: '12px', marginBottom: '8px' }}>
         <Link href="/" className="back-btn" style={{ textDecoration: 'none', color: 'var(--mid-gray)', fontSize: '11px', fontFamily: 'var(--mono)', letterSpacing: '0.1em', display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '24px' }}>
           &larr; Back to Manual Design Guide
         </Link>
-        <h1 style={{ fontFamily: 'Lora, serif', fontWeight: '400', fontSize: '34px', color: 'var(--black)', marginBottom: '8px' }}>Community Notes &amp; Q&amp;A Forum</h1>
+        <h1 style={{ fontFamily: 'Lora, serif', fontWeight: '400', fontSize: '34px', color: 'var(--black)', marginBottom: '8px' }}>FAQ &amp; Notes</h1>
         <p style={{ fontFamily: 'var(--mono)', fontSize: '11.5px', color: 'var(--mid-gray)', letterSpacing: '0.04em' }}>
-          BS 8110 Structural Knowledge Base &middot; Curated Articles &middot; Community Discussions
+          BS 8110 Structural Knowledge Base &middot; Curated FAQ &middot; Peer Discussion
         </p>
       </div>
 
-      {/* Interactive Two-Tab Switcher */}
-      <div className="forum-tabs-bar">
+      <div className="forum-tabs-bar" style={{ display: 'flex', gap: '24px', borderBottom: '1px solid #e0e0e0', marginBottom: '32px' }}>
         <button 
-          onClick={() => { setActiveTab('notes'); setExpandedQuestionId(null); }} 
-          className={`forum-tab-btn ${activeTab === 'notes' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('notes'); setExpandedId(null); }} 
+          style={{
+            background: 'none', border: 'none', padding: '12px 4px', fontFamily: 'Inter, sans-serif', fontSize: '14.5px', fontWeight: activeTab === 'notes' ? 600 : 400, color: activeTab === 'notes' ? '#000000' : '#666666', cursor: 'pointer', borderBottom: activeTab === 'notes' ? '2px solid #000000' : '2px solid transparent', marginBottom: '-1px', transition: 'all 0.15s ease', display: 'flex', alignItems: 'center', gap: '6px'
+          }}
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-          Editorial Notes &amp; FAQs
+          Notes
         </button>
         <button 
-          onClick={() => { setActiveTab('forum'); setExpandedQuestionId(null); }} 
-          className={`forum-tab-btn ${activeTab === 'forum' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('discussion'); setExpandedId(null); }} 
+          style={{
+            background: 'none', border: 'none', padding: '12px 4px', fontFamily: 'Inter, sans-serif', fontSize: '14.5px', fontWeight: activeTab === 'discussion' ? 600 : 400, color: activeTab === 'discussion' ? '#000000' : '#666666', cursor: 'pointer', borderBottom: activeTab === 'discussion' ? '2px solid #000000' : '2px solid transparent', marginBottom: '-1px', transition: 'all 0.15s ease', display: 'flex', alignItems: 'center', gap: '6px'
+          }}
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-          Stack Overflow Q&amp;A Forum
+          Discussion
         </button>
       </div>
 
-      {/* =========================================================================
-          TAB 1: EDITORIAL NOTES & CURATED FAQS
-          ========================================================================= */}
       {activeTab === 'notes' && (
         <>
-          {/* Search and Tag Controls */}
-          <div style={{ marginBottom: '36px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ marginBottom: '36px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search editorial community notes by keyword, code clause, or topic..."
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                fontSize: '14.5px',
-                border: '1px solid var(--rule)',
-                borderRadius: 'var(--radius)',
-                fontFamily: 'var(--sans)',
-                background: 'var(--light-bg)',
-                color: 'var(--black)',
-                outline: 'none'
-              }}
+              placeholder="Search notes by keyword, clause, or topic..."
+              style={{ width: '100%', padding: '11px 15px', fontSize: '14px', border: '1px solid #d8d8d8', borderRadius: '6px', fontFamily: 'Inter, sans-serif', background: '#fafafa', color: '#111111', outline: 'none' }}
             />
-
-            <div className="tag-list" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              <button
-                onClick={() => setSelectedTag('')}
-                className={`tag-pill ${!selectedTag ? 'active' : ''}`}
-              >
+            <div className="tag-list" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              <button onClick={() => setSelectedTag('')} className={`tag-pill ${!selectedTag ? 'active' : ''}`} style={{ fontSize: '11.5px', padding: '4px 10px', borderRadius: '4px' }}>
                 All Topics
               </button>
               {allTags.map(tag => (
-                <button
-                  key={tag}
-                  onClick={() => setSelectedTag(tag)}
-                  className={`tag-pill ${selectedTag === tag ? 'active' : ''}`}
-                >
+                <button key={tag} onClick={() => setSelectedTag(tag)} className={`tag-pill ${selectedTag === tag ? 'active' : ''}`} style={{ fontSize: '11.5px', padding: '4px 10px', borderRadius: '4px' }}>
                   #{tag.toLowerCase()}
                 </button>
               ))}
             </div>
           </div>
-
-          {/* Notes Directory Cards */}
-          <main className="journal-list" style={{ display: 'flex', flexDirection: 'column', gap: '26px' }}>
+          <main style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {searchResults.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--mid-gray)' }}>
-                <h3 style={{ fontFamily: 'Lora, serif', fontSize: '20px', fontWeight: '400', color: 'var(--black)', marginBottom: '8px' }}>
-                  No notes found
-                </h3>
+              <div style={{ textAlign: 'center', padding: '60px 0', color: '#6b6b6b' }}>
+                <h3 style={{ fontFamily: 'Lora, serif', fontSize: '20px', fontWeight: '400', color: '#111111', marginBottom: '8px' }}>No notes found</h3>
                 <p style={{ fontSize: '13.5px' }}>Try adjustments to your keywords or clear your tag filters.</p>
               </div>
             ) : (
               searchResults.map((art, idx) => {
                 const slugVal = typeof art.slug === 'string' ? art.slug : art.slug?.current || `note-${idx}`;
                 return (
-                  <article key={idx} className="journal-card" style={{ display: 'flex', gap: '24px', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <article key={idx} style={{ display: 'flex', gap: '20px', justifyContent: 'space-between', alignItems: 'flex-start', padding: '20px 24px', border: '1px solid #e8e8e8', borderRadius: '8px', background: '#ffffff', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
                     <div style={{ flex: 1 }}>
-                      <div className="card-meta">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11.5px', color: '#6e6e6e', fontFamily: 'var(--mono)', marginBottom: '8px' }}>
                         <span>{art.date}</span>
-                        <div className="card-tags">
+                        <span>&middot;</span>
+                        <div style={{ display: 'flex', gap: '6px' }}>
                           {art.tags?.map(t => (
-                            <span key={t} className="card-tag">#{t.toLowerCase()}</span>
+                            <span key={t} style={{ color: '#333333', background: '#f0f0f0', padding: '1px 6px', borderRadius: '3px', fontSize: '10.5px' }}>#{t.toLowerCase()}</span>
                           ))}
                         </div>
                       </div>
-                      
-                      <h2 style={{ fontSize: '20px', fontWeight: '500', marginBottom: '12px' }}>
-                        <Link
-                          href={`/community-notes/${slugVal}`}
-                          style={{ textDecoration: 'none', color: 'var(--black)' }}
-                          dangerouslySetInnerHTML={{ __html: art.title }}
-                        />
+                      <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '10px', color: '#111111', lineHeight: '1.4' }}>
+                        <Link href={`/community-notes/${slugVal}`} style={{ textDecoration: 'none', color: '#111111' }} dangerouslySetInnerHTML={{ __html: art.title }} />
                       </h2>
-                      
-                      <div
-                        className="card-answer"
-                        style={{
-                          display: '-webkit-box',
-                          WebkitLineClamp: 3,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          fontSize: '14.5px',
-                          color: 'var(--dark-gray)',
-                          marginBottom: '14px'
-                        }}
-                        dangerouslySetInnerHTML={{ __html: art.answer }}
-                      />
-
-                      <Link
-                        href={`/community-notes/${slugVal}`}
-                        style={{
-                          fontFamily: 'var(--mono)',
-                          fontSize: '11px',
-                          color: 'var(--accent)',
-                          textTransform: 'uppercase',
-                          textDecoration: 'none',
-                          fontWeight: 600
-                        }}
-                      >
-                        Read Note Article &rarr;
+                      <div style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '14px', color: '#4a4a4a', lineHeight: '1.5', marginBottom: '14px' }} dangerouslySetInnerHTML={{ __html: art.answer }} />
+                      <Link href={`/community-notes/${slugVal}`} style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#000000', textDecoration: 'underline', fontWeight: 600 }}>
+                        Read Full Note &rarr;
                       </Link>
                     </div>
-
                     {art.image && (
-                      <img
-                        src={urlFor(art.image).width(120).height(80).url()}
-                        alt={art.title}
-                        style={{
-                          width: '120px',
-                          height: '80px',
-                          objectFit: 'cover',
-                          borderRadius: 'var(--radius)',
-                          border: '1px solid var(--rule)',
-                          flexShrink: 0,
-                          marginTop: '4px'
-                        }}
-                      />
+                      <img src={urlFor(art.image).width(120).height(80).url()} alt={art.title} style={{ width: '120px', height: '80px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #e5e5e5', flexShrink: 0, marginTop: '4px' }} />
                     )}
                   </article>
                 );
@@ -747,378 +564,75 @@ export default function CommunityNotes() {
         </>
       )}
 
-      {/* =========================================================================
-          TAB 2: STACK OVERFLOW STRUCTURAL Q&A FORUM
-          ========================================================================= */}
-      {activeTab === 'forum' && (
+      {activeTab === 'discussion' && (
         <main>
-          {/* VIEW A: QUESTION DIRECTORY AND FILTERS */}
-          {!expandedQuestionId && (
-            <div>
-              {/* Forum Controls Header */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-                <div style={{ flex: 1, minWidth: '260px' }}>
-                  <input
-                    type="text"
-                    value={forumSearch}
-                    onChange={(e) => setForumSearch(e.target.value)}
-                    placeholder="Search Q&A discussions by title, clause, or tags..."
-                    style={{
-                      width: '100%',
-                      padding: '11px 16px',
-                      fontSize: '14px',
-                      border: '1px solid var(--rule)',
-                      borderRadius: 'var(--radius)',
-                      background: 'var(--light-bg)',
-                      color: 'var(--black)',
-                      outline: 'none'
-                    }}
-                  />
-                </div>
-                <button
-                  onClick={() => setIsForumModalOpen(true)}
-                  style={{
-                    background: 'var(--accent)',
-                    color: 'var(--white)',
-                    border: 'none',
-                    padding: '11px 20px',
-                    borderRadius: 'var(--radius)',
-                    fontFamily: 'var(--mono)',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    boxShadow: '0 2px 6px rgba(47,93,138,0.25)',
-                    transition: 'opacity 0.15s'
-                  }}
-                >
-                  <span style={{ fontSize: '15px' }}>+</span> Ask Structural Question
-                </button>
-              </div>
-
-              {/* Tag Filter and Sort Tabs Row */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px', borderBottom: '1px solid var(--rule)', paddingBottom: '20px', marginBottom: '24px' }}>
-                <div className="tag-list" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                  <button
-                    onClick={() => setSelectedForumTag('')}
-                    className={`tag-pill ${!selectedForumTag ? 'active' : ''}`}
-                    style={{ fontSize: '11.5px', padding: '4px 10px' }}
-                  >
-                    All Tags
-                  </button>
-                  {forumTags.map(t => (
-                    <button
-                      key={t}
-                      onClick={() => setSelectedForumTag(t)}
-                      className={`tag-pill ${selectedForumTag === t ? 'active' : ''}`}
-                      style={{ fontSize: '11.5px', padding: '4px 10px' }}
-                    >
-                      #{t.toLowerCase()}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Sort selector pills */}
-                <div style={{ display: 'flex', gap: '4px', background: 'var(--light-bg)', padding: '4px', borderRadius: 'var(--radius)', border: '1px solid var(--rule)' }}>
-                  {(['voted', 'newest', 'solved', 'unanswered'] as const).map(sortType => (
-                    <button
-                      key={sortType}
-                      onClick={() => setForumSort(sortType)}
-                      style={{
-                        background: forumSort === sortType ? 'var(--white)' : 'transparent',
-                        color: forumSort === sortType ? 'var(--accent)' : 'var(--dark-gray)',
-                        border: 'none',
-                        padding: '5px 12px',
-                        borderRadius: '4px',
-                        fontFamily: 'var(--mono)',
-                        fontSize: '11px',
-                        fontWeight: forumSort === sortType ? 600 : 400,
-                        cursor: 'pointer',
-                        boxShadow: forumSort === sortType ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-                        textTransform: 'capitalize'
-                      }}
-                    >
-                      {sortType === 'voted' ? '🔥 Most Voted' : sortType === 'solved' ? '✔ Solved' : sortType}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Forum Question Cards List */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {filteredForumQuestions.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--mid-gray)' }}>
-                    <p style={{ fontSize: '15px', fontWeight: 500, color: 'var(--black)', marginBottom: '8px' }}>No questions match your filter constraints</p>
-                    <p style={{ fontSize: '13.5px' }}>Be the first engineer to start a discussion on this structural topic!</p>
-                  </div>
-                ) : (
-                  filteredForumQuestions.map((q) => {
-                    const hasAccepted = q.answers.some(a => a.isAccepted);
-                    const ansCount = q.answers.length;
-                    
-                    return (
-                      <div key={q.id} className="so-card" onClick={() => setExpandedQuestionId(q.id)}>
-                        
-                        {/* Left Stats Sidebar */}
-                        <div className="so-stats">
-                          <div className="so-stat-item" style={{ flexDirection: 'row', gap: '6px', alignItems: 'center', color: q.votes > 15 ? 'var(--accent)' : 'var(--dark-gray)' }}>
-                            <span className="so-stat-num">{q.votes}</span> votes
-                          </div>
-
-                          <div className={`so-answers-box ${hasAccepted ? 'accepted' : ansCount > 0 ? 'answered' : ''}`}>
-                            {hasAccepted ? `✔ ${ansCount} ${ansCount === 1 ? 'answer' : 'answers'}` : `${ansCount} ${ansCount === 1 ? 'answer' : 'answers'}`}
-                          </div>
-
-                          <div className="so-stat-item" style={{ fontSize: '11px' }}>
-                            {q.views} views
-                          </div>
-                        </div>
-
-                        {/* Right Main Question Content */}
-                        <div className="so-content">
-                          <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: '#6b6b6b', marginBottom: '4px' }}>
-                            <span style={{ background: 'var(--accent-bg)', color: 'var(--accent)', padding: '2px 6px', borderRadius: '3px', fontWeight: 600 }}>{q.clauseRef}</span>
-                          </div>
-                          
-                          <h2 className="so-title">{q.title}</h2>
-                          
-                          <p className="so-excerpt">{q.content}</p>
-
-                          <div className="so-footer">
-                            <div className="so-tags-row">
-                              {q.tags.map(t => (
-                                <span key={t} className="so-tag-pill">#{t.toLowerCase()}</span>
-                              ))}
-                            </div>
-
-                            <div className="so-author">
-                              <span className="so-avatar">{q.author.charAt(0).toUpperCase()}</span>
-                              <span><strong>{q.author}</strong> ({q.authorRole}) &middot; {q.date}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+            <div style={{ flex: 1, minWidth: '240px' }}>
+              <input type="text" value={discSearch} onChange={(e) => setDiscSearch(e.target.value)} placeholder="Search discussion threads by topic, text, or author..." style={{ width: '100%', padding: '10px 14px', fontSize: '13.5px', border: '1px solid #d8d8d8', borderRadius: '6px', background: '#fafafa', color: '#111111', outline: 'none' }} />
             </div>
-          )}
-
-          {/* VIEW B: EXPANDED INLINE DISCUSSION THREAD & ANSWERS */}
-          {activeForumQuestion && (
-            <div style={{ animation: 'fadeIn 0.2s ease-in-out' }}>
-              <button
-                onClick={() => setExpandedQuestionId(null)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--accent)',
-                  fontFamily: 'var(--mono)',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  marginBottom: '24px',
-                  padding: 0
-                }}
-              >
-                &larr; Return to All Forum Discussions
-              </button>
-
-              {/* Full Question Details Header */}
-              <div style={{ borderBottom: '1px solid var(--rule)', paddingBottom: '24px', marginBottom: '28px' }}>
-                <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-                  
-                  {/* Voting column */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                    <button 
-                      onClick={(e) => handleVoteQuestion(activeForumQuestion.id, 1, e)}
-                      className="so-vote-btn" 
-                      title="Upvote discussion (this standard inquiry is clear and useful)"
-                    >
-                      ▲
-                    </button>
-                    <span style={{ fontSize: '18px', fontWeight: 700, color: 'var(--black)', margin: '4px 0' }}>{activeForumQuestion.votes}</span>
-                    <button 
-                      onClick={(e) => handleVoteQuestion(activeForumQuestion.id, -1, e)}
-                      className="so-vote-btn"
-                      title="Downvote discussion"
-                    >
-                      ▼
-                    </button>
-                  </div>
-
-                  {/* Main question body */}
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontFamily: 'var(--mono)', fontSize: '12px', marginBottom: '8px' }}>
-                      <span style={{ background: 'var(--accent-bg)', color: 'var(--accent)', padding: '3px 8px', borderRadius: '4px', fontWeight: 600, border: '1px solid #c8e0f4' }}>{activeForumQuestion.clauseRef}</span>
-                    </div>
-
-                    <h1 style={{ fontFamily: 'Lora, serif', fontSize: '26px', fontWeight: '400', color: 'var(--black)', marginBottom: '16px', lineHeight: '1.35' }}>
-                      {activeForumQuestion.title}
-                    </h1>
-
-                    <div style={{ fontSize: '15.5px', color: 'var(--dark-gray)', lineHeight: '1.7', whiteSpace: 'pre-wrap', background: 'var(--light-bg)', padding: '20px', borderRadius: 'var(--radius)', border: '1px solid var(--rule)', marginBottom: '20px' }}>
-                      {activeForumQuestion.content}
-                    </div>
-
-                    <div className="so-footer">
-                      <div className="so-tags-row">
-                        {activeForumQuestion.tags.map(t => (
-                          <span key={t} className="so-tag-pill">#{t.toLowerCase()}</span>
-                        ))}
-                      </div>
-
-                      <div className="so-author" style={{ background: '#f3f6f9', padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--rule)' }}>
-                        <span className="so-avatar" style={{ width: '24px', height: '24px', fontSize: '11px' }}>{activeForumQuestion.author.charAt(0)}</span>
-                        <div>
-                          <div style={{ color: 'var(--black)', fontWeight: 600 }}>{activeForumQuestion.author}</div>
-                          <div style={{ fontSize: '10.5px' }}>{activeForumQuestion.authorRole} &middot; Asked {activeForumQuestion.date}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <button onClick={() => setIsNewModalOpen(true)} style={{ background: '#000000', color: '#ffffff', border: 'none', padding: '10px 18px', borderRadius: '6px', fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '15px' }}>+</span> New Discussion
+            </button>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', borderBottom: '1px solid #e8e8e8', paddingBottom: '20px', marginBottom: '24px' }}>
+            <button onClick={() => setSelectedTopic('')} style={{ background: !selectedTopic ? '#000000' : '#f0f0f0', color: !selectedTopic ? '#ffffff' : '#333333', border: 'none', padding: '5px 12px', borderRadius: '4px', fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>All Topics</button>
+            {(["Part 0", "Part 1", "Part 2", "Part 3", "Part 4", "General"] as const).map(t => (
+              <button key={t} onClick={() => setSelectedTopic(t)} style={{ background: selectedTopic === t ? '#000000' : '#f0f0f0', color: selectedTopic === t ? '#ffffff' : '#333333', border: 'none', padding: '5px 12px', borderRadius: '4px', fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>{t}</button>
+            ))}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {filteredDiscussions.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '60px 0', color: '#6e6e6e' }}>
+                <p style={{ fontSize: '15px', fontWeight: 500, color: '#111111', marginBottom: '8px' }}>No discussions match your filter</p>
+                <p style={{ fontSize: '13.5px' }}>Be the first to start a clean, minimal discussion on this structural topic!</p>
               </div>
-
-              {/* Answers Section */}
-              <h2 style={{ fontFamily: 'Lora, serif', fontSize: '22px', fontWeight: '400', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {activeForumQuestion.answers.length} {activeForumQuestion.answers.length === 1 ? 'Engineering Answer' : 'Engineering Answers'}
-              </h2>
-
-              {activeForumQuestion.answers.length === 0 ? (
-                <div style={{ padding: '30px', background: 'var(--light-bg)', borderRadius: 'var(--radius)', textAlign: 'center', color: 'var(--mid-gray)', marginBottom: '36px', border: '1px dashed var(--rule)' }}>
-                  <p style={{ fontSize: '14.5px', marginBottom: '4px', fontWeight: 500, color: 'var(--black)' }}>There are no accepted engineering answers for this discussion yet.</p>
-                  <p style={{ fontSize: '13px' }}>Share your structural code expertise and submit a solution below!</p>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '40px' }}>
-                  {/* Sort answers putting accepted answer first, then highest votes */}
-                  {[...activeForumQuestion.answers]
-                    .sort((a, b) => (b.isAccepted ? 1 : 0) - (a.isAccepted ? 1 : 0) || b.votes - a.votes)
-                    .map((ans) => (
-                      <div 
-                        key={ans.id} 
-                        style={{
-                          display: 'flex',
-                          gap: '20px',
-                          padding: '24px',
-                          borderRadius: 'var(--radius)',
-                          border: ans.isAccepted ? '2px solid #16a34a' : '1px solid var(--rule)',
-                          background: ans.isAccepted ? 'rgba(22, 163, 74, 0.02)' : 'var(--white)',
-                          boxShadow: ans.isAccepted ? '0 4px 16px rgba(22, 163, 74, 0.08)' : '0 2px 6px rgba(0,0,0,0.03)'
-                        }}
-                      >
-                        {/* Answer voting column */}
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                          <button 
-                            onClick={() => handleVoteAnswer(activeForumQuestion.id, ans.id, 1)}
-                            className="so-vote-btn"
-                          >
-                            ▲
-                          </button>
-                          <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--black)', margin: '2px 0' }}>{ans.votes}</span>
-                          <button 
-                            onClick={() => handleVoteAnswer(activeForumQuestion.id, ans.id, -1)}
-                            className="so-vote-btn"
-                          >
-                            ▼
-                          </button>
-                          {ans.isAccepted && (
-                            <div style={{ color: '#16a34a', marginTop: '8px', fontSize: '24px', fontWeight: 800 }} title="Verified & Accepted Engineering Solution">
-                              ✔
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Answer body */}
-                        <div style={{ flex: 1 }}>
-                          {ans.isAccepted && (
-                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#16a34a', color: 'var(--white)', padding: '3px 10px', borderRadius: '20px', fontFamily: 'var(--mono)', fontSize: '11px', fontWeight: 600, marginBottom: '12px' }}>
-                              ✔ VERIFIED STRUCTURAL SOLUTION
-                            </div>
-                          )}
-                          
-                          <div style={{ fontSize: '15px', color: 'var(--dark-gray)', lineHeight: '1.7', whiteSpace: 'pre-wrap', marginBottom: '16px' }}>
-                            {ans.content}
-                          </div>
-
-                          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <div className="so-author" style={{ background: 'var(--light-bg)', padding: '6px 12px', borderRadius: '6px' }}>
-                              <span className="so-avatar" style={{ background: ans.isAccepted ? '#16a34a' : 'var(--accent)' }}>{ans.author.charAt(0)}</span>
-                              <div>
-                                <div style={{ color: 'var(--black)', fontWeight: 600 }}>{ans.author}</div>
-                                <div style={{ fontSize: '10.5px' }}>{ans.authorRole} &middot; Replied {ans.date}</div>
+            ) : (
+              filteredDiscussions.map((d) => {
+                const isExpanded = expandedId === d.id;
+                return (
+                  <div key={d.id} style={{ background: '#ffffff', border: '1px solid #e2e2e2', borderRadius: '8px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', fontSize: '12.5px', color: '#6e6e6e', fontFamily: 'Inter, sans-serif' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ fontWeight: 600, color: '#111111' }}>{d.author}</span><span>&middot;</span><span>{d.date}</span></div>
+                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11.5px', background: '#f4f4f4', color: '#333333', border: '1px solid #e6e6e6', padding: '3px 9px', borderRadius: '4px', fontWeight: 500 }}>{d.topic}</span>
+                    </div>
+                    <p style={{ fontSize: '14.5px', lineHeight: '1.6', color: '#1b1b1b', margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'Inter, sans-serif' }}>{d.content}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '2px', paddingTop: '12px', borderTop: '1px solid #f3f3f3', fontSize: '13px', fontFamily: 'Inter, sans-serif', color: '#555555' }}>
+                      <button onClick={(e) => handleLike(d.id, e)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', padding: 0, color: '#555555' }} title="Like">
+                        <span style={{ fontSize: '14px', color: d.likes > 20 ? '#000000' : '#555555' }}>♥</span> <strong style={{ fontWeight: 600, color: '#222222' }}>{d.likes}</strong>
+                      </button>
+                      <button onClick={(e) => handleDislike(d.id, e)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', padding: 0, color: '#555555' }} title="Dislike">
+                        <span>👎</span> {d.dislikes > 0 && <strong style={{ fontWeight: 600, color: '#222222' }}>{d.dislikes}</strong>}
+                      </button>
+                      <button onClick={() => setExpandedId(isExpanded ? null : d.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', padding: 0, color: isExpanded ? '#000000' : '#555555', fontWeight: isExpanded ? 600 : 400 }}>
+                        <span>💬</span> <span>{d.replies.length === 0 ? 'Reply' : `${d.replies.length} ${d.replies.length === 1 ? 'reply' : 'replies'}`}</span>
+                      </button>
+                    </div>
+                    {isExpanded && (
+                      <div style={{ marginTop: '6px', paddingTop: '14px', paddingLeft: '16px', borderLeft: '2px solid #e0e0e0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {d.replies.length > 0 ? (
+                          d.replies.map(rep => (
+                            <div key={rep.id} style={{ display: 'flex', flexDirection: 'column', gap: '5px', paddingBottom: '12px', borderBottom: '1px solid #f7f7f7' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#6e6e6e' }}><strong style={{ color: '#111111', fontWeight: 600 }}>{rep.author}</strong><span>&middot;</span><span>{rep.date}</span></div>
+                              <p style={{ fontSize: '13.5px', lineHeight: '1.55', color: '#2b2b2b', margin: '2px 0 4px 0', whiteSpace: 'pre-wrap' }}>{rep.content}</p>
+                              <div style={{ display: 'flex', gap: '16px', alignItems: 'center', fontSize: '12px', color: '#6e6e6e' }}>
+                                <button onClick={() => handleLikeReply(d.id, rep.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555555', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', padding: 0 }}><span>♥</span> <strong style={{ color: '#222222', fontWeight: 600 }}>{rep.likes}</strong></button>
+                                <button onClick={() => handleDislikeReply(d.id, rep.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555555', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', padding: 0 }}><span>👎</span> {rep.dislikes > 0 && <strong style={{ color: '#222222', fontWeight: 600 }}>{rep.dislikes}</strong>}</button>
                               </div>
                             </div>
-                          </div>
-                        </div>
+                          ))
+                        ) : (<div style={{ fontSize: '13px', color: '#777777', fontStyle: 'italic', marginBottom: '4px' }}>No replies yet.</div>)}
+                        <form onSubmit={(e) => handlePostReply(d.id, e)} style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px', background: '#f8f8f8', padding: '12px 14px', borderRadius: '6px', border: '1px solid #eeeeee' }}>
+                          <input type="text" placeholder="Your Name" value={replyAuthor[d.id] || ''} onChange={(e) => setReplyAuthor(prev => ({ ...prev, [d.id]: e.target.value }))} style={{ width: '100%', padding: '8px 10px', fontSize: '13px', border: '1px solid #dcdcdc', borderRadius: '4px', outline: 'none', background: '#ffffff' }} />
+                          <textarea required rows={2} placeholder="Write your reply..." value={replyContent[d.id] || ''} onChange={(e) => setReplyContent(prev => ({ ...prev, [d.id]: e.target.value }))} style={{ width: '100%', padding: '8px 10px', fontSize: '13.5px', border: '1px solid #dcdcdc', borderRadius: '4px', outline: 'none', background: '#ffffff', resize: 'vertical' }} />
+                          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><button type="submit" style={{ background: '#000000', color: '#ffffff', border: 'none', padding: '7px 16px', borderRadius: '4px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>Post Reply</button></div>
+                        </form>
                       </div>
-                    ))}
-                </div>
-              )}
-
-              {/* Post Your Answer Box */}
-              <div style={{ background: 'var(--light-bg)', padding: '28px', borderRadius: 'var(--radius)', border: '1px solid var(--rule)' }}>
-                <h3 style={{ fontFamily: 'Lora, serif', fontSize: '20px', fontWeight: '400', color: 'var(--black)', marginBottom: '8px' }}>
-                  Your Engineering Solution
-                </h3>
-                <p style={{ fontSize: '13px', color: 'var(--mid-gray)', marginBottom: '20px' }}>
-                  Contribute your BS 8110 engineering knowledge to answer this structural inquiry. Be explicit with calculations and clause citations.
-                </p>
-
-                <form onSubmit={(e) => handlePostAnswer(activeForumQuestion.id, e)}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
-                    <div>
-                      <label style={{ display: 'block', fontSize: '11px', fontFamily: 'var(--mono)', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Your Name &amp; Title</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Eng. Awojide Joseph (MICE, Consulting Structural Lead)"
-                        value={answerAuthor}
-                        onChange={(e) => setAnswerAuthor(e.target.value)}
-                        style={{ width: '100%', padding: '10px 14px', border: '1px solid var(--rule)', borderRadius: 'var(--radius)', fontSize: '14px', outline: 'none', background: 'var(--white)' }}
-                      />
-                    </div>
-
-                    <div>
-                      <label style={{ display: 'block', fontSize: '11px', fontFamily: 'var(--mono)', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Detailed Solution / Clause Guidance</label>
-                      <textarea
-                        required
-                        rows={6}
-                        placeholder="Provide clear calculations, code limits, or structural recommendations..."
-                        value={answerContent}
-                        onChange={(e) => setAnswerContent(e.target.value)}
-                        style={{ width: '100%', padding: '12px 14px', border: '1px solid var(--rule)', borderRadius: 'var(--radius)', fontSize: '14px', outline: 'none', resize: 'vertical', background: 'var(--white)' }}
-                      />
-                    </div>
+                    )}
                   </div>
-
-                  <button
-                    type="submit"
-                    style={{
-                      background: 'var(--accent)',
-                      color: 'var(--white)',
-                      border: 'none',
-                      borderRadius: 'var(--radius)',
-                      padding: '12px 24px',
-                      fontFamily: 'var(--mono)',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      boxShadow: '0 2px 6px rgba(47,93,138,0.2)'
-                    }}
-                  >
-                    Post Structural Solution &rarr;
-                  </button>
-                </form>
-              </div>
-            </div>
-          )}
+                );
+              })
+            )}
+          </div>
         </main>
       )}
 
@@ -1312,124 +826,6 @@ export default function CommunityNotes() {
               </div>
             )}
 
-          </div>
-        </div>
-      )}
-
-      {/* =========================================================================
-          MODAL 2: STACK OVERFLOW FORUM QUESTION SUBMISSION MODAL
-          ========================================================================= */}
-      {isForumModalOpen && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(0,0,0,0.5)',
-          backdropFilter: 'blur(3px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1100,
-          padding: '20px'
-        }}>
-          <div style={{
-            background: '#ffffff',
-            border: '1px solid #0f0f0f',
-            borderRadius: 'var(--radius)',
-            padding: '32px',
-            width: '100%',
-            maxWidth: '600px',
-            boxShadow: '0 12px 40px rgba(0,0,0,0.2)',
-            maxHeight: '90vh',
-            overflowY: 'auto'
-          }}>
-            <h3 style={{ fontFamily: 'Lora, serif', fontSize: '24px', fontWeight: '400', marginBottom: '6px' }}>Ask a Structural Question</h3>
-            <p style={{ fontSize: '13px', color: 'var(--mid-gray)', marginBottom: '24px', lineHeight: '1.5' }}>
-              Publish an engineering question to the public Q&amp;A exchange. Include relevant BS 8110 or BS 6399 clauses so peers can verify your design parameters.
-            </p>
-
-            <form onSubmit={handleCreateForumQuestion}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '11px', fontFamily: 'var(--mono)', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Question Title</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. How to evaluate punching shear enhancement near column openings under Cl. 3.7.7.4?"
-                    value={forumTitle}
-                    onChange={(e) => setForumTitle(e.target.value)}
-                    style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--rule)', borderRadius: 'var(--radius)', fontSize: '14.5px', outline: 'none' }}
-                  />
-                </div>
-
-                <div style={{ display: 'flex', gap: '16px' }}>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ display: 'block', fontSize: '11px', fontFamily: 'var(--mono)', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Standard Clause Ref</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. BS 8110-1 Cl. 3.7.7.4"
-                      value={forumClause}
-                      onChange={(e) => setForumClause(e.target.value)}
-                      style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--rule)', borderRadius: 'var(--radius)', fontSize: '13.5px', outline: 'none' }}
-                    />
-                  </div>
-                  
-                  <div style={{ flex: 1 }}>
-                    <label style={{ display: 'block', fontSize: '11px', fontFamily: 'var(--mono)', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Your Name / Alias</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Eng_Joseph (Chartered)"
-                      value={forumAuthor}
-                      onChange={(e) => setForumAuthor(e.target.value)}
-                      style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--rule)', borderRadius: 'var(--radius)', fontSize: '13.5px', outline: 'none' }}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '11px', fontFamily: 'var(--mono)', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Tags (comma-separated)</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Slabs, Punching-Shear, BS8110, Flat-Slabs"
-                    value={forumTagsInput}
-                    onChange={(e) => setForumTagsInput(e.target.value)}
-                    style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--rule)', borderRadius: 'var(--radius)', fontSize: '13.5px', outline: 'none' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '11px', fontFamily: 'var(--mono)', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600 }}>Detailed Engineering Explanation</label>
-                  <textarea
-                    required
-                    rows={5}
-                    placeholder="Describe your design parameters, applied loading, concrete strength class, or structural confusion in detail..."
-                    value={forumContent}
-                    onChange={(e) => setForumContent(e.target.value)}
-                    style={{ width: '100%', padding: '12px 14px', border: '1px solid var(--rule)', borderRadius: 'var(--radius)', fontSize: '14px', outline: 'none', resize: 'vertical' }}
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                <button type="button" onClick={() => setIsForumModalOpen(false)} style={{ background: 'none', border: '1px solid var(--rule)', cursor: 'pointer', padding: '10px 18px', borderRadius: 'var(--radius)', fontFamily: 'var(--mono)', fontSize: '11.5px', fontWeight: 600 }}>Cancel</button>
-                <button
-                  type="submit"
-                  style={{
-                    background: 'var(--accent)',
-                    color: 'var(--white)',
-                    border: 'none',
-                    borderRadius: 'var(--radius)',
-                    padding: '10px 24px',
-                    fontFamily: 'var(--mono)',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 8px rgba(47,93,138,0.3)'
-                  }}
-                >
-                  Publish Discussion to Exchange
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}
