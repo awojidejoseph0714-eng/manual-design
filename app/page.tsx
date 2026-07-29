@@ -887,8 +887,8 @@ Check: Actual short span / d &le; Allowable span / d &rarr; Deflection is satisf
         <div class="section-header"><span class="step-num">STEP ST6</span><h2>Flexural Design &amp; Deflection</h2></div>
         <p>Stairs are designed identically to one-way solid slabs <span class="ref-code" title="BS 8110-1:1997">Cl. 3.10.1.1</span>.</p>
         <ul class="check">
-          <li><strong>Flexure:</strong> Calculate K = M / (b&middot;d&sup2;&middot;f<sub>cu</sub>), z, and A<sub>s</sub> exactly as a slab. The depth "d" is based on the waist thickness.</li>
-          <li><strong>Deflection Check:</strong> Check span/effective-depth ratio as per slabs. Because stairs often span 3-5m and have a waist of 150-200mm, deflection is usually the governing criteria <span class="ref-thumb">Deflection governs</span>.</li>
+          <li><strong>Flexure:</strong> Calculate K = M / (b&middot;d&sup2;&middot;f<sub>cu</sub>), z, and A<sub>s</sub> exactly as a <a href="#s6" style="color:inherit; text-decoration:underline; text-decoration-style:dotted; text-underline-offset:2px;" title="Go to Slabs Flexural Design">slab</a>. The depth "d" is based on the waist thickness.</li>
+          <li><strong>Deflection Check:</strong> Check span/effective-depth ratio as per <a href="#s8" style="color:inherit; text-decoration:underline; text-decoration-style:dotted; text-underline-offset:2px;" title="Go to Slabs Deflection Check">slabs</a>. Because stairs often span 3-5m and have a waist of 150-200mm, deflection is usually the governing criteria <span class="ref-thumb">Deflection governs</span>.</li>
           <li><strong>Shear:</strong> Shear is rarely critical for stairs due to their thickness relative to their span. Check v &le; v<sub>c</sub>.</li>
         </ul>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
@@ -1205,7 +1205,7 @@ Check: actual span/d &le; allowable span/d</div>
         <p>Where A<sub>c</sub> is the concrete area per meter, and A<sub>sc</sub> is the area of vertical steel per meter <span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.3.6.2</span>.</p>
 
         <h3>Significant Bending (In-Plane or Out-of-Plane)</h3>
-        <p>For walls subjected to significant moments, design the cross-section similar to a column using strain compatibility or column interaction design charts <span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.3.6.1</span>. If the wall is acting as a retaining wall, design a 1m strip as a cantilever beam for out-of-plane flexure.</p>
+        <p>For walls subjected to significant moments, design the cross-section similar to a <a href="#c5" style="color:inherit; text-decoration:underline; text-decoration-style:dotted; text-underline-offset:2px;" title="Go to Columns Bending">column</a> using strain compatibility or column interaction design charts <span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.3.6.1</span>. If the wall is acting as a retaining wall, design a 1m strip as a cantilever beam for out-of-plane flexure.</p>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
 
@@ -1215,7 +1215,7 @@ Check: actual span/d &le; allowable span/d</div>
         <ul class="check">
           <li>Check that v &le; 0.8&radic;f<sub>cu</sub> or 5 N/mm&sup2; (whichever is less) <span class="ref-code" title="BS 8110-1:1997">Cl. 3.9.3.8</span>.</li>
           <li>If v &le; v<sub>c</sub> + 0.4, provide minimum horizontal reinforcement (0.25% or 0.3%).</li>
-          <li>If v &gt; v<sub>c</sub> + 0.4, calculate required shear reinforcement exactly as for beams.</li>
+          <li>If v &gt; v<sub>c</sub> + 0.4, calculate required shear reinforcement exactly as for <a href="#b7" style="color:inherit; text-decoration:underline; text-decoration-style:dotted; text-underline-offset:2px;" title="Go to Beams Shear Design">beams</a>.</li>
         </ul>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
       </section>
@@ -1227,7 +1227,7 @@ Check: actual span/d &le; allowable span/d</div>
           <tr><td>Min Vertical Steel (Reinforced Wall)</td><td>0.4% of gross area (0.004Ac)</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.5.4</span></td></tr>
           <tr><td>Min Horizontal Steel</td><td>0.3% of gross area (0.25% if f<sub>y</sub>=460)</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.5.4</span></td></tr>
           <tr><td>Max Vertical Steel</td><td>4.0% of gross area (except at laps)</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.5.4</span></td></tr>
-          <tr><td>Requirement for Links</td><td>If vertical steel &gt; 2%, links MUST be provided (as per columns)</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.7.4</span></td></tr>
+          <tr><td>Requirement for Links</td><td>If vertical steel &gt; 2%, links MUST be provided (as per <a href="#c9" style="color:inherit; text-decoration:underline; text-decoration-style:dotted; text-underline-offset:2px;" title="Go to Columns Detailing">columns</a>)</td><td><span class="ref-code" title="BS 8110-1:1997">Cl. 3.12.7.4</span></td></tr>
         </table></div>
         <p>Bars should typically be arranged in two faces (two layers) if the wall thickness is greater than 150mm <span class="ref-thumb">Good detailing practice</span>.</p>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
@@ -1356,7 +1356,7 @@ h' and b' = effective depth to the compression reinforcement in each direction</
 
       <section id="c7">
         <div class="section-header"><span class="step-num">STEP C7</span><h2>Shear in Columns</h2></div>
-        <p>Columns rarely require shear reinforcement for gravity loads alone <span class="ref-thumb">Engineering guidance</span> &mdash; shear usually governs only in unbraced/sway frames under wind or seismic loading. Check using the same method as beams (Step B7).</p>
+        <p>Columns rarely require shear reinforcement for gravity loads alone <span class="ref-thumb">Engineering guidance</span> &mdash; shear usually governs only in unbraced/sway frames under wind or seismic loading. Check using the same method as <a href="#b7" style="color:inherit; text-decoration:underline; text-decoration-style:dotted; text-underline-offset:2px;" title="Go to Beams Shear Design">beams (Step B7)</a>.</p>
         <div class="formula">v = H / (b<sub>v</sub>d) &mdash; where H is the storey shear at that level
 Compare against v<sub>c</sub> from Table 3.8 (enhanced by axial compression)</div>
         <div class="backtotop"><a href="#top">&uarr; back to top</a></div>
