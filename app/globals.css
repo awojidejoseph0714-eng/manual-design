@@ -336,19 +336,29 @@ p strong { color: var(--black); }
    ===================================== */
 /* Shared badge base */
 .cl, .ref-code, .ref-standard, .ref-handbook, .ref-thumb, .ref-assumption {
-  display: inline-block; background: var(--light-bg); color: var(--dark-gray);
-  border: 1px solid var(--rule);
-  font-family: var(--mono); font-size: 9.5px; padding: 2px 6px;
-  border-radius: 4px; letter-spacing: 0.04em;
+  display: inline-block; color: var(--white);
+  font-family: var(--mono); font-size: 9.5px; padding: 1px 6px;
+  border-radius: 2px; letter-spacing: 0.04em;
   vertical-align: middle; margin: 0 2px; white-space: nowrap;
   cursor: help;
-  transition: all 0.15s ease;
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  border: none;
 }
 .cl:hover, .ref-code:hover, .ref-standard:hover, .ref-handbook:hover, .ref-thumb:hover, .ref-assumption:hover {
-  background: var(--black);
-  color: var(--white);
-  border-color: var(--black);
+  filter: brightness(1.15);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  transform: translateY(-1px);
 }
+/* 1. BS 8110 Code Requirement — blueprint blue */
+.cl, .ref-code { background: var(--accent); }
+/* 2. Other British Standard (BS 6399, BS 648, etc.) — muted teal */
+.ref-standard { background: #3a7d6e; }
+/* 3. Handbook Guidance (Oyenuga, Arya, Reynolds) — warm amber */
+.ref-handbook { background: #8a6d2f; }
+/* 4. Rule of Thumb / Engineering Judgment — slate grey */
+.ref-thumb { background: var(--mid-gray); }
+/* 5. Project Assumption (worked examples) — soft red-brown */
+.ref-assumption { background: #8a4a3a; }
 
 /* =====================================
    REFERENCE LEGEND
@@ -371,8 +381,14 @@ p strong { color: var(--black); }
 .ref-legend-item .swatch {
   display: inline-block; width: 10px; height: 10px;
   border-radius: 2px;
-  background: var(--light-bg); border: 1px solid var(--rule);
+  margin-right: 8px; vertical-align: -2px;
+  border: none;
 }
+.ref-legend-item .swatch.code { background: var(--accent); }
+.ref-legend-item .swatch.standard { background: #3a7d6e; }
+.ref-legend-item .swatch.handbook { background: #8a6d2f; }
+.ref-legend-item .swatch.thumb { background: var(--mid-gray); }
+.ref-legend-item .swatch.assumption { background: #8a4a3a; }
 
 /* =====================================
    CARDS
@@ -391,15 +407,17 @@ p strong { color: var(--black); }
    FORMULA / CODE BLOCK
    ===================================== */
 .formula {
-  background: var(--light-bg); color: var(--black);
-  border: 1px solid var(--rule);
+  background: var(--code-bg); color: var(--code-text);
+  border: none;
   font-family: var(--mono); font-size: 12.5px;
   padding: 16px 20px; margin: 14px 0;
   border-radius: var(--radius); line-height: 2;
   overflow-x: auto; -webkit-overflow-scrolling: touch;
   white-space: pre;
 }
-.formula span { color: var(--mid-gray); }
+.formula span { color: var(--code-yellow); }
+.formula p { color: inherit; margin: 0; }
+.formula strong, .formula p strong { color: var(--white); font-weight: 600; }
 
 /* =====================================
    TABLES
@@ -518,7 +536,7 @@ ul.check li::before {
 .building-card .ref-standard,
 .building-card .ref-handbook,
 .building-card .ref-thumb,
-.building-card .ref-assumption { background: var(--black); color: var(--white); border-color: var(--black); }
+.building-card .ref-assumption { background: rgba(255,255,255,0.15); color: var(--white); border: none; }
 
 /* =====================================
    GLOSSARY
