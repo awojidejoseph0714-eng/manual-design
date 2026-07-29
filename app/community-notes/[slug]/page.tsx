@@ -223,9 +223,15 @@ export default function ArticleDetail({ params }: { params: { slug: string } }) 
     <div style={{ padding: '60px 0 100px 0', fontFamily: 'Inter, sans-serif' }}>
       <div style={{ maxWidth: '760px', margin: '0 auto', padding: '0 24px' }}>
         
-        {/* Back Link */}
-        <Link href="/community-notes" style={{ textDecoration: 'none', color: 'var(--mid-gray)', fontSize: '11px', fontFamily: 'var(--mono)', letterSpacing: '0.1em', display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '32px' }}>
-          &larr; Back to FAQ &amp; Notes
+        {/* Floating Back to FAQ Button (Top Left) */}
+        <Link
+          href="/community-notes"
+          className="floating-faq-btn-left"
+          aria-label="Back to FAQ"
+          style={{ top: '24px', bottom: 'auto', left: '24px' }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: "-1px" }}><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Back to FAQ
         </Link>
 
         {/* Metadata */}
